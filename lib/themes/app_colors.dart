@@ -1,0 +1,24 @@
+import 'package:flutter/material.dart';
+
+class AppColors {
+  static const Color transparent = Colors.transparent;
+  static const Color darkBlue = Color(0xFF0C1B54);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color blue = Color(0xFF386DF3);
+  static const Color green = Color(0xFF2AB749);
+}
+
+// class Gradients {
+//   static const Gradient defaultGradientButton = LinearGradient(
+//     colors: [AppColors.redMedium, AppColors.tanHide],
+//     begin: Alignment.bottomLeft,
+//     end: Alignment.topRight,
+//   );
+//
+//   static Gradient defaultGradientBackground = LinearGradient(
+//     begin: Alignment.topCenter,
+//     end: Alignment.bottomCenter,
+//     colors: [AppColors.dark.withOpacity(0.28), AppColors.dark],
+//     stops: const [0.2, 0.8],
+//   );
+// }
