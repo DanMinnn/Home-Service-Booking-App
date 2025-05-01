@@ -1,3 +1,3 @@
 class FontFamily {
-  static const gilroy = "Gilroy";
+  static const gilroy = 'Gilroy';
 }
