@@ -16,7 +16,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => FormFieldBloc(),
-      child: LoginForm(),
+      child: const LoginForm(),
     );
   }
 }
@@ -27,6 +27,8 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FormFieldBloc, FormFieldStates>(
+      buildWhen: (previous, current) => 
+        previous.email != current.email || previous.password != current.password,
       builder: (context, state) {
         return GestureDetector(
           onTap: () {
@@ -40,21 +42,21 @@ class LoginForm extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildTextWelcomeBack(),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     _buildEmailTextField(context, state),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildPasswordTextField(context, state),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildForgetPassword(),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     _buildBtnLogin(),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _buildOrSplitDivider(),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _buildButtonLoginFbOrGoogle(),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildNotMember(),
                   ],
                 ),
@@ -142,7 +144,7 @@ Widget _buildOrSplitDivider() {
         child: DottedLine(
           direction: Axis.horizontal,
           lineLength: double.infinity,
-          dashColor: AppColors.darkBlue.withValues(alpha: 0.2),
+          dashColor: AppColors.darkBlue.withAlpha(20),
         ),
       ),
       Container(
@@ -157,7 +159,7 @@ Widget _buildOrSplitDivider() {
         child: DottedLine(
           direction: Axis.horizontal,
           lineLength: double.infinity,
-          dashColor: AppColors.darkBlue.withValues(alpha: 0.2),
+          dashColor: AppColors.darkBlue.withAlpha(20),
         ),
       ),
     ],
@@ -223,7 +225,7 @@ Widget _buildNotMember() {
       Text(
         'Not you member?',
         style: AppTextStyles.bodyLargeMedium.copyWith(
-          color: AppColors.darkBlue.withValues(alpha: 0.6),
+          color: AppColors.darkBlue.withAlpha(60),
           fontWeight: FontWeight.w400,
         ),
       ),
@@ -235,3 +237,4 @@ Widget _buildNotMember() {
     ],
   );
 }
+

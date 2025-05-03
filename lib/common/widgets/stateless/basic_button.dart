@@ -4,12 +4,12 @@ import 'package:home_service/themes/styles_text.dart';
 import '../../../themes/app_colors.dart';
 
 class BasicButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String title;
   final double? height;
 
   const BasicButton(
-      {super.key, required this.onPressed, required this.title, this.height});
+      {super.key, this.onPressed, required this.title, this.height});
 
   @override
   Widget build(BuildContext context) {

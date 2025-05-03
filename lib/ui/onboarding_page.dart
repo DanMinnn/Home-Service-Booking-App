@@ -60,7 +60,7 @@ class OnboardingPage extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Text(
-          'Application for easily find a Home Serviceman',
+          'Application for easily find a\nHome Serviceman',
           style: AppTextStyles.bodyLargeRegular,
           textAlign: TextAlign.center,
         ),
@@ -77,8 +77,16 @@ class OnboardingPage extends StatelessWidget {
               width: double.infinity,
               child: BasicButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => AuthScreen()));
+                    // Optimize navigation by using a builder function
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const AuthScreen(),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
                   },
                   title: 'Login')),
           SizedBox(height: 14),
@@ -86,8 +94,16 @@ class OnboardingPage extends StatelessWidget {
             width: double.infinity,
             child: OutlinedButton(
               onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => AuthScreen()));
+                // Optimize navigation by using a builder function
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const AuthScreen(initialTab: 1),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
               },
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
