@@ -21,6 +21,12 @@ dependencies:
   flutter_bloc: ^9.1.0
   equatable:
   formz:
+  dio:
+  shared_preferences:
+  flutter_dotenv:
+  json_serializable:
+  #deep link
+  uni_links3: ^0.5.3
 
 dev_dependencies:
   flutter_test:
@@ -40,6 +46,7 @@ flutter:
     - assets/images/icons/
     - assets/images/icons/2x/
     - assets/images/icons/3x/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
