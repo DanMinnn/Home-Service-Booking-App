@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_service/modules/authentication/blocs/signup_event.dart';
-import 'package:home_service/modules/authentication/blocs/signup_state.dart';
+import 'package:home_service/modules/authentication/blocs/signup/signup_event.dart';
+import 'package:home_service/modules/authentication/blocs/signup/signup_state.dart';
 import 'package:home_service/providers/log_provider.dart';
 
-import '../repos/signup_repo.dart';
+import '../../repos/signup_repo.dart';
 
 class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final SignupRepo signupRepository;

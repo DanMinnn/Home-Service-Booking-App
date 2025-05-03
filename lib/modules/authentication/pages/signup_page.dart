@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_service/modules/authentication/blocs/form_bloc.dart';
-import 'package:home_service/modules/authentication/blocs/signup_bloc.dart';
+import 'package:home_service/modules/authentication/blocs/form_validate/form_bloc.dart';
+import 'package:home_service/modules/authentication/blocs/signup/signup_bloc.dart';
 import 'package:home_service/modules/authentication/repos/signup_repo.dart';
 
 import '../../../common/widgets/stateless/basic_button.dart';
@@ -9,8 +9,8 @@ import '../../../providers/log_provider.dart';
 import '../../../themes/app_assets.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/styles_text.dart';
-import '../blocs/signup_event.dart';
-import '../blocs/signup_state.dart';
+import '../blocs/signup/signup_event.dart';
+import '../blocs/signup/signup_state.dart';
 import '../models/signup_req.dart';
 import '../widgets/custom_text_field.dart';
 

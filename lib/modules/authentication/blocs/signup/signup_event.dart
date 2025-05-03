@@ -1,4 +1,4 @@
-import '../models/signup_req.dart';
+import '../../models/signup_req.dart';
 
 abstract class SignupEvent {}
 

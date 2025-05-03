@@ -2,9 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:home_service/modules/authentication/models/phone.dart';
 
-import '../models/email.dart';
-import '../models/password.dart';
-import '../models/username.dart';
+import '../../models/email.dart';
+import '../../models/password.dart';
+import '../../models/username.dart';
 
 part 'form_event.dart';
 part 'form_state.dart';
