@@ -6,9 +6,9 @@ import 'package:home_service/modules/authentication/blocs/form_validate/form_blo
 import 'package:home_service/modules/authentication/blocs/login/login_event.dart';
 import 'package:home_service/modules/authentication/widgets/custom_text_field.dart';
 import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_assets.dart';
 import 'package:home_service/themes/app_colors.dart';
-import 'package:home_service/ui/home_page.dart';
 
 import '../../../themes/styles_text.dart';
 import '../blocs/login/login_bloc.dart';
@@ -40,6 +40,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   LogProvider get logger => const LogProvider('LOGIN-PAGE');
+  final NavigationService _navigationService = NavigationService();
 
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -56,15 +57,7 @@ class _LoginFormState extends State<LoginForm> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.green,
-            ),
-          );
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage()));
+          _navigationService.navigateToAndClearStack('/home-screen');
         } else if (state is LoginFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_assets.dart';
 import 'package:home_service/themes/app_colors.dart';
-import 'package:home_service/ui/onboarding_page.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 class Splashscreen extends StatefulWidget {
@@ -12,6 +12,7 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
+  final NavigationService _navigationService = NavigationService();
   @override
   void initState() {
     super.initState();
@@ -66,7 +67,6 @@ class _SplashscreenState extends State<Splashscreen> {
 
   Future<void> _redirect() async {
     await Future.delayed(Duration(seconds: 2));
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => OnboardingPage()));
+    _navigationService.navigateToReplacement('/onboarding-screen');
   }
 }

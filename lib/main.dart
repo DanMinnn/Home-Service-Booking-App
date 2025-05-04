@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:home_service/modules/authentication/repos/email_verification_handler.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
+import 'package:home_service/ui/home_page.dart';
+import 'package:home_service/ui/onboarding_page.dart';
 import 'package:home_service/ui/splash_screen.dart';
 
 import 'modules/authentication/pages/verify_success_page.dart';
@@ -17,10 +20,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Get the single instance of NavigationService
+    final navigationService = NavigationService();
+
     return EmailVerificationHandler(
       child: MaterialApp(
         navigatorKey:
-            navigatorKey, // Using the navigatorKey from email_verification_handler.dart
+            navigationService.navigatorKey, // Use the centralized navigator key
         title: 'Home service',
         theme: ThemeData(
           appBarTheme: const AppBarTheme(
@@ -34,6 +40,8 @@ class MyApp extends StatelessWidget {
         home: Splashscreen(),
         routes: {
           '/verified-screen': (context) => const VerifySuccessPage(),
+          '/onboarding-screen': (context) => const OnboardingPage(),
+          '/home-screen': (context) => const HomePage(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/verify-screen') {

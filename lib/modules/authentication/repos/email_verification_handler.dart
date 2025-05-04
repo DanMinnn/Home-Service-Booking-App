@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:uni_links3/uni_links.dart';
 
-// Keep this global key as the single source of truth for navigation
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// Remove the global navigatorKey - we'll use the one from NavigationService instead
 
 class EmailVerificationHandler extends StatefulWidget {
   const EmailVerificationHandler({super.key, required this.child});
@@ -19,6 +19,8 @@ class EmailVerificationHandler extends StatefulWidget {
 class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
   StreamSubscription? _sub;
   LogProvider get logger => const LogProvider('Email Verification Handler');
+  // Get the navigation service instance
+  final NavigationService _navigationService = NavigationService();
 
   @override
   void initState() {
@@ -92,7 +94,7 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
     logger.log(
         'Attempting to navigate to VerifySuccessPage, attempt ${retryCount + 1}');
 
-    // Try using context navigation if navigatorKey is not ready
+    // Try using context navigation if NavigationService is not ready
     if (mounted && context.mounted) {
       try {
         logger.log('Trying to navigate using context');
@@ -103,13 +105,13 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
       }
     }
 
-    // Fallback to navigator key
-    if (navigatorKey.currentState != null) {
+    // Use the NavigationService instead of direct navigatorKey
+    if (_navigationService.navigator != null) {
       logger.log('Navigator is ready, navigating to VerifySuccessPage');
       try {
-        navigatorKey.currentState!.pushNamed('/verified-screen');
+        _navigationService.navigateTo('/verified-screen');
       } catch (e) {
-        logger.log('Error navigating with navigatorKey: $e');
+        logger.log('Error navigating with NavigationService: $e');
         if (retryCount < maxRetries) {
           Future.delayed(retryDelay,
               () => _navigateToSuccessPage(retryCount: retryCount + 1));
