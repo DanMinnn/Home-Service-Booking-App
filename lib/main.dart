@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:home_service/blocs/app_state_bloc.dart';
 import 'package:home_service/modules/authentication/repos/email_verification_handler.dart';
+import 'package:home_service/routes/routes.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
-import 'package:home_service/ui/home_page.dart';
-import 'package:home_service/ui/onboarding_page.dart';
-import 'package:home_service/ui/splash_screen.dart';
-
-import 'modules/authentication/pages/verify_success_page.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
-  runApp(const MyApp());
+  runApp(
+    EmailVerificationHandler(
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -23,35 +25,38 @@ class MyApp extends StatelessWidget {
     // Get the single instance of NavigationService
     final navigationService = NavigationService();
 
-    return EmailVerificationHandler(
-      child: MaterialApp(
-        navigatorKey:
-            navigationService.navigatorKey, // Use the centralized navigator key
-        title: 'Home service',
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            color: AppColors.white,
-            centerTitle: false,
-            titleSpacing: 0,
-            elevation: 0,
-          ),
-        ),
-        debugShowCheckedModeBanner: false,
-        home: Splashscreen(),
-        routes: {
-          '/verified-screen': (context) => const VerifySuccessPage(),
-          '/onboarding-screen': (context) => const OnboardingPage(),
-          '/home-screen': (context) => const HomePage(),
-        },
-        onGenerateRoute: (settings) {
-          if (settings.name == '/verify-screen') {
-            return MaterialPageRoute(
-              builder: (context) => const VerifySuccessPage(),
-            );
-          }
-          return null;
+    return BlocProvider<AppStateBloc>(
+      create: (_) => AppStateBloc(),
+      child: BlocBuilder<AppStateBloc, AppState>(
+        builder: (context, state) {
+          return MaterialApp(
+            key: ValueKey('APP-STATE-${state.toString()}'),
+            navigatorKey: navigationService.navigatorKey,
+            title: 'Home service',
+            theme: ThemeData(
+              appBarTheme: const AppBarTheme(
+                color: AppColors.white,
+                centerTitle: false,
+                titleSpacing: 0,
+                elevation: 0,
+              ),
+            ),
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: state == AppState.authorized
+                ? Routes.authorizedRoute
+                : Routes.unAuthorizedRoute,
+            builder: _builder,
+          );
         },
       ),
+    );
+  }
+
+  Widget _builder(BuildContext context, Widget? child) {
+    final mediaQuery = MediaQuery.of(context);
+    return MediaQuery(
+      data: mediaQuery.copyWith(textScaler: TextScaler.linear(1)),
+      child: child!,
     );
   }
 }

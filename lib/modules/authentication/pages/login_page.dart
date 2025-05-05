@@ -1,11 +1,13 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service/blocs/app_state_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_button.dart';
 import 'package:home_service/modules/authentication/blocs/form_validate/form_bloc.dart';
 import 'package:home_service/modules/authentication/blocs/login/login_event.dart';
 import 'package:home_service/modules/authentication/widgets/custom_text_field.dart';
 import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_assets.dart';
 import 'package:home_service/themes/app_colors.dart';
@@ -39,7 +41,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  LogProvider get logger => const LogProvider('LOGIN-PAGE');
+  LogProvider get logger => const LogProvider('LOGIN-PAGE:::');
   final NavigationService _navigationService = NavigationService();
 
   final TextEditingController _email = TextEditingController();
@@ -57,7 +59,12 @@ class _LoginFormState extends State<LoginForm> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          _navigationService.navigateToAndClearStack('/home-screen');
+          context.read<AppStateBloc>().changeAppState(AppState.authorized);
+          logger.log("Login successful. Redirecting to home screen.");
+
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _navigationService.navigateToAndClearStack(RouteName.homeScreen);
+          });
         } else if (state is LoginFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -104,7 +111,7 @@ class _LoginFormState extends State<LoginForm> {
                           const SizedBox(height: 10),
                           _buildButtonLoginFbOrGoogle(),
                           const SizedBox(height: 20),
-                          _buildNotMember(),
+                          //_buildNotMember(),
                         ],
                       ),
                     ),
@@ -222,7 +229,7 @@ class _LoginFormState extends State<LoginForm> {
           child: DottedLine(
             direction: Axis.horizontal,
             lineLength: double.infinity,
-            dashColor: AppColors.darkBlue.withAlpha(20),
+            dashColor: AppColors.darkBlue.withValues(alpha: 0.20),
           ),
         ),
         Container(
@@ -237,7 +244,7 @@ class _LoginFormState extends State<LoginForm> {
           child: DottedLine(
             direction: Axis.horizontal,
             lineLength: double.infinity,
-            dashColor: AppColors.darkBlue.withAlpha(20),
+            dashColor: AppColors.darkBlue.withValues(alpha: 0.20),
           ),
         ),
       ],
@@ -303,7 +310,7 @@ class _LoginFormState extends State<LoginForm> {
         Text(
           'Not you member?',
           style: AppTextStyles.bodyLargeMedium.copyWith(
-            color: AppColors.darkBlue.withAlpha(60),
+            color: AppColors.darkBlue.withValues(alpha: 0.6),
             fontWeight: FontWeight.w400,
           ),
         ),

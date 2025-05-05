@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_assets.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+
+import '../blocs/app_state_bloc.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -16,7 +20,9 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    _redirect();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _redirect();
+    });
   }
 
   @override
@@ -66,7 +72,15 @@ class _SplashscreenState extends State<Splashscreen> {
   }
 
   Future<void> _redirect() async {
-    await Future.delayed(Duration(seconds: 2));
-    _navigationService.navigateToReplacement('/onboarding-screen');
+    await Future.delayed(const Duration(seconds: 2));
+
+    final appState = context.read<AppStateBloc>().state;
+    if (appState == AppState.authorized) {
+      _navigationService.navigateToAndClearStack(RouteName.homeScreen);
+    } else if (appState == AppState.unAuthorized) {
+      _navigationService.navigateToAndClearStack(RouteName.authScreen);
+    } else {
+      _navigationService.navigateToAndClearStack(RouteName.onboardingScreen);
+    }
   }
 }
