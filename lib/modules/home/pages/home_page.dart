@@ -1,0 +1,259 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service/modules/home/bloc/categories/service_cubit.dart';
+import 'package:home_service/modules/home/repo/services_repo.dart';
+
+import '../../../common/widgets/stateless/basic_app_bar.dart';
+import '../../../providers/log_provider.dart';
+import '../../../services/navigation_service.dart';
+import '../../../themes/app_assets.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/styles_text.dart';
+import '../bloc/categories/service_state.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final NavigationService _navigationService = NavigationService();
+  LogProvider get logger => const LogProvider('HOMEPAGE:::');
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BasicAppBar(
+            isLeading: true,
+            isTrailing: true,
+            leading: Image.asset(AppAssetIcons.logoHouse),
+            title: 'Welcome,',
+            subtitle: 'Denuyel',
+            trailing: Image.asset(AppAssetIcons.notification),
+          ),
+          _buildBody(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSearchBar(),
+          const SizedBox(height: 30),
+          _buildCategories(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width - 70,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextFormField(
+              decoration: InputDecoration(
+                hintText: 'All Service Available',
+                hintStyle: AppTextStyles.bodyMediumMedium
+                    .copyWith(color: AppColors.darkBlue.withValues(alpha: 0.4)),
+                prefixIcon: Image.asset(AppAssetIcons.location),
+                suffixIcon: Image.asset(AppAssetIcons.gps),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: _isFocused
+                      ? BorderSide(
+                          color: AppColors.darkBlue.withValues(alpha: 0.05),
+                        )
+                      : BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: AppColors.darkBlue.withValues(alpha: 0.4),
+                  ),
+                ),
+                fillColor: AppColors.darkBlue.withValues(alpha: 0.05),
+                filled: true,
+              ),
+            ),
+          ),
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: AppColors.darkBlue,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ColorFiltered(
+                colorFilter: ColorFilter.mode(AppColors.white, BlendMode.srcIn),
+                child: Image.asset(AppAssetIcons
+                    .search) // Icon(Icons.search, color: AppColors.white),
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategories() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                'Categories',
+                style: AppTextStyles.bodyLargeSemiBold.copyWith(
+                  color: AppColors.darkBlue,
+                  fontSize: 20,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  logger.log('See All button pressed');
+                  // Use the NavigationService to change tabs instead of direct navigation
+                  _navigationService
+                      .changeTab(2); // 2 is the index for Categories tab
+                },
+                child: Text(
+                  'See All',
+                  style: AppTextStyles.captionMedium.copyWith(
+                    color: AppColors.darkBlue.withValues(alpha: 0.6),
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              )
+            ],
+          ),
+          BlocProvider(
+            create: (context) => ServiceCubit(ServicesRepo())..fetchServices(),
+            child: BlocBuilder<ServiceCubit, ServiceState>(
+              builder: (context, state) {
+                if (state is ServiceLoading) {
+                  return const Center(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                } else if (state is ServiceLoaded) {
+                  final services = state.services;
+                  if (services.isEmpty) {
+                    return const Center(
+                      child: Text('No services available'),
+                    );
+                  }
+                  return GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 101 / 124,
+                    ),
+                    itemCount: 6,
+                    itemBuilder: (context, index) {
+                      return _buildItemGridView(
+                        services[index].name ?? '',
+                        services[index].icon ?? '',
+                      );
+                    },
+                  );
+                }
+                return Center(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Sorry, something went wrong',
+                      style: AppTextStyles.bodyLargeSemiBold.copyWith(
+                        color: AppColors.redMedium,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemGridView(String title, String image) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.darkBlue.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            AppAssetIcons.iconPath + image,
+            width: 40,
+            height: 40,
+            filterQuality: FilterQuality.high,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: AppTextStyles.bodyMediumMedium.copyWith(
+              color: AppColors.darkBlue.withValues(alpha: 0.8),
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -3,6 +3,7 @@ class RouteName {
   static const String onboardingScreen = '/onboarding-screen';
   static const String authScreen = '/auth-screen';
   static const String homeScreen = '/home-screen';
+  static const String categories = '/categories-screen';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String about = '/about';
