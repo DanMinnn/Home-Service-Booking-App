@@ -9,7 +9,7 @@ import '../utils/error_response.dart';
 class ApiProvider {
   late Dio _dio;
   String? get _accessToken {
-    return dotenv.env['USER_TOKEN'];
+    return TokenManager().accessToken;
   }
 
   static final ApiProvider _instance = ApiProvider._internal();
@@ -19,9 +19,11 @@ class ApiProvider {
   }
 
   ApiProvider._internal() {
-    final baseOption = BaseOptions(baseUrl: dotenv.env['API_URL']!,
+    final baseOption = BaseOptions(
+      baseUrl: dotenv.env['API_URL']!,
       connectTimeout: const Duration(seconds: 30), // Add a 30-second timeout
-      receiveTimeout: const Duration(seconds: 30),);
+      receiveTimeout: const Duration(seconds: 30),
+    );
     _dio = Dio(baseOption);
     setupInterceptors();
   }
@@ -36,10 +38,12 @@ class ApiProvider {
           TokenManager().load(prefs);
           logger.log('calling with access token: $_accessToken');
           options.headers['Authorization'] = 'Bearer $_accessToken';
+          options.headers.remove('Authorization');
           return handler.next(options);
         });
       }
       options.headers['Authorization'] = 'Bearer $_accessToken';
+      options.headers.remove('Authorization');
       return handler.next(options);
     }, onResponse: (response, handler) {
       return handler.next(response);
