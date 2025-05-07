@@ -1,7 +1,6 @@
-import 'package:home_service/modules/home/models/service_category.dart';
-
 import '../../../providers/api_provider.dart';
 import '../../../providers/log_provider.dart';
+import '../models/service_category.dart';
 
 class ServicesRepo {
   LogProvider get logger => LogProvider('CATEGORIES-REPO:::');

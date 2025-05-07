@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_service/modules/home/bloc/categories/service_cubit.dart';
-import 'package:home_service/modules/home/repo/services_repo.dart';
+import 'package:home_service/modules/categories/repo/services_repo.dart';
 
 import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../providers/log_provider.dart';
@@ -9,7 +8,8 @@ import '../../../services/navigation_service.dart';
 import '../../../themes/app_assets.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/styles_text.dart';
-import '../bloc/categories/service_state.dart';
+import '../../categories/bloc/service_cubit.dart';
+import '../../categories/bloc/service_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

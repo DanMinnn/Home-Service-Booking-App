@@ -6,9 +6,9 @@ import 'package:home_service/themes/app_assets.dart';
 import '../../../services/navigation_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/styles_text.dart';
-import '../../home/bloc/categories/service_cubit.dart';
-import '../../home/bloc/categories/service_state.dart';
-import '../../home/repo/services_repo.dart';
+import '../bloc/service_cubit.dart';
+import '../bloc/service_state.dart';
+import '../repo/services_repo.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
