@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_service/modules/booking/pages/choose_working_time_page.dart';
+import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
+import 'package:home_service/modules/booking/pages/options_service_page.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
@@ -35,9 +38,15 @@ class Routes {
       case RouteName.onboardingScreen:
         return _buildRoute(settings, const OnboardingPage());
       case RouteName.categories:
-        _logger.log(
-            'UNAUTHORIZED ==== Navigating to CategoriesPage: ${settings.name}');
         return _buildRoute(settings, const CategoriesPage());
+      case RouteName.serviceItem:
+        return _buildRoute(settings, const OptionsServicePage());
+      case RouteName.chooseTime:
+        _logger.log('Navigating to ChooseWorkingTimePage: ${settings.name}');
+        return _buildRoute(settings, const ChooseWorkingTimePage());
+      case RouteName.confirmAndPay:
+        _logger.log('Navigating to ChooseWorkingTimePage: ${settings.name}');
+        return _buildRoute(settings, const ConfirmAndPayPage());
       default:
         _logger.log('Default redirect to AuthScreen: ${settings.name}');
         return _buildRoute(settings, const MainScreen());

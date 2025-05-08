@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
 import 'package:home_service/themes/app_assets.dart';
 
+import '../../../routes/route_name.dart';
 import '../../../services/navigation_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/styles_text.dart';
@@ -81,6 +82,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 itemBuilder: (context, index) => _buildItemGridView(
                   services[index].name ?? '',
                   services[index].icon ?? '',
+                  services[index].id ?? 0,
                 ),
               ),
             );
@@ -101,37 +103,45 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  Widget _buildItemGridView(String title, String image) {
-    return Column(
-      children: [
-        Container(
-          width: 78,
-          height: 78,
-          decoration: BoxDecoration(
-            color: AppColors.darkBlue.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Image.asset(
-              AppAssetIcons.iconPath + image,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
+  Widget _buildItemGridView(String serviceName, String icon, int id) {
+    return GestureDetector(
+      onTap: () {
+        _navigationService.navigateTo(RouteName.serviceItem, arguments: {
+          'id': id,
+          'name': serviceName,
+        });
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 78,
+            height: 78,
+            decoration: BoxDecoration(
+              color: AppColors.darkBlue.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Image.asset(
+                AppAssetIcons.iconPath + icon,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.captionMedium.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-            color: AppColors.darkBlue,
-          ),
-        )
-      ],
+          const SizedBox(height: 8),
+          Text(
+            serviceName,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.captionMedium.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: AppColors.darkBlue,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

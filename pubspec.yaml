@@ -27,6 +27,10 @@ dependencies:
   json_serializable:
   #deep link
   uni_links3: ^0.5.3
+  #calendar
+  flutter_datetime_picker_plus: ^2.2.0
+  #format date
+  intl:
 
 dev_dependencies:
   flutter_test:

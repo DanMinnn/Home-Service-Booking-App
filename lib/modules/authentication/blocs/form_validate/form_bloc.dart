@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:home_service/modules/authentication/models/phone.dart';
 
+import '../../../booking/models/address_validate.dart';
+import '../../../booking/models/date_time_validate.dart';
 import '../../models/email.dart';
 import '../../models/password.dart';
 import '../../models/username.dart';
@@ -19,6 +21,10 @@ class FormFieldBloc extends Bloc<FormFieldEvent, FormFieldStates> {
     on<PhoneNumberUnfocused>(_onPhoneNumberUnfocused);
     on<UsernameChanged>(_onUsernameChanged);
     on<UsernameUnfocused>(_onUsernameUnfocused);
+    on<DateTimeChanged>(_onDateTimeChanged);
+    on<DateTimeUnfocused>(_onDateTimeUnfocused);
+    on<AddressChanged>(_onAddressChanged);
+    on<AddressUnfocused>(_onAddressUnfocused);
   }
 
   void _onEmailChanged(EmailChanged event, Emitter<FormFieldStates> emit) {
@@ -103,6 +109,56 @@ class FormFieldBloc extends Bloc<FormFieldEvent, FormFieldStates> {
     emit(
       state.copyWith(
         username: username,
+      ),
+    );
+  }
+
+  void _onDateTimeChanged(
+    DateTimeChanged event,
+    Emitter<FormFieldStates> emit,
+  ) {
+    final dateTime = DateTimeValidate.dirty(event.dateTime);
+    emit(
+      state.copyWith(
+        dateTime:
+            dateTime.isValid ? dateTime : DateTimeValidate.pure(event.dateTime),
+      ),
+    );
+  }
+
+  void _onDateTimeUnfocused(
+    DateTimeUnfocused event,
+    Emitter<FormFieldStates> emit,
+  ) {
+    final dateTime = DateTimeValidate.dirty(state.dateTime.value);
+    emit(
+      state.copyWith(
+        dateTime: dateTime,
+      ),
+    );
+  }
+
+  void _onAddressChanged(
+    AddressChanged event,
+    Emitter<FormFieldStates> emit,
+  ) {
+    final address = AddressValidator.dirty(event.address);
+    emit(
+      state.copyWith(
+        address:
+            address.isValid ? address : AddressValidator.pure(event.address),
+      ),
+    );
+  }
+
+  void _onAddressUnfocused(
+    AddressUnfocused event,
+    Emitter<FormFieldStates> emit,
+  ) {
+    final address = AddressValidator.dirty(state.address.value);
+    emit(
+      state.copyWith(
+        address: address,
       ),
     );
   }

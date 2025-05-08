@@ -46,3 +46,23 @@ class UsernameChanged extends FormFieldEvent {
 }
 
 class UsernameUnfocused extends FormFieldEvent {}
+
+class DateTimeChanged extends FormFieldEvent {
+  final String dateTime;
+  const DateTimeChanged(this.dateTime);
+
+  @override
+  List<Object> get props => [dateTime];
+}
+
+class DateTimeUnfocused extends FormFieldEvent {}
+
+class AddressChanged extends FormFieldEvent {
+  final String address;
+  const AddressChanged(this.address);
+
+  @override
+  List<Object> get props => [address];
+}
+
+class AddressUnfocused extends FormFieldEvent {}

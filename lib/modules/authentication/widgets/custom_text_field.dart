@@ -15,6 +15,8 @@ class CustomTextField extends StatefulWidget {
   final Function() onUnfocused;
   final List<String>? errorMessages;
   final TextEditingController? controller;
+  final bool fillColor;
+  final bool? enabled;
 
   const CustomTextField({
     super.key,
@@ -29,6 +31,8 @@ class CustomTextField extends StatefulWidget {
     this.errorMessages,
     this.isPassword = false,
     this.controller,
+    this.fillColor = true,
+    this.enabled,
   });
 
   @override
@@ -84,12 +88,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
           obscureText: widget.isPassword ? _obscureText : false,
           keyboardType: widget.keyboardType,
           onChanged: widget.onChanged,
+          style: AppTextStyles.bodySmallMedium.copyWith(
+            color: AppColors.darkBlue,
+            fontSize: 16,
+          ),
+          cursorColor: AppColors.darkBlue,
           decoration: InputDecoration(
             prefixIcon: widget.prefixIcon,
             hintText: widget.hintText,
-            hintStyle: AppTextStyles.bodySmallMedium.copyWith(
-              color: AppColors.darkBlue.withValues(alpha: 0.6),
-            ),
+            hintStyle: widget.fillColor
+                ? AppTextStyles.bodySmallMedium.copyWith(
+                    color: AppColors.darkBlue.withValues(alpha: 0.6),
+                  )
+                : AppTextStyles.bodySmallMedium.copyWith(
+                    color: AppColors.darkBlue.withValues(alpha: 0.8),
+                  ),
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
@@ -101,7 +114,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       });
                     },
                   )
-                : null,
+                : widget.suffixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: _isFocused
@@ -116,7 +129,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.blue, width: 1.5),
             ),
-            fillColor: AppColors.blue.withValues(alpha: 0.05),
+            fillColor: widget.fillColor
+                ? AppColors.blue.withValues(alpha: 0.05)
+                : AppColors.white,
             filled: true,
           ),
         ),

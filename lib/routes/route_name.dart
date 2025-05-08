@@ -4,6 +4,9 @@ class RouteName {
   static const String authScreen = '/auth-screen';
   static const String homeScreen = '/home-screen';
   static const String categories = '/categories-screen';
+  static const String serviceItem = '/option-screen';
+  static const String chooseTime = '/choose-time-screen';
+  static const String confirmAndPay = '/confirm-and-pay-screen';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String about = '/about';

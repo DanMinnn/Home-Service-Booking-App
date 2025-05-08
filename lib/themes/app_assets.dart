@@ -38,4 +38,15 @@ class AppAssetIcons {
 
   //icon categories
   static const String arrowLeft = '${iconPath}arrow_left_ic.png';
+  static const String cooking = '${iconPath}cooking_ic.png';
+  static const String cookingOutline = '${iconPath}cooking_outline_ic.png';
+  static const String ironing = '${iconPath}ironing_outline_ic.png';
+  static const String tick = '${iconPath}tick_ic.png';
+  static const String tickOutline = '${iconPath}tick_outline_ic.png';
+  static const String calendarOutline = '${iconPath}calendar_outline_ic.png';
+
+  static const String locationFilled = '${iconPath}location_filled_ic.png';
+  static const String profileFilled = '${iconPath}profile_filled_ic.png';
+  static const String paymentCash = '${iconPath}payment_cash.png';
+  static const String digitalPay = '${iconPath}digital_pay_ic.png';
 }

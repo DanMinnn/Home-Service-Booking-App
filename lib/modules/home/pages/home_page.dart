@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/modules/categories/repo/services_repo.dart';
+import 'package:home_service/routes/route_name.dart';
 
 import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../providers/log_provider.dart';
@@ -203,6 +204,7 @@ class _HomePageState extends State<HomePage> {
                       return _buildItemGridView(
                         services[index].name ?? '',
                         services[index].icon ?? '',
+                        services[index].id ?? 0,
                       );
                     },
                   );
@@ -226,33 +228,41 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildItemGridView(String title, String image) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.darkBlue.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            AppAssetIcons.iconPath + image,
-            width: 40,
-            height: 40,
-            filterQuality: FilterQuality.high,
-            fit: BoxFit.contain,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: AppTextStyles.bodyMediumMedium.copyWith(
-              color: AppColors.darkBlue.withValues(alpha: 0.8),
-              fontWeight: FontWeight.normal,
+  Widget _buildItemGridView(String nameService, String image, int id) {
+    return GestureDetector(
+      onTap: () {
+        _navigationService.navigateTo(RouteName.serviceItem, arguments: {
+          'id': id,
+          'name': nameService,
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.darkBlue.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              AppAssetIcons.iconPath + image,
+              width: 40,
+              height: 40,
+              filterQuality: FilterQuality.high,
+              fit: BoxFit.contain,
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              nameService,
+              style: AppTextStyles.bodyMediumMedium.copyWith(
+                color: AppColors.darkBlue.withValues(alpha: 0.8),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
