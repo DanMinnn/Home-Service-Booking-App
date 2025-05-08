@@ -8,11 +8,11 @@ import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
 import 'package:intl/intl.dart';
 
+import '../../../blocs/form_validate/form_bloc.dart';
 import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../providers/log_provider.dart';
 import '../../../routes/route_name.dart';
 import '../../../themes/app_assets.dart';
-import '../../authentication/blocs/form_validate/form_bloc.dart';
 
 class ChooseWorkingTimePage extends StatefulWidget {
   const ChooseWorkingTimePage({super.key});

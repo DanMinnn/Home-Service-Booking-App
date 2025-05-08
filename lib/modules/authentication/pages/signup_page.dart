@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_service/modules/authentication/blocs/form_validate/form_bloc.dart';
+import 'package:home_service/blocs/form_validate/form_bloc.dart';
 import 'package:home_service/modules/authentication/blocs/signup/signup_bloc.dart';
 import 'package:home_service/modules/authentication/repos/signup_repo.dart';
 
