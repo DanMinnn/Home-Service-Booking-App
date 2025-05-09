@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
+import 'package:home_service/modules/categories/bloc/service_package_cubit.dart';
+import 'package:home_service/modules/categories/bloc/service_package_state.dart';
+import 'package:home_service/modules/categories/repo/services_repo.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
+import 'package:intl/intl.dart';
 
+import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../providers/log_provider.dart';
 import '../../../themes/app_assets.dart';
 
@@ -25,6 +31,9 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
   int? selectedItemAddOn;
   late bool checked = false;
 
+  String pricePerHour = '';
+  final formatter = NumberFormat('#,###');
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -37,12 +46,6 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
     }
   }
 
-  final List<Map<String, String>> areaItems = [
-    {"hours": "2 hours", "desc": "Maximum 55m2 or 2 rooms"},
-    {"hours": "3 hours", "desc": "Maximum 85m2 or 3 rooms"},
-    {"hours": "4 hours", "desc": "Maximum 105m2 or 4 rooms"},
-  ];
-
   final List<Map<String, String>> addOnItems = [
     {"image": AppAssetIcons.cookingOutline, "title": "Cooking", "hours": "+1h"},
     {"image": AppAssetIcons.ironing, "title": "Ironing", "hours": "+1h"},
@@ -50,114 +53,147 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          elevation: 0,
-          leading: GestureDetector(
-              onTap: Navigator.of(context).pop,
-              child: Image.asset(AppAssetIcons.arrowLeft)),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("154 Đường Lý Thường Kiệt",
-                  style: TextStyle(fontSize: 16, color: Colors.black)),
-              Text("Phường 6, Quận Tân Bình",
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
-            ],
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // BasicAppBar(
-              //   isLeading: false,
-              //   isTrailing: false,
-              //   leading: Image.asset(AppAssetIcons.arrowLeft),
-              //   title: 'Options',
-              //   onBackButtonPressed: () {
-              //     // Go back to the previous tab instead of hardcoding to home
-              //     Navigator.of(context).pop();
-              //   },
-              // ),
-              Center(
-                child: Text(
-                  'Service ID: $serviceId',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: AppColors.redMedium,
-                  ),
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: BlocProvider(
+        create: (context) => ServicePackageCubit(ServicesRepo())
+          ..fetchServicePackages(serviceId!),
+        child: BlocBuilder<ServicePackageCubit, ServicePackagesState>(
+          builder: (context, state) {
+            if (state is ServicePackagesLoading) {
+              return const Center(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-              _buildDuration(),
-              _addOnService(),
-            ],
-          ),
-        ),
-        bottomNavigationBar: checked
-            ? GestureDetector(
-                onTap: () {
-                  logger.log('Navigating to ChooseWorkingTimePage');
-                  _navigationService.navigateTo(RouteName.chooseTime);
-                },
-                child: PriceNextNavbar(
-                  pricePerHour: '192,000 VND/2h',
-                ),
-              )
-            : null,
-      ),
-    );
-  }
-
-  Widget _buildDuration() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Duration',
-            style: AppTextStyles.h6Bold.copyWith(
-              color: AppColors.darkBlue,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Please estimate the exact area for cleaning',
-            style: AppTextStyles.bodyMediumRegular.copyWith(
-              color: AppColors.darkBlue,
-            ),
-          ),
-          ListView.builder(
-            itemCount: areaItems.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final item = areaItems[index];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedDuration = index;
-                    checked = true;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: _buildAreaItem(
-                    index,
-                    item['hours'] ?? '',
-                    item['desc'] ?? '',
+              );
+            } else if (state is ServicePackagesError) {
+              return Center(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Error loading service packages',
+                    style: AppTextStyles.bodyLargeSemiBold.copyWith(
+                      color: AppColors.redMedium,
+                    ),
                   ),
                 ),
               );
-            },
+            }
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BasicAppBar(
+                    isLeading: false,
+                    isTrailing: false,
+                    leading: GestureDetector(
+                        onTap: () {
+                          _navigationService.goBack();
+                        },
+                        child: Image.asset(AppAssetIcons.arrowLeft)),
+                    title: 'Choose Options',
+                  ),
+                  _buildDuration(state),
+                  _addOnService(),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: checked
+          ? GestureDetector(
+              onTap: () {
+                logger.log('Navigating to ChooseWorkingTimePage');
+                _navigationService.navigateTo(RouteName.chooseTime);
+              },
+              child: PriceNextNavbar(
+                pricePerHour: pricePerHour,
+              ),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildDuration(ServicePackagesState state) {
+    if (state is ServicePackagesLoaded) {
+      final servicePackages = state.servicePackages;
+      logger.log('Selected duration: $selectedDuration');
+      if (servicePackages.isEmpty) {
+        return Center(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              'No service packages available',
+              style: AppTextStyles.bodyLargeSemiBold.copyWith(
+                color: AppColors.redMedium,
+              ),
+            ),
           ),
-        ],
+        );
+      }
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Duration',
+              style: AppTextStyles.h6Bold.copyWith(
+                color: AppColors.darkBlue,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Please estimate the exact area for cleaning',
+              style: AppTextStyles.bodyMediumRegular.copyWith(
+                color: AppColors.darkBlue,
+              ),
+            ),
+            ListView.builder(
+              itemCount: servicePackages.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                String formattedPrice =
+                    formatter.format(servicePackages[index].basePrice);
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedDuration = index;
+                      checked = true;
+
+                      pricePerHour =
+                          '$formattedPrice VND/${servicePackages[index].name}';
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: _buildAreaItem(
+                      index,
+                      servicePackages[index].name,
+                      servicePackages[index].description,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+    return Center(
+      child: Align(
+        alignment: Alignment.center,
+        child: Text(
+          'No service packages available',
+          style: AppTextStyles.bodyLargeSemiBold.copyWith(
+            color: AppColors.redMedium,
+          ),
+        ),
       ),
     );
   }

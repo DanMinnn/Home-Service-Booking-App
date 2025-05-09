@@ -3,7 +3,6 @@ class ServiceItem {
   String? name;
   String? description;
   String? icon;
-  double? price;
   bool? isActive;
 
   ServiceItem({
@@ -11,7 +10,6 @@ class ServiceItem {
     this.name,
     this.description,
     this.icon,
-    this.price,
     this.isActive,
   });
 
@@ -20,7 +18,6 @@ class ServiceItem {
     name = json['name'];
     description = json['description'];
     icon = json['icon'];
-    price = (json['basePrice'] as num).toDouble();
     isActive = json['isActive'];
   }
 
@@ -30,7 +27,6 @@ class ServiceItem {
     data['name'] = name;
     data['description'] = description;
     data['icon'] = icon;
-    data['basePrice'] = price;
     data['isActive'] = isActive;
     return data;
   }
