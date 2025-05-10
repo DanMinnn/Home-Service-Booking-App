@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:home_service/common/widgets/stateless/custom_snack_bar.dart';
 import 'package:home_service/modules/authentication/widgets/custom_text_field.dart';
+import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
 import 'package:home_service/modules/booking/widget/step_component.dart';
 import 'package:home_service/themes/app_colors.dart';
@@ -30,6 +32,19 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
 
   final FormFieldBloc _formFieldBloc = FormFieldBloc();
 
+  late BookingData bookingData;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is BookingData) {
+      bookingData = args;
+    } else {
+      bookingData = BookingData();
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -40,6 +55,14 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
 
   @override
   Widget build(BuildContext context) {
+    logger.log(
+        'Booking data = ${bookingData.serviceName} - ${bookingData.packageName} - ${bookingData.packageDescription}');
+
+    bool checkValidation = _selectedDateTime.text.toString().isNotEmpty &&
+        _selectedAddress.text.toString().isNotEmpty;
+
+    logger.log('Check validation = $checkValidation');
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SingleChildScrollView(
@@ -61,10 +84,37 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, RouteName.confirmAndPay);
+          if (checkValidation) {
+            //Update booking data with the collected information
+            bookingData = bookingData.copyWith(
+              dateTime: _selectedDateTime.text,
+              address: _selectedAddress.text,
+              notes: _description.text,
+            );
+
+            Navigator.pushNamed(context, RouteName.confirmAndPay,
+                arguments: bookingData);
+          } else {
+            // Clear any existing SnackBars to prevent conflicts
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: const CustomSnackBar(
+                backgroundColor: AppColors.snackBarError,
+                closeColor: AppColors.iconClose,
+                bubbleColor: AppColors.bubbles,
+                title: "Oh snap!",
+                message: "Please fill date-time and address",
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: AppColors.transparent,
+              elevation: 0,
+              duration: const Duration(seconds: 3),
+            ));
+          }
         },
         child: PriceNextNavbar(
-          pricePerHour: '192,000 VND/2h',
+          pricePerHour: bookingData.formattedPrice,
         ),
       ),
     );
@@ -232,7 +282,7 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
       maxTime: DateTime(2030),
       onConfirm: (date) {
         final formatted =
-            DateFormat('EEEE, dd MMMM yyyy - HH:mm a').format(date);
+            DateFormat('EEEE, dd MMMM yyyy - hh:mm a').format(date);
 
         setState(() {
           _selectedDateTime.text = formatted;

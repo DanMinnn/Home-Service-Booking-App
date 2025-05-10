@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
 import 'package:home_service/modules/categories/bloc/service_package_cubit.dart';
 import 'package:home_service/modules/categories/bloc/service_package_state.dart';
@@ -34,6 +35,11 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
   String pricePerHour = '';
   final formatter = NumberFormat('#,###');
 
+  late BookingData bookingData = BookingData(
+    serviceId: serviceId,
+    serviceName: serviceName,
+  );
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -43,6 +49,11 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
     if (args != null) {
       serviceId = args['id'] as int?;
       serviceName = args['name'] as String?;
+
+      bookingData = bookingData.copyWith(
+        serviceId: serviceId,
+        serviceName: serviceName,
+      );
     }
   }
 
@@ -107,7 +118,8 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
           ? GestureDetector(
               onTap: () {
                 logger.log('Navigating to ChooseWorkingTimePage');
-                _navigationService.navigateTo(RouteName.chooseTime);
+                _navigationService.navigateTo(RouteName.chooseTime,
+                    arguments: bookingData);
               },
               child: PriceNextNavbar(
                 pricePerHour: pricePerHour,
@@ -168,6 +180,13 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
 
                       pricePerHour =
                           '$formattedPrice VND/${servicePackages[index].name}';
+
+                      bookingData = bookingData.copyWith(
+                        packageId: servicePackages[index].id,
+                        packageName: servicePackages[index].name,
+                        packageDescription: servicePackages[index].description,
+                        formattedPrice: pricePerHour,
+                      );
                     });
                   },
                   child: Container(

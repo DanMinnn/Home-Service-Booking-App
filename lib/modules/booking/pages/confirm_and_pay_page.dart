@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
+import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/models/payment_method.dart';
 import 'package:home_service/modules/booking/widget/step_component.dart';
+import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
+import 'package:intl/intl.dart';
 
-import '../../../routes/route_name.dart';
 import '../../../themes/app_assets.dart';
 import '../widget/confirm_box.dart';
 import '../widget/price_next_navbar.dart';
@@ -18,7 +20,22 @@ class ConfirmAndPayPage extends StatefulWidget {
 }
 
 class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
+  LogProvider get logger => const LogProvider("CONFIRM-AND-PAY-PAGE:::::");
+
   PaymentMethod? _selectedPaymentMethod = PaymentMethod.cash;
+
+  late BookingData bookingData;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is BookingData) {
+      bookingData = args;
+    } else {
+      bookingData = BookingData();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +61,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
               title: 'Location',
               children: [
                 _buildItemLocation(Image.asset(AppAssetIcons.locationFilled),
-                    '2972 Westheinmer', '2972 Westheinmer St, Houston, TX'),
+                    bookingData.address!, bookingData.address!),
                 _buildItemLocation(Image.asset(AppAssetIcons.profileFilled),
                     'Johny Doe', '034 759 2129'),
               ],
@@ -64,10 +81,14 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, RouteName.confirmAndPay);
+          final updateBookingData = bookingData.copyWith(
+            paymentMethod: _selectedPaymentMethod?.name,
+          );
+
+          logger.log("Booking data: ${updateBookingData.paymentMethod}");
         },
         child: PriceNextNavbar(
-          pricePerHour: '192,000 VND/2h',
+          pricePerHour: totalPrice(bookingData.formattedPrice),
           booking: false,
         ),
       ),
@@ -75,28 +96,31 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
   }
 
   Widget _buildItemLocation(Widget image, String title, String subtitle) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        image,
-        const SizedBox(width: 8),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTextStyles.bodyMediumMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: AppTextStyles.bodySmallMedium,
-            )
-          ],
-        )
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          image,
+          const SizedBox(width: 8),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTextStyles.bodyMediumMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: AppTextStyles.bodySmallMedium,
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -112,16 +136,17 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
             style: AppTextStyles.bodyMediumMedium,
           ),
           const SizedBox(height: 8),
-          _itemTaskInfo('Date', 'Monday, 12th Dec 2023 - 02:00 PM'),
+          _itemTaskInfo('Date', bookingData.dateTime!),
           const SizedBox(height: 8),
-          _itemTaskInfo('Duration', '2 hours, from 02:00 PM to 04:00 PM'),
+          _itemTaskInfo('Duration',
+              '${bookingData.packageName}, from ${convertStringToDateTime(bookingData.dateTime!, bookingData.packageName!)}'),
           const SizedBox(height: 8),
           Text(
             'Task detailed',
             style: AppTextStyles.bodyMediumMedium,
           ),
           const SizedBox(height: 8),
-          _itemTaskInfo('Workload', '55m2/2 rooms'),
+          _itemTaskInfo('Workload', bookingData.packageDescription!),
         ],
       ),
     );
@@ -230,5 +255,32 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
         ),
       ),
     );
+  }
+
+  String convertStringToDateTime(String dateString, String durationStr) {
+    try {
+      final inputFormat = DateFormat('EEEE, dd MMMM yyyy - hh:mm a');
+      final startTime = inputFormat.parse(dateString);
+
+      final durationParts = int.parse(durationStr.split(' ').first);
+
+      final endTime = startTime.add(Duration(hours: durationParts));
+
+      final outputFormat = DateFormat('hh:mm a');
+      final formattedEndTime =
+          '${outputFormat.format(startTime)} to ${outputFormat.format(endTime)}';
+
+      logger.log("Durations: $formattedEndTime");
+
+      return formattedEndTime;
+    } catch (e) {
+      logger.log("Error parsing date: $e");
+      return 'Invalid date';
+    }
+  }
+
+  String totalPrice(String pricePerHour) {
+    final totalPrice = pricePerHour.split('/').first.trim();
+    return totalPrice;
   }
 }
