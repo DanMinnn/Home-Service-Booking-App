@@ -53,7 +53,7 @@ class ConfirmBox extends StatelessWidget {
       if (i != 0) {
         spacedChildren.add(const SizedBox(height: 8));
         spacedChildren.add(Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: DottedLine(
             direction: Axis.horizontal,
             lineLength: double.infinity,
