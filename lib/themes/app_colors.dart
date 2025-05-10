@@ -10,6 +10,10 @@ class AppColors {
   static const Color loginWith = Color(0xFFF5F5F6);
   static const Color subTitle = Color(0xFF3D4976);
   static const Color redMedium = Color(0xFFEA4C2D);
+
+  static const Color iconClose = Color(0xFFc91912);
+  static const Color bubbles = Color(0xFFc81a12);
+  static const Color snackBarError = Color(0xFFf64b3c);
 }
 
 // class Gradients {
