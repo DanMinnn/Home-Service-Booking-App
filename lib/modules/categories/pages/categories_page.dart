@@ -106,10 +106,23 @@ class _CategoriesPageState extends State<CategoriesPage> {
   Widget _buildItemGridView(String serviceName, String icon, int id) {
     return GestureDetector(
       onTap: () {
-        _navigationService.navigateTo(RouteName.serviceItem, arguments: {
-          'id': id,
-          'name': serviceName,
-        });
+        if (id == 21) {
+          _navigationService.navigateTo(
+            RouteName.serviceCooking,
+            arguments: {
+              'id': id,
+              'name': serviceName,
+            },
+          );
+        } else {
+          _navigationService.navigateTo(
+            RouteName.serviceItem,
+            arguments: {
+              'id': id,
+              'name': serviceName,
+            },
+          );
+        }
       },
       child: Column(
         children: [

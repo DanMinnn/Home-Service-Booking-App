@@ -21,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final NavigationService _navigationService = NavigationService();
+
   LogProvider get logger => const LogProvider('HOMEPAGE:::');
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
@@ -231,10 +232,23 @@ class _HomePageState extends State<HomePage> {
   Widget _buildItemGridView(String nameService, String image, int id) {
     return GestureDetector(
       onTap: () {
-        _navigationService.navigateTo(RouteName.serviceItem, arguments: {
-          'id': id,
-          'name': nameService,
-        });
+        if (id == 21) {
+          _navigationService.navigateTo(
+            RouteName.serviceCooking,
+            arguments: {
+              'id': id,
+              'name': nameService,
+            },
+          );
+        } else {
+          _navigationService.navigateTo(
+            RouteName.serviceItem,
+            arguments: {
+              'id': id,
+              'name': nameService,
+            },
+          );
+        }
       },
       child: Container(
         decoration: BoxDecoration(

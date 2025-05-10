@@ -31,6 +31,8 @@ dependencies:
   flutter_datetime_picker_plus: ^2.2.0
   #format date
   intl:
+  #
+  flutter_svg:
 
 dev_dependencies:
   flutter_test:

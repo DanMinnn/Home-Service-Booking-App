@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:home_service/modules/booking/pages/choose_working_time_page.dart';
 import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
-import 'package:home_service/modules/booking/pages/options_service_page.dart';
+import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/ui/onboarding_page.dart';
 import 'package:home_service/ui/splash_screen.dart';
 
+import '../modules/booking/pages/options_service_cooking_page.dart';
 import '../ui/main_screen.dart';
 
 class Routes {
@@ -40,7 +41,9 @@ class Routes {
       case RouteName.categories:
         return _buildRoute(settings, const CategoriesPage());
       case RouteName.serviceItem:
-        return _buildRoute(settings, const OptionsServicePage());
+        return _buildRoute(settings, const OptionsServiceCleaningPage());
+      case RouteName.serviceCooking:
+        return _buildRoute(settings, const OptionsServiceCookingPage());
       case RouteName.chooseTime:
         _logger.log('Navigating to ChooseWorkingTimePage: ${settings.name}');
         return _buildRoute(settings, const ChooseWorkingTimePage());
