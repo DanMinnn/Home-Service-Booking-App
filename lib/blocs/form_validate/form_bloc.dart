@@ -5,8 +5,8 @@ import 'package:home_service/modules/authentication/models/validate/phone.dart';
 import '../../modules/authentication/models/validate/email.dart';
 import '../../modules/authentication/models/validate/password.dart';
 import '../../modules/authentication/models/validate/username.dart';
-import '../../modules/booking/models/address_validate.dart';
-import '../../modules/booking/models/date_time_validate.dart';
+import '../../modules/booking/models/validate/address_validate.dart';
+import '../../modules/booking/models/validate/date_time_validate.dart';
 
 part 'form_event.dart';
 part 'form_state.dart';
