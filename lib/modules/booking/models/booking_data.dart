@@ -28,6 +28,12 @@ class BookingData {
   // User profile information
   //final User? user;
 
+  // Optional fields for cooking service
+  final int? numberOfPeople;
+  final int? numberOfCourses;
+  final List<String>? coursesNames;
+  final String? preferStyle;
+
   BookingData({
     this.serviceId,
     this.serviceName,
@@ -44,6 +50,11 @@ class BookingData {
     this.variantName,
     this.variantDescription,
     //this.user,
+
+    this.numberOfPeople,
+    this.numberOfCourses,
+    this.coursesNames,
+    this.preferStyle,
   });
 
   BookingData copyWith({
@@ -62,6 +73,11 @@ class BookingData {
     String? variantName,
     String? variantDescription,
     //User? user,
+
+    int? numberOfPeople,
+    int? numberOfCourses,
+    List<String>? coursesNames,
+    String? preferStyle,
   }) {
     return BookingData(
       serviceId: serviceId ?? this.serviceId,
@@ -79,6 +95,11 @@ class BookingData {
       variantName: variantName ?? this.variantName,
       variantDescription: variantDescription ?? this.variantDescription,
       //user: user ?? this.user,
+
+      numberOfPeople: numberOfPeople ?? this.numberOfPeople,
+      numberOfCourses: numberOfCourses ?? this.numberOfCourses,
+      coursesNames: coursesNames ?? this.coursesNames,
+      preferStyle: preferStyle ?? this.preferStyle,
     );
   }
 

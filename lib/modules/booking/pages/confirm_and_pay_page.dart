@@ -146,7 +146,19 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
             style: AppTextStyles.bodyMediumMedium,
           ),
           const SizedBox(height: 8),
-          _itemTaskInfo('Workload', bookingData.packageDescription!),
+          if (bookingData.packageDescription == null) ...[
+            _itemTaskInfo('People', bookingData.numberOfPeople.toString()),
+            const SizedBox(height: 8),
+            _itemTaskInfo('Course', bookingData.numberOfCourses.toString()),
+            const SizedBox(height: 8),
+            _itemTaskInfo('Courses',
+                handleCoursesNames(bookingData.coursesNames!).join(', ')),
+            if (bookingData.preferStyle != null) ...[
+              _itemTaskInfo('Prefer Style', bookingData.preferStyle!),
+            ],
+          ] else ...[
+            _itemTaskInfo('Workload', bookingData.packageDescription!),
+          ],
         ],
       ),
     );
@@ -282,5 +294,12 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
   String totalPrice(String pricePerHour) {
     final totalPrice = pricePerHour.split('/').first.trim();
     return totalPrice;
+  }
+
+  List<String> handleCoursesNames(List<String> coursesNames) {
+    List<String> cleanedNames =
+        coursesNames.map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+
+    return cleanedNames;
   }
 }
