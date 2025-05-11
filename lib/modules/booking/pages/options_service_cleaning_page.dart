@@ -15,14 +15,16 @@ import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../providers/log_provider.dart';
 import '../../../themes/app_assets.dart';
 
-class OptionsServicePage extends StatefulWidget {
-  const OptionsServicePage({super.key});
+class OptionsServiceCleaningPage extends StatefulWidget {
+  const OptionsServiceCleaningPage({super.key});
 
   @override
-  State<OptionsServicePage> createState() => _OptionsServicePageState();
+  State<OptionsServiceCleaningPage> createState() =>
+      _OptionsServiceCleaningPageState();
 }
 
-class _OptionsServicePageState extends State<OptionsServicePage> {
+class _OptionsServiceCleaningPageState
+    extends State<OptionsServiceCleaningPage> {
   LogProvider get logger => const LogProvider('OPTION-SERVICE-PAGE:::');
   final _navigationService = NavigationService();
   int? serviceId;
@@ -132,7 +134,7 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
   Widget _buildDuration(ServicePackagesState state) {
     if (state is ServicePackagesLoaded) {
       final servicePackages = state.servicePackages;
-      logger.log('Selected duration: $selectedDuration');
+      logger.log('Selected duration: $servicePackages.');
       if (servicePackages.isEmpty) {
         return Center(
           child: Align(
@@ -185,8 +187,12 @@ class _OptionsServicePageState extends State<OptionsServicePage> {
                         packageId: servicePackages[index].id,
                         packageName: servicePackages[index].name,
                         packageDescription: servicePackages[index].description,
+                        basePrice: servicePackages[index].basePrice,
                         formattedPrice: pricePerHour,
                       );
+
+                      logger.log(
+                          'Package variant: ${servicePackages[index].packageVariants}');
                     });
                   },
                   child: Container(

@@ -48,7 +48,7 @@ class Routes {
         _logger.log('Navigating to ChooseWorkingTimePage: ${settings.name}');
         return _buildRoute(settings, const ChooseWorkingTimePage());
       case RouteName.confirmAndPay:
-        _logger.log('Navigating to ChooseWorkingTimePage: ${settings.name}');
+        _logger.log('Navigating to ConfirmAndPayPage: ${settings.name}');
         return _buildRoute(settings, const ConfirmAndPayPage());
       default:
         _logger.log('Default redirect to AuthScreen: ${settings.name}');
