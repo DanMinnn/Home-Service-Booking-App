@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_service/modules/authentication/pages/auth_screen.dart';
 import 'package:home_service/modules/booking/pages/choose_working_time_page.dart';
 import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
 import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
@@ -23,22 +24,6 @@ class Routes {
       case RouteName.homeScreen:
         return _buildRoute(settings, const MainScreen());
       case RouteName.categories:
-        _logger.log('Navigating to CategoriesPage: ${settings.name}');
-        return _buildRoute(settings, const CategoriesPage());
-      default:
-        _logger.log('Default redirect to HomePage: ${settings.name}');
-        return _buildRoute(settings, const MainScreen());
-    }
-  }
-
-  static Route unAuthorizedRoute(RouteSettings settings) {
-    _logger.log('unAuthorized route request: ${settings.name}');
-    switch (settings.name) {
-      case RouteName.homeScreen:
-        return _buildRoute(settings, const MainScreen());
-      case RouteName.onboardingScreen:
-        return _buildRoute(settings, const OnboardingPage());
-      case RouteName.categories:
         return _buildRoute(settings, const CategoriesPage());
       case RouteName.serviceItem:
         return _buildRoute(settings, const OptionsServiceCleaningPage());
@@ -51,8 +36,21 @@ class Routes {
         _logger.log('Navigating to ConfirmAndPayPage: ${settings.name}');
         return _buildRoute(settings, const ConfirmAndPayPage());
       default:
-        _logger.log('Default redirect to AuthScreen: ${settings.name}');
+        _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());
+    }
+  }
+
+  static Route unAuthorizedRoute(RouteSettings settings) {
+    _logger.log('unAuthorized route request: ${settings.name}');
+    switch (settings.name) {
+      case RouteName.splashScreen:
+        return _buildRoute(settings, const Splashscreen());
+      case RouteName.onboardingScreen:
+        return _buildRoute(settings, const OnboardingPage());
+      default:
+        _logger.log('Default redirect to AuthScreen: ${settings.name}');
+        return _buildRoute(settings, const AuthScreen());
     }
   }
 

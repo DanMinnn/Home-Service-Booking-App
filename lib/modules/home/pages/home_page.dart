@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/modules/categories/repo/services_repo.dart';
+import 'package:home_service/repo/user_repository.dart';
 import 'package:home_service/routes/route_name.dart';
 
 import '../../../common/widgets/stateless/basic_app_bar.dart';
@@ -21,15 +22,44 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final NavigationService _navigationService = NavigationService();
+  final UserRepository _userRepository = UserRepository();
 
   LogProvider get logger => const LogProvider('HOMEPAGE:::');
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
 
+  String _userName = 'User';
+
   @override
   void initState() {
     super.initState();
     _focusNode.addListener(_onFocusChange);
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    //try get user from cache
+    final currentUser = _userRepository.currentUser;
+    if (currentUser != null && currentUser.name != null) {
+      setState(() {
+        _userName = currentUser.name!;
+      });
+      logger.log('Load user from cache: $_userName');
+      return;
+    }
+
+    //if user data not in cache, get from local storage
+    await _userRepository.loadUserFromStorage();
+    final userStorage = _userRepository.currentUser;
+    if (userStorage != null && userStorage.name != null) {
+      setState(() {
+        _userName = userStorage.name!;
+      });
+      logger.log('Load user from local storage: $_userName');
+      return;
+    }
+
+    logger.log('Could not load user information');
   }
 
   @override
@@ -57,7 +87,7 @@ class _HomePageState extends State<HomePage> {
             isTrailing: true,
             leading: Image.asset(AppAssetIcons.logoHouse),
             title: 'Welcome,',
-            subtitle: 'Denuyel',
+            subtitle: _userName,
             trailing: Image.asset(AppAssetIcons.notification),
           ),
           _buildBody(),

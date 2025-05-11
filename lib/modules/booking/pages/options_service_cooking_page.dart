@@ -7,6 +7,7 @@ import 'package:home_service/modules/categories/bloc/service_package_state.dart'
 import 'package:home_service/modules/categories/models/service_package.dart';
 import 'package:home_service/modules/categories/repo/services_repo.dart';
 import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/repo/user_repository.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
@@ -30,6 +31,7 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
       const LogProvider('OPTIONS-SERVICE-COOKING-PAGE:::');
   final NavigationService _navigationService = NavigationService();
   final Map<String, TextEditingController> _courseControllers = {};
+  final UserRepository _userRepository = UserRepository();
 
   int _peopleCount = 2;
   final int _minPeopleCount = 2;
@@ -69,6 +71,7 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
       bookingData = bookingData.copyWith(
         serviceId: serviceId,
         serviceName: serviceName,
+        user: _userRepository.currentUser,
       );
     }
   }

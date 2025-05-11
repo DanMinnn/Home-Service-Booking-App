@@ -63,7 +63,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                 _buildItemLocation(Image.asset(AppAssetIcons.locationFilled),
                     bookingData.address!, bookingData.address!),
                 _buildItemLocation(Image.asset(AppAssetIcons.profileFilled),
-                    'Johny Doe', '034 759 2129'),
+                    bookingData.user!.name, bookingData.user!.phone),
               ],
             ),
             Padding(
@@ -95,7 +95,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
     );
   }
 
-  Widget _buildItemLocation(Widget image, String title, String subtitle) {
+  Widget _buildItemLocation(Widget image, String? title, String? subtitle) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Row(
@@ -103,18 +103,18 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           image,
-          const SizedBox(width: 8),
+          const SizedBox(width: 16),
           Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                title!,
                 style: AppTextStyles.bodyMediumMedium,
               ),
               const SizedBox(height: 8),
               Text(
-                subtitle,
+                subtitle!,
                 style: AppTextStyles.bodySmallMedium,
               )
             ],

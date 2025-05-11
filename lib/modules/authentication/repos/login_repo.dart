@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:home_service/models/user.dart';
 import 'package:home_service/modules/authentication/models/login_req.dart';
 import 'package:home_service/modules/authentication/models/login_res.dart';
 import 'package:home_service/providers/api_provider.dart';
@@ -28,11 +29,33 @@ class LoginRepo {
         ),
       );
       if (response.statusCode == 200) {
-        logger.log("Response status: ${response.statusCode}");
         final loginResponse = LoginResponse.fromJson(response.data);
         await saveTokens(loginResponse);
-        logger.log("Response data: ${response.data}");
         return loginResponse;
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      logger.log("Error: ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  Future<User> getUserInfo(String email) async {
+    try {
+      final response = await apiProvider.get(
+        '/user/profile/$email',
+        options: Options(
+          method: 'GET',
+          contentType: 'application/json',
+        ),
+      );
+      if (response.statusCode == 200) {
+        logger.log("Response status: ${response.statusCode}");
+        final data = response.data['data'];
+        final user = User.fromJson(data);
+        logger.log("User info: ${user.name}");
+        return user;
       } else {
         throw Exception('Unexpected status code: ${response.statusCode}');
       }

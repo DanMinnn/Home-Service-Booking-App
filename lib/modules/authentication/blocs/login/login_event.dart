@@ -7,3 +7,9 @@ class LoginSubmitted extends LoginEvent {
 
   LoginSubmitted(this.loginReq);
 }
+
+class GetUserInfo extends LoginEvent {
+  final String email;
+
+  GetUserInfo(this.email);
+}

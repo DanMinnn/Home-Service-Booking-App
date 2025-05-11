@@ -60,11 +60,10 @@ class _LoginFormState extends State<LoginForm> {
       listener: (context, state) {
         if (state is LoginSuccess) {
           context.read<AppStateBloc>().changeAppState(AppState.authorized);
-          logger.log("Login successful. Redirecting to home screen.");
+          logger.log(
+              "Login successful. Redirecting to home screen. email ${_email.text}");
 
-          Future.delayed(const Duration(milliseconds: 100), () {
-            _navigationService.navigateToAndClearStack(RouteName.homeScreen);
-          });
+          context.read<LoginBloc>().add(GetUserInfo(_email.text));
         } else if (state is LoginFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -75,6 +74,10 @@ class _LoginFormState extends State<LoginForm> {
             ),
           );
           logger.log("Login failed: ${state.error}");
+        } else if (state is UserInfoLoaded) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _navigationService.navigateToAndClearStack(RouteName.homeScreen);
+          });
         }
       },
       child: BlocBuilder<FormFieldBloc, FormFieldStates>(

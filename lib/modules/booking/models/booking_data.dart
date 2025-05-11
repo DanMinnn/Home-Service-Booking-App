@@ -1,3 +1,5 @@
+import '../../../models/user.dart';
+
 class BookingData {
   // Service details
   final int? serviceId;
@@ -26,7 +28,7 @@ class BookingData {
   final String? paymentMethod;
 
   // User profile information
-  //final User? user;
+  final User? user;
 
   // Optional fields for cooking service
   final int? numberOfPeople;
@@ -49,8 +51,7 @@ class BookingData {
     this.paymentMethod,
     this.variantName,
     this.variantDescription,
-    //this.user,
-
+    this.user,
     this.numberOfPeople,
     this.numberOfCourses,
     this.coursesNames,
@@ -72,8 +73,7 @@ class BookingData {
     String? paymentMethod,
     String? variantName,
     String? variantDescription,
-    //User? user,
-
+    User? user,
     int? numberOfPeople,
     int? numberOfCourses,
     List<String>? coursesNames,
@@ -94,8 +94,7 @@ class BookingData {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       variantName: variantName ?? this.variantName,
       variantDescription: variantDescription ?? this.variantDescription,
-      //user: user ?? this.user,
-
+      user: user ?? this.user,
       numberOfPeople: numberOfPeople ?? this.numberOfPeople,
       numberOfCourses: numberOfCourses ?? this.numberOfCourses,
       coursesNames: coursesNames ?? this.coursesNames,

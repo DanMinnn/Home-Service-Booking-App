@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service/repo/user_repository.dart';
 import 'package:home_service/utils/prefs_key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,7 +9,7 @@ enum AppState { loading, unAuthorized, authorized }
 
 class AppStateBloc extends Cubit<AppState> {
   LogProvider get logger => const LogProvider('APP-STATE-BLOC:::');
-
+  final UserRepository _userRepository = UserRepository();
   AppStateBloc() : super(AppState.loading) {
     _launchApp();
   }
@@ -20,6 +21,7 @@ class AppStateBloc extends Cubit<AppState> {
     logger.log('Authorization level: $authorLevel');
 
     if (authorLevel == 2) {
+      await _userRepository.loadUserFromStorage();
       emit(AppState.authorized);
       logger.log('User is authorized');
     } else {

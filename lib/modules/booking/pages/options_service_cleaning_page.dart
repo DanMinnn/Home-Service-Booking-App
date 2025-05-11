@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 
 import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../providers/log_provider.dart';
+import '../../../repo/user_repository.dart';
 import '../../../themes/app_assets.dart';
 
 class OptionsServiceCleaningPage extends StatefulWidget {
@@ -27,6 +28,8 @@ class _OptionsServiceCleaningPageState
     extends State<OptionsServiceCleaningPage> {
   LogProvider get logger => const LogProvider('OPTION-SERVICE-PAGE:::');
   final _navigationService = NavigationService();
+  final UserRepository _userRepository = UserRepository();
+
   int? serviceId;
   String? serviceName;
 
@@ -55,6 +58,7 @@ class _OptionsServiceCleaningPageState
       bookingData = bookingData.copyWith(
         serviceId: serviceId,
         serviceName: serviceName,
+        user: _userRepository.currentUser,
       );
     }
   }
