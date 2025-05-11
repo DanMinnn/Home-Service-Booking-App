@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:home_service/modules/authentication/models/phone.dart';
+import 'package:home_service/modules/authentication/models/validate/phone.dart';
 
-import '../../modules/authentication/models/email.dart';
-import '../../modules/authentication/models/password.dart';
-import '../../modules/authentication/models/username.dart';
+import '../../modules/authentication/models/validate/email.dart';
+import '../../modules/authentication/models/validate/password.dart';
+import '../../modules/authentication/models/validate/username.dart';
 import '../../modules/booking/models/address_validate.dart';
 import '../../modules/booking/models/date_time_validate.dart';
 
