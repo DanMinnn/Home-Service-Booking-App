@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class NavigationService {
@@ -43,6 +44,14 @@ class NavigationService {
     return navigator?.pushNamedAndRemoveUntil(
         routeName, (Route<dynamic> route) => false,
         arguments: arguments);
+  }
+
+  // Navigate to a named route with replacement
+  void navigateToWithReplacement(String routeName, {Object? arguments}) {
+    navigatorKey.currentState?.pushReplacementNamed(
+      routeName,
+      arguments: arguments,
+    );
   }
 
   // Go back to previous screen

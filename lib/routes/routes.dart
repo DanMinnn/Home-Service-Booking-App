@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_service/modules/authentication/pages/auth_screen.dart';
+import 'package:home_service/modules/booking/pages/booking_successfully_page.dart';
 import 'package:home_service/modules/booking/pages/choose_working_time_page.dart';
 import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
 import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
@@ -35,6 +36,9 @@ class Routes {
       case RouteName.confirmAndPay:
         _logger.log('Navigating to ConfirmAndPayPage: ${settings.name}');
         return _buildRoute(settings, const ConfirmAndPayPage());
+      case RouteName.bookingSuccessfully:
+        _logger.log('Navigating to BookingSuccessfullyPage: ${settings.name}');
+        return _buildRoute(settings, const BookingSuccessfullyPage());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());

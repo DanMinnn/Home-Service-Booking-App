@@ -7,6 +7,7 @@ class RouteName {
   static const String serviceItem = '/option-screen';
   static const String chooseTime = '/choose-time-screen';
   static const String confirmAndPay = '/confirm-and-pay-screen';
+  static const String bookingSuccessfully = '/booking-successfully-screen';
   //cooking page
   static const String serviceCooking = '/option-cooking-screen';
 
