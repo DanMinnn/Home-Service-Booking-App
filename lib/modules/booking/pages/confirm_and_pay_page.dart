@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
+import 'package:home_service/modules/booking/bloc/booking_event.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
+import 'package:home_service/modules/booking/models/booking_req.dart';
 import 'package:home_service/modules/booking/models/payment_method.dart';
+import 'package:home_service/modules/booking/repo/booking_repo.dart';
 import 'package:home_service/modules/booking/widget/step_component.dart';
 import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/routes/route_name.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
 import 'package:intl/intl.dart';
 
 import '../../../themes/app_assets.dart';
+import '../bloc/booking_bloc.dart';
+import '../bloc/booking_state.dart';
 import '../widget/confirm_box.dart';
 import '../widget/price_next_navbar.dart';
 
@@ -21,6 +29,7 @@ class ConfirmAndPayPage extends StatefulWidget {
 
 class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
   LogProvider get logger => const LogProvider("CONFIRM-AND-PAY-PAGE:::::");
+  final NavigationService navigationService = NavigationService();
 
   PaymentMethod? _selectedPaymentMethod = PaymentMethod.cash;
 
@@ -79,17 +88,79 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
           ],
         ),
       ),
-      bottomNavigationBar: GestureDetector(
-        onTap: () {
-          final updateBookingData = bookingData.copyWith(
-            paymentMethod: _selectedPaymentMethod?.name,
-          );
+      bottomNavigationBar: BlocProvider(
+        create: (context) => BookingBloc(BookingRepo()),
+        child: BlocBuilder<BookingBloc, BookingState>(
+          builder: (context, state) {
+            if (state is BookingLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is BookingFailure) {
+              return Center(
+                child: Text(
+                  'Can not create booking',
+                  style: AppTextStyles.bodyMediumMedium,
+                ),
+              );
+            }
 
-          logger.log("Booking data: ${updateBookingData.paymentMethod}");
-        },
-        child: PriceNextNavbar(
-          pricePerHour: totalPrice(bookingData.formattedPrice),
-          booking: false,
+            if (state is BookingSuccess) {
+              Future.microtask(() {
+                navigationService
+                    .navigateToWithReplacement(RouteName.bookingSuccessfully);
+              });
+            }
+            return GestureDetector(
+              onTap: () {
+                final updateBookingData = bookingData.copyWith(
+                  paymentMethod: _selectedPaymentMethod?.name,
+                );
+
+                Map<String, Object> taskDetails = {};
+
+                final bool isCookingService =
+                    bookingData.numberOfPeople != null &&
+                        bookingData.numberOfCourses != null &&
+                        bookingData.coursesNames != null;
+
+                if (isCookingService) {
+                  taskDetails = {
+                    'people': bookingData.numberOfPeople.toString(),
+                    'course': bookingData.numberOfCourses.toString(),
+                    'courses': handleCoursesNames(bookingData.coursesNames!)
+                        .join(', '),
+                  };
+
+                  if (bookingData.preferStyle != null &&
+                      bookingData.preferStyle!.isNotEmpty) {
+                    taskDetails['preferStyle'] = bookingData.preferStyle!;
+                  }
+                } else {
+                  taskDetails = {'workload': bookingData.packageDescription!};
+                }
+
+                final bookingReq = BookingReq(
+                  userId: bookingData.user!.id,
+                  serviceId: bookingData.serviceId,
+                  packageId: bookingData.packageId,
+                  address: bookingData.address,
+                  scheduledDate: bookingData.dateTime,
+                  duration:
+                      '${bookingData.packageName}, from ${convertStringToDateTime(bookingData.dateTime!, bookingData.packageName!)}',
+                  taskDetails: taskDetails,
+                  totalPrice: bookingData.basePrice,
+                  methodType: _selectedPaymentMethod?.name,
+                );
+
+                context.read<BookingBloc>().add(BookingSubmitted(bookingReq));
+                logger.log("Booking data: ${updateBookingData.paymentMethod}");
+              },
+              child: PriceNextNavbar(
+                pricePerHour: totalPrice(bookingData.formattedPrice),
+                booking: false,
+              ),
+            );
+          },
         ),
       ),
     );
@@ -146,22 +217,43 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
             style: AppTextStyles.bodyMediumMedium,
           ),
           const SizedBox(height: 8),
-          if (bookingData.packageDescription == null) ...[
-            _itemTaskInfo('People', bookingData.numberOfPeople.toString()),
+          _buildServiceSpecificDetails(),
+          if (bookingData.notes != null && bookingData.notes!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            _itemTaskInfo('Course', bookingData.numberOfCourses.toString()),
-            const SizedBox(height: 8),
-            _itemTaskInfo('Courses',
-                handleCoursesNames(bookingData.coursesNames!).join(', ')),
-            if (bookingData.preferStyle != null) ...[
-              _itemTaskInfo('Prefer Style', bookingData.preferStyle!),
-            ],
-          ] else ...[
-            _itemTaskInfo('Workload', bookingData.packageDescription!),
+            _itemTaskInfo('Notes', bookingData.notes!),
           ],
         ],
       ),
     );
+  }
+
+  Widget _buildServiceSpecificDetails() {
+    final bool isCookingService = bookingData.numberOfPeople != null &&
+        bookingData.numberOfCourses != null &&
+        bookingData.coursesNames != null;
+
+    if (isCookingService) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _itemTaskInfo('People', bookingData.numberOfPeople.toString()),
+          const SizedBox(height: 8),
+          _itemTaskInfo('Course', bookingData.numberOfCourses.toString()),
+          const SizedBox(height: 8),
+          _itemTaskInfo('Courses',
+              handleCoursesNames(bookingData.coursesNames!).join(', ')),
+          if (bookingData.preferStyle != null) ...[
+            _itemTaskInfo('Prefer Style', bookingData.preferStyle!),
+          ],
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          _itemTaskInfo('Workload', bookingData.packageDescription!),
+        ],
+      );
+    }
   }
 
   Widget _itemTaskInfo(String title, String subtitle) {
