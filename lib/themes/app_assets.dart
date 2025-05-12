@@ -53,4 +53,5 @@ class AppAssetIcons {
   static const String add = '${iconPath}add_ic.png';
   static const String minus = '${iconPath}minus_ic.png';
   static const String tickCourse = '${iconPath}tick_course_ic.png';
+  static const String tickSuccess = '${iconPath}tick_success.png';
 }
