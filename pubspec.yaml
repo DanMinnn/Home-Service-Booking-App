@@ -31,8 +31,13 @@ dependencies:
   flutter_datetime_picker_plus: ^2.2.0
   #format date
   intl:
-  #
+  # files with .svg
   flutter_svg:
+  #goong map
+  maplibre_gl: ^0.21.0
+  flutter_polyline_points: ^2.1.0
+  http: ^1.4.0
+  geolocator: ^13.0.4
 
 dev_dependencies:
   flutter_test:
