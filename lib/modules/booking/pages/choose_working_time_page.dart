@@ -6,6 +6,7 @@ import 'package:home_service/modules/authentication/widgets/custom_text_field.da
 import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
 import 'package:home_service/modules/booking/widget/step_component.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +26,7 @@ class ChooseWorkingTimePage extends StatefulWidget {
 
 class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
   LogProvider get logger => const LogProvider('CHOOSE-WORKING-TIME-PAGE:::');
-
+  final NavigationService navigationService = NavigationService();
   final TextEditingController _selectedDateTime = TextEditingController();
   final TextEditingController _selectedAddress = TextEditingController();
   final TextEditingController _description = TextEditingController();
@@ -33,6 +34,8 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
   final FormFieldBloc _formFieldBloc = FormFieldBloc();
 
   late BookingData bookingData;
+  double _latitude = 0.001;
+  double _longitude = 0.002;
 
   @override
   void didChangeDependencies() {
@@ -90,10 +93,15 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
               dateTime: _selectedDateTime.text,
               address: _selectedAddress.text,
               notes: _description.text,
+              latitude: _latitude,
+              longitude: _longitude,
             );
 
             Navigator.pushNamed(context, RouteName.confirmAndPay,
                 arguments: bookingData);
+
+            logger.log(
+                'Lat: ${bookingData.latitude} - - Lng: ${bookingData.longitude}');
           } else {
             // Clear any existing SnackBars to prevent conflicts
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -157,11 +165,31 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
                         const SizedBox(height: 20),
                         _buildSelectedAddress(context, state),
                         const SizedBox(height: 8),
-                        Text(
-                          'Choose from map',
-                          style: AppTextStyles.captionRegular.copyWith(
-                            color: AppColors.blue,
-                            fontSize: 14,
+                        GestureDetector(
+                          onTap: () {
+                            Future.delayed(const Duration(milliseconds: 100),
+                                () async {
+                              final result = await navigationService.navigateTo(
+                                  RouteName.mapsScreen,
+                                  arguments: bookingData);
+
+                              if (result is BookingData) {
+                                setState(() {
+                                  bookingData = result;
+                                  _selectedAddress.text =
+                                      bookingData.address ?? '';
+                                  _latitude = bookingData.latitude!;
+                                  _longitude = bookingData.longitude!;
+                                });
+                              }
+                            });
+                          },
+                          child: Text(
+                            'Choose from map',
+                            style: AppTextStyles.captionRegular.copyWith(
+                              color: AppColors.blue,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -247,11 +275,9 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
   Widget _buildSelectedAddress(BuildContext context, FormFieldStates state) {
     final errors = <String>[];
 
-    if (state.address.isPure && state.address.value.trim().isEmpty) {
-      errors.add("Please enter address.");
-    } else if (state.address.isNotValid) {
-      errors.add("Address is invalid.");
-    }
+    // if (state.address.isPure && state.address.value.trim().isEmpty) {
+    //   errors.add("Please enter address.");
+    // }
 
     return CustomTextField(
       controller: _selectedAddress,

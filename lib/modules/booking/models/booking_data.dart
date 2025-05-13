@@ -20,6 +20,8 @@ class BookingData {
 
   // Location
   final String? address;
+  final double? latitude;
+  final double? longitude;
 
   // Additional info
   final String? notes;
@@ -56,6 +58,8 @@ class BookingData {
     this.numberOfCourses,
     this.coursesNames,
     this.preferStyle,
+    this.latitude,
+    this.longitude,
   });
 
   BookingData copyWith({
@@ -78,6 +82,8 @@ class BookingData {
     int? numberOfCourses,
     List<String>? coursesNames,
     String? preferStyle,
+    double? latitude,
+    double? longitude,
   }) {
     return BookingData(
       serviceId: serviceId ?? this.serviceId,
@@ -99,6 +105,8 @@ class BookingData {
       numberOfCourses: numberOfCourses ?? this.numberOfCourses,
       coursesNames: coursesNames ?? this.coursesNames,
       preferStyle: preferStyle ?? this.preferStyle,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 

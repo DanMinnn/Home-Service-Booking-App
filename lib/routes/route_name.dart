@@ -10,6 +10,7 @@ class RouteName {
   static const String bookingSuccessfully = '/booking-successfully-screen';
   //cooking page
   static const String serviceCooking = '/option-cooking-screen';
+  static const String mapsScreen = '/map-screen';
 
   ///
   static const String profile = '/profile';

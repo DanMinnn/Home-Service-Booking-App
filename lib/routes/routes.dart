@@ -5,6 +5,7 @@ import 'package:home_service/modules/booking/pages/choose_working_time_page.dart
 import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
 import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
+import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/ui/onboarding_page.dart';
@@ -39,6 +40,9 @@ class Routes {
       case RouteName.bookingSuccessfully:
         _logger.log('Navigating to BookingSuccessfullyPage: ${settings.name}');
         return _buildRoute(settings, const BookingSuccessfullyPage());
+      case RouteName.mapsScreen:
+        _logger.log('Navigating to BookingSuccessfullyPage: ${settings.name}');
+        return _buildRoute(settings, const MapsPage());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());
