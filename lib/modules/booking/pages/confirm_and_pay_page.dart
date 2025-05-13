@@ -69,8 +69,10 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
             ConfirmBox(
               title: 'Location',
               children: [
-                _buildItemLocation(Image.asset(AppAssetIcons.locationFilled),
-                    bookingData.address!, bookingData.address!),
+                _buildItemLocation(
+                    Image.asset(AppAssetIcons.locationFilled),
+                    _getMainAddress(bookingData.address!),
+                    _getSecondAddress(bookingData.address!)),
                 _buildItemLocation(Image.asset(AppAssetIcons.profileFilled),
                     bookingData.user!.name, bookingData.user!.phone),
               ],
@@ -150,6 +152,8 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                   taskDetails: taskDetails,
                   totalPrice: bookingData.basePrice,
                   methodType: _selectedPaymentMethod?.name,
+                  latitude: bookingData.latitude,
+                  longitude: bookingData.longitude,
                 );
 
                 context.read<BookingBloc>().add(BookingSubmitted(bookingReq));
@@ -393,5 +397,21 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
         coursesNames.map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
     return cleanedNames;
+  }
+
+  String _getMainAddress(String address) {
+    return address.split(',').first;
+  }
+
+  String _getSecondAddress(String address) {
+    final parts = address.split(',');
+    String result = '';
+    if (parts.length >= 4) {
+      result = '${parts[1].trim()}, ${parts[2].trim()}';
+    } else {
+      result = parts[1].trim();
+      logger.log('Can not get parts');
+    }
+    return result;
   }
 }
