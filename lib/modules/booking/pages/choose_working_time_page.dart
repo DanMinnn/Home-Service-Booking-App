@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:home_service/common/widgets/stateless/custom_snack_bar.dart';
+import 'package:home_service/common/widgets/stateless/snack_bar_error.dart';
 import 'package:home_service/modules/authentication/widgets/custom_text_field.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
@@ -103,22 +103,8 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
             logger.log(
                 'Lat: ${bookingData.latitude} - - Lng: ${bookingData.longitude}');
           } else {
-            // Clear any existing SnackBars to prevent conflicts
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const CustomSnackBar(
-                backgroundColor: AppColors.snackBarError,
-                closeColor: AppColors.iconClose,
-                bubbleColor: AppColors.bubbles,
-                title: "Oh snap!",
-                message: "Please fill date-time and address",
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AppColors.transparent,
-              elevation: 0,
-              duration: const Duration(seconds: 3),
-            ));
+            SnackBarError.showError(
+                context, 'Please fill date-time and address');
           }
         },
         child: PriceNextNavbar(
@@ -262,13 +248,18 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
           child: Image.asset(AppAssetIcons.calendarOutline)),
       keyboardType: TextInputType.datetime,
       onChanged: (value) {
-        context.read<FormFieldBloc>().add(DateTimeChanged(value));
+        if (value.isNotEmpty) {
+          context.read<FormFieldBloc>().add(DateTimeChanged(value));
+        }
       },
       onUnfocused: () {
-        context.read<FormFieldBloc>().add(DateTimeUnfocused());
+        if (_selectedDateTime.text.isNotEmpty) {
+          context.read<FormFieldBloc>().add(DateTimeUnfocused());
+        }
       },
       fillColor: false,
       errorMessages: errors,
+      readOnly: true,
     );
   }
 
@@ -297,6 +288,7 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
       },
       fillColor: false,
       errorMessages: errors,
+      readOnly: false,
     );
   }
 
@@ -304,18 +296,23 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
     DatePicker.showDateTimePicker(
       context,
       showTitleActions: true,
-      minTime: DateTime(2020),
-      maxTime: DateTime(2030),
+      minTime: DateTime.now(), // At least 30 minutes in the future
+      maxTime: DateTime.now().add(const Duration(days: 365)),
       onConfirm: (date) {
-        final formatted =
-            DateFormat('EEEE, dd MMMM yyyy - hh:mm a').format(date);
+        try {
+          String formatted =
+              DateFormat('EEEE, dd MMMM yyyy - hh:mm a').format(date);
 
-        setState(() {
-          _selectedDateTime.text = formatted;
-        });
+          setState(() {
+            _selectedDateTime.text = formatted;
+          });
 
-        context.read<FormFieldBloc>().add(DateTimeChanged(formatted));
-        logger.log('Selected date: $formatted');
+          context.read<FormFieldBloc>().add(DateTimeChanged(formatted));
+          logger.log('Selected date: $formatted');
+        } catch (e) {
+          logger.log('Error formatting date: $e');
+          SnackBarError.showError(context, 'Invalid date format');
+        }
       },
       currentTime: DateTime.now(),
       locale: LocaleType.en,
