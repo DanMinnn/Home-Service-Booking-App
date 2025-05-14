@@ -11,6 +11,7 @@ import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
 import 'package:intl/intl.dart';
 
+import '../../../services/navigation_service.dart';
 import '../../../themes/app_assets.dart';
 import '../blocs/post_bloc.dart';
 import '../blocs/post_event.dart';
@@ -25,6 +26,7 @@ class BookingPost extends StatefulWidget {
 class _BookingPostState extends State<BookingPost> {
   final LogProvider logger = const LogProvider('::::BOOKING-POST::::');
   final UserRepository _userRepository = UserRepository();
+  final NavigationService _navigationService = NavigationService();
   int _userId = 0;
   late PostBloc _postBloc;
 
@@ -67,7 +69,9 @@ class _BookingPostState extends State<BookingPost> {
               isLeading: false,
               isTrailing: false,
               leading: GestureDetector(
-                onTap: Navigator.of(context).pop,
+                onTap: () {
+                  _navigationService.goBackToPreviousTab();
+                },
                 child: Image.asset(AppAssetIcons.arrowLeft),
               ),
               title: 'Bookings',
