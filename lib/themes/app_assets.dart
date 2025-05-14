@@ -59,4 +59,5 @@ class AppAssetIcons {
   static const String timer = '${iconPath}timer_filled_ic.png';
   static const String calendarFilled = '${iconPath}calendar_filled_ic.png';
   static const String dollarFiled = '${iconPath}dollar_ic.png';
+  static const String arrowDown = '${iconPath}arrow_down_ic.png';
 }
