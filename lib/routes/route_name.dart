@@ -12,7 +12,8 @@ class RouteName {
   static const String serviceCooking = '/option-cooking-screen';
   static const String mapsScreen = '/map-screen';
 
-  ///
+  //booking posts
+  static const String bookingPost = '/booking-post-screen';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String about = '/about';
