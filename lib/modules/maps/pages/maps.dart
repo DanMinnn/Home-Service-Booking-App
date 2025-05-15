@@ -7,14 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/themes/app_assets.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:maplibre_gl/maplibre_gl.dart';
-
-import '../../../common/widgets/stateless/custom_snack_bar.dart';
 
 class MapsPage extends StatefulWidget {
   const MapsPage({super.key});
@@ -306,21 +305,8 @@ class _MapsPageState extends State<MapsPage> {
       // );
     } catch (e) {
       logger.log('Error getting current location: $e');
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const CustomSnackBar(
-          backgroundColor: AppColors.snackBarErrorDark,
-          closeColor: AppColors.bubblesDark,
-          bubbleColor: AppColors.bubblesDark,
-          title: "Oh snap!",
-          message: "Some thing went wrong, please check your location",
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
-        duration: const Duration(seconds: 3),
-      ));
+      ShowSnackBar.showError(
+          context, "Something went wrong, please check your location");
     } finally {
       setState(() {
         _isLoading = false;

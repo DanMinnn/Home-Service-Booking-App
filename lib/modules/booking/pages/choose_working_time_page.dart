@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:home_service/common/widgets/stateless/snack_bar_error.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/authentication/widgets/custom_text_field.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
@@ -103,7 +103,7 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
             logger.log(
                 'Lat: ${bookingData.latitude} - - Lng: ${bookingData.longitude}');
           } else {
-            SnackBarError.showError(
+            ShowSnackBar.showError(
                 context, 'Please fill date-time and address');
           }
         },
@@ -311,7 +311,7 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
           logger.log('Selected date: $formatted');
         } catch (e) {
           logger.log('Error formatting date: $e');
-          SnackBarError.showError(context, 'Invalid date format');
+          ShowSnackBar.showError(context, 'Invalid date format');
         }
       },
       currentTime: DateTime.now(),

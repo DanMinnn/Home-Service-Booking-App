@@ -5,6 +5,7 @@ import 'package:home_service/themes/styles_text.dart';
 class CustomSnackBar extends StatelessWidget {
   final String title;
   final String message;
+  final String icon;
   final Color backgroundColor;
   final Color bubbleColor;
   final Color closeColor;
@@ -16,6 +17,7 @@ class CustomSnackBar extends StatelessWidget {
     required this.backgroundColor,
     required this.bubbleColor,
     required this.closeColor,
+    required this.icon,
   });
 
   @override
@@ -95,8 +97,7 @@ class CustomSnackBar extends StatelessWidget {
               ),
               Positioned(
                 top: 10,
-                child: SvgPicture.asset("assets/images/icons/close.svg",
-                    height: 16),
+                child: SvgPicture.asset(icon, height: 16),
               ),
             ],
           ),

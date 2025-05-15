@@ -22,6 +22,10 @@ class AppColors {
   //error color dark
   static const Color bubblesDark = Color(0xFF7E1534);
   static const Color snackBarErrorDark = Color(0xFFC82C41);
+
+  //success color snack bar
+  static const Color snackBarSuccess = Color(0xFF0B7141);
+  static const Color bubblesSuccess = Color(0xFF004E31);
 }
 
 // class Gradients {

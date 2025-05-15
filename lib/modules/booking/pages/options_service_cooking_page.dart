@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_service/common/widgets/stateless/custom_snack_bar.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/categories/bloc/service_package_cubit.dart';
 import 'package:home_service/modules/categories/bloc/service_package_state.dart';
@@ -270,38 +270,12 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
       bottomNavigationBar: GestureDetector(
         onTap: () {
           if (_selectedCourse == null) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const CustomSnackBar(
-                backgroundColor: AppColors.snackBarError,
-                closeColor: AppColors.iconClose,
-                bubbleColor: AppColors.bubbles,
-                title: "Oh snap!",
-                message: "Please select a course option",
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AppColors.transparent,
-              elevation: 0,
-              duration: const Duration(seconds: 3),
-            ));
+            ShowSnackBar.showError(context, "Please select a course option");
             return;
           }
           if (!_areAllCourseFieldsFilled()) {
+            ShowSnackBar.showError(context, "Please fill your course name");
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const CustomSnackBar(
-                backgroundColor: AppColors.snackBarError,
-                closeColor: AppColors.iconClose,
-                bubbleColor: AppColors.bubbles,
-                title: "Oh snap!",
-                message: "Please fill your course name",
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AppColors.transparent,
-              elevation: 0,
-              duration: const Duration(seconds: 3),
-            ));
             return;
           }
 
