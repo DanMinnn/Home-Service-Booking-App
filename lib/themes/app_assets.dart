@@ -60,4 +60,11 @@ class AppAssetIcons {
   static const String calendarFilled = '${iconPath}calendar_filled_ic.png';
   static const String dollarFiled = '${iconPath}dollar_ic.png';
   static const String arrowDown = '${iconPath}arrow_down_ic.png';
+
+  //icon profile
+  static const String arrowRight = '${iconPath}arrow_right_ic.png';
+  static const String logout = '${iconPath}logout_outline_ic.png';
+  static const String heart = '${iconPath}heart_outline_ic.png';
+  static const String galleryEdit = '${iconPath}gallery_edit_ic.png';
+  static const String trash = '${iconPath}trash_filled_ic.png';
 }

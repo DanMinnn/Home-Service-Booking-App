@@ -7,6 +7,7 @@ import 'package:home_service/modules/booking/pages/options_service_cleaning_page
 import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
+import 'package:home_service/modules/proflie/pages/edit_profile.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/ui/onboarding_page.dart';
@@ -42,11 +43,14 @@ class Routes {
         _logger.log('Navigating to BookingSuccessfullyPage: ${settings.name}');
         return _buildRoute(settings, const BookingSuccessfullyPage());
       case RouteName.bookingPost:
-        _logger.log('Navigating to BookingSuccessfullyPage: ${settings.name}');
+        _logger.log('Navigating to Booking posts: ${settings.name}');
         return _buildRoute(settings, const BookingPost());
       case RouteName.mapsScreen:
-        _logger.log('Navigating to BookingSuccessfullyPage: ${settings.name}');
+        _logger.log('Navigating to Maps: ${settings.name}');
         return _buildRoute(settings, const MapsPage());
+      case RouteName.editProfile:
+        _logger.log('Navigating to Edit profile: ${settings.name}');
+        return _buildRoute(settings, const EditProfile());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());

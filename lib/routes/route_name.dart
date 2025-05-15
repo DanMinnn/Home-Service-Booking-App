@@ -15,6 +15,7 @@ class RouteName {
   //booking posts
   static const String bookingPost = '/booking-post-screen';
   static const String profile = '/profile';
+  static const String editProfile = '/edit-profile';
   static const String settings = '/settings';
   static const String about = '/about';
   static const String contactUs = '/contact_us';
