@@ -29,3 +29,13 @@ class ProfileStateError extends ProfileState {
 
   const ProfileStateError(this.error);
 }
+
+class ProfileStateDeleteAccountSuccess extends ProfileState {
+  final String message;
+  const ProfileStateDeleteAccountSuccess(this.message);
+}
+
+class ProfileStateDeleteAccountError extends ProfileState {
+  final String error;
+  const ProfileStateDeleteAccountError(this.error);
+}

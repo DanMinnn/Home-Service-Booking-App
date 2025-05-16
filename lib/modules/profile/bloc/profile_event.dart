@@ -14,6 +14,12 @@ class ProfileEventUpdate extends ProfileEvent {
   const ProfileEventUpdate(this.userId, this.updateUser, this.imageFile);
 }
 
+class ProfileEventDeleteAccount extends ProfileEvent {
+  final int userId;
+
+  const ProfileEventDeleteAccount(this.userId);
+}
+
 /*class ProfileEventUploadImage extends ProfileEvent {
   final File imagePath;
 

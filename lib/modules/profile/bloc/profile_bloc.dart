@@ -10,6 +10,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc(this._userRepo) : super(ProfileStateInitial()) {
     on<ProfileEventUpdate>(_onUpdateProfile);
+    on<ProfileEventDeleteAccount>(_onDeleteAccount);
     //on<ProfileEventUploadImage>(_onUploadImage);
   }
 
@@ -23,6 +24,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileStateSuccess(message));
     } catch (e) {
       emit(ProfileStateError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteAccount(
+      ProfileEventDeleteAccount event, Emitter<ProfileState> emit) async {
+    emit(ProfileStateLoading());
+    try {
+      final message = await _userRepo.deleteAccount(event.userId);
+      emit(ProfileStateDeleteAccountSuccess(message));
+    } catch (e) {
+      emit(ProfileStateDeleteAccountError(e.toString()));
     }
   }
 

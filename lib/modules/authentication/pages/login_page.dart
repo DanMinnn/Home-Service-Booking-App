@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/blocs/app_state_bloc.dart';
 import 'package:home_service/blocs/form_validate/form_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_button.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/authentication/blocs/login/login_event.dart';
 import 'package:home_service/modules/authentication/widgets/custom_text_field.dart';
 import 'package:home_service/providers/log_provider.dart';
@@ -65,16 +66,16 @@ class _LoginFormState extends State<LoginForm> {
 
           context.read<LoginBloc>().add(GetUserInfo(_email.text));
         } else if (state is LoginFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  "Login failed. Please check your email and password and try again."),
-              duration: const Duration(seconds: 2),
-              backgroundColor: Colors.red,
-            ),
-          );
+          ShowSnackBar.showError(
+              context, 'Login failed. Please check your email and password.');
           logger.log("Login failed: ${state.error}");
         } else if (state is UserInfoLoaded) {
+          final user = state.user;
+          if (user.active == false) {
+            ShowSnackBar.showError(context,
+                'Sorry, your account is maybe deleted. Please contact admin.');
+            return;
+          }
           Future.delayed(const Duration(milliseconds: 100), () {
             _navigationService.navigateToAndClearStack(RouteName.homeScreen);
           });

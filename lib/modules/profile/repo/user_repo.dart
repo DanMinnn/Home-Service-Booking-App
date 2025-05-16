@@ -45,6 +45,23 @@ class UserRepo {
     }
   }
 
+  Future<String> deleteAccount(int userId) async {
+    try {
+      final response = await _apiProvider.delete(
+        '/user/delete/$userId',
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['message'];
+      } else {
+        return response.data['message'];
+      }
+    } catch (e) {
+      logger.log("Failed to delete account: $e");
+      rethrow;
+    }
+  }
+
   /*Future<String> uploadImage(File imageFile) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(imageFile.path),

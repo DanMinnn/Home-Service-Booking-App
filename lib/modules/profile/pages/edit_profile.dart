@@ -13,10 +13,12 @@ import 'package:home_service/repo/user_repository.dart';
 import 'package:home_service/themes/app_colors.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../blocs/app_state_bloc.dart';
 import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../services/navigation_service.dart';
 import '../../../themes/app_assets.dart';
 import '../../../themes/styles_text.dart';
+import '../../authentication/pages/auth_screen.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_state.dart';
 
@@ -91,6 +93,24 @@ class _EditProfileState extends State<EditProfile> {
             } else if (state is ProfileStateError) {
               _isUpdating = false;
               ShowSnackBar.showError(context, 'Updated failed');
+            } else if (state is ProfileStateDeleteAccountSuccess) {
+              _isUpdating = false;
+
+              context.read<AppStateBloc>().logout();
+              Future.delayed(const Duration(milliseconds: 300), () {
+                // _navigationService
+                //     .navigateToAndClearStack(RouteName.authScreen);
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const AuthScreen(),
+                  ),
+                  (route) => false,
+                );
+              });
+            } else if (state is ProfileStateDeleteAccountError) {
+              // Handle delete account error
+              _isUpdating = false;
+              ShowSnackBar.showError(context, 'Failed to delete account');
             }
           },
           builder: (context, state) {
@@ -129,7 +149,7 @@ class _EditProfileState extends State<EditProfile> {
                           backgroundColor: AppColors.blue),
                     ),
                     const SizedBox(height: 40),
-                    _buildDeleteAccount(),
+                    _buildDeleteAccount(context),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -315,10 +335,12 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Widget _buildDeleteAccount() {
+  Widget _buildDeleteAccount(BuildContext context) {
     return Center(
       child: GestureDetector(
-        onTap: _showDeleteConfirmation,
+        onTap: () {
+          _showDeleteConfirmation(context);
+        },
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -353,7 +375,8 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  void _showDeleteConfirmation() {
+  void _showDeleteConfirmation(BuildContext context) {
+    final profileBloc = context.read<ProfileBloc>();
     AwesomeDialog(
       context: context,
       dialogBackgroundColor: AppColors.white,
@@ -378,7 +401,7 @@ class _EditProfileState extends State<EditProfile> {
         child: TextButton(
           onPressed: () {
             Navigator.pop(context);
-            _deleteAccount();
+            _deleteAccount(profileBloc);
           },
           child: Text(
             'Delete',
@@ -396,7 +419,6 @@ class _EditProfileState extends State<EditProfile> {
         child: TextButton(
           onPressed: () {
             Navigator.pop(context);
-            _deleteAccount();
           },
           child: Text(
             'Cancel',
@@ -409,8 +431,10 @@ class _EditProfileState extends State<EditProfile> {
     ).show();
   }
 
-  void _deleteAccount() {
-    // Implement account deletion logic
-    print("Account would be deleted here");
+  void _deleteAccount(ProfileBloc profileBloc) {
+    setState(() {
+      _isUpdating = true;
+    });
+    profileBloc.add(ProfileEventDeleteAccount(_userId));
   }
 }

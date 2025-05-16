@@ -7,7 +7,7 @@ import 'package:home_service/modules/booking/pages/options_service_cleaning_page
 import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
-import 'package:home_service/modules/proflie/pages/edit_profile.dart';
+import 'package:home_service/modules/profile/pages/edit_profile.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/ui/onboarding_page.dart';
@@ -64,6 +64,9 @@ class Routes {
         return _buildRoute(settings, const Splashscreen());
       case RouteName.onboardingScreen:
         return _buildRoute(settings, const OnboardingPage());
+      case RouteName.authScreen:
+        _logger.log('Redirecting to AuthScreen as requested');
+        return _buildRoute(settings, const AuthScreen());
       default:
         _logger.log('Default redirect to AuthScreen: ${settings.name}');
         return _buildRoute(settings, const AuthScreen());
