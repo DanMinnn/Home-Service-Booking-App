@@ -90,6 +90,10 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: AppAssetIcons.logout,
               onTap: () {
                 context.read<AppStateBloc>().logout();
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  navigationService
+                      .navigateToAndClearStack(RouteName.authScreen);
+                });
               },
             ),
           ],
@@ -148,13 +152,19 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 16),
           GestureDetector(
-            onTap: () {
-              navigationService.navigateTo(RouteName.editProfile, arguments: {
+            onTap: () async {
+              final result = await navigationService
+                  .navigateTo(RouteName.editProfile, arguments: {
                 'id': _userId,
                 'name': _userName,
                 'email': _userEmail,
                 'image': _imageUrl,
               });
+              if (result == true) {
+                setState(() {
+                  loadUserData();
+                });
+              }
             },
             child: Container(
               width: double.infinity,

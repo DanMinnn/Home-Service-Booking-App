@@ -125,7 +125,7 @@ class _EditProfileState extends State<EditProfile> {
                       isTrailing: false,
                       leading: GestureDetector(
                         onTap: () {
-                          _navigationService.goBack();
+                          _navigationService.goBack(true);
                         },
                         child: Image.asset(AppAssetIcons.arrowLeft),
                       ),
