@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service/blocs/app_state_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
@@ -19,9 +21,12 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final NavigationService navigationService = NavigationService();
   final UserRepository _userRepository = UserRepository();
+
   LogProvider get logger => const LogProvider(":::PROFILE-PAGE:::");
   String _userName = '';
   String _userEmail = '';
+  String _imageUrl = '';
+  int _userId = 0;
 
   @override
   initState() {
@@ -31,20 +36,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> loadUserData() async {
     try {
-      final user = _userRepository.currentUser;
-      if (user != null) {
-        setState(() {
-          _userName = user.name!;
-          _userEmail = user.email!;
-        });
-      }
-
       await _userRepository.loadUserFromStorage();
       final userStorage = _userRepository.currentUser;
       if (userStorage != null) {
         setState(() {
           _userName = userStorage.name!;
           _userEmail = userStorage.email!;
+          _userId = userStorage.id!;
+          _imageUrl = userStorage.profileImage!;
         });
       }
     } catch (e) {
@@ -90,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Logout',
               icon: AppAssetIcons.logout,
               onTap: () {
-                //navigationService.navigateTo('/my-orders');
+                context.read<AppStateBloc>().logout();
               },
             ),
           ],
@@ -108,12 +107,28 @@ class _ProfilePageState extends State<ProfilePage> {
             radius: 60,
             backgroundColor: AppColors.darkBlue.withValues(alpha: 0.05),
             child: ClipOval(
-              child: Image.asset(
-                AppAssetIcons.profile,
-                fit: BoxFit.fill,
-                width: 100,
-                height: 100,
-              ),
+              child: _imageUrl.isNotEmpty
+                  ? Image.network(
+                      _imageUrl,
+                      filterQuality: FilterQuality.high,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          AppAssetIcons.profile,
+                          fit: BoxFit.fill,
+                          width: 100,
+                          height: 100,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      AppAssetIcons.profile,
+                      fit: BoxFit.fill,
+                      width: 100,
+                      height: 100,
+                    ),
             ),
           ),
           SizedBox(height: 10),
@@ -135,8 +150,10 @@ class _ProfilePageState extends State<ProfilePage> {
           GestureDetector(
             onTap: () {
               navigationService.navigateTo(RouteName.editProfile, arguments: {
+                'id': _userId,
                 'name': _userName,
                 'email': _userEmail,
+                'image': _imageUrl,
               });
             },
             child: Container(

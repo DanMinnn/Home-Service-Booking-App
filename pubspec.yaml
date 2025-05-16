@@ -42,6 +42,8 @@ dependencies:
   dropdown_button2: ^2.3.9
   #dialog
   awesome_dialog: ^3.2.1
+  #image
+  image_picker: any
 
 dev_dependencies:
   flutter_test:

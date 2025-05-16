@@ -25,7 +25,8 @@ class UserRepository {
       final userJson = prefs.getString('user_data');
       if (userJson != null) {
         _currentUser = User.fromJson(json.decode(userJson));
-        logger.log("User loaded from storage: ${_currentUser.toString()}");
+        logger
+            .log("User loaded from storage: ${_currentUser?.name.toString()}");
       }
     } catch (e) {
       logger.log("Error loading user from storage: ${e.toString()}");
@@ -39,6 +40,22 @@ class UserRepository {
       logger.log("User saved to storage: ${user.toString()}");
     } catch (e) {
       logger.log("Error saving user to storage: ${e.toString()}");
+    }
+  }
+
+  Future<void> updateUserInStorage(String name, String imagePath) async {
+    try {
+      await loadUserFromStorage();
+      final user = _currentUser;
+
+      if (user != null) {
+        user.name = name;
+        user.profileImage = imagePath;
+        await saveUserToStorage(user);
+      }
+      logger.log("User updated in storage: ${user.toString()}");
+    } catch (e) {
+      logger.log("Error updating user in storage: ${e.toString()}");
     }
   }
 
