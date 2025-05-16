@@ -46,7 +46,6 @@ class CustomSnackBar extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 4),
                     Text(
                       message,
                       style: AppTextStyles.bodyMediumMedium.copyWith(
