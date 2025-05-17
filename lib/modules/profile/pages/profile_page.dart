@@ -75,7 +75,9 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Wallet',
               icon: AppAssetIcons.digitalPay,
               onTap: () {
-                //navigationService.navigateTo('/my-orders');
+                navigationService.navigateTo(RouteName.wallet, arguments: {
+                  'userId': _userId,
+                });
               },
             ),
             _buildItem(

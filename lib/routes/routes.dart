@@ -8,6 +8,8 @@ import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
 import 'package:home_service/modules/profile/pages/edit_profile.dart';
+import 'package:home_service/modules/wallet/pages/deposit_wallet_page.dart';
+import 'package:home_service/modules/wallet/pages/wallet_page.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/ui/onboarding_page.dart';
@@ -51,6 +53,12 @@ class Routes {
       case RouteName.editProfile:
         _logger.log('Navigating to Edit profile: ${settings.name}');
         return _buildRoute(settings, const EditProfile());
+      case RouteName.wallet:
+        _logger.log('Navigating to Wallet profile: ${settings.name}');
+        return _buildRoute(settings, const WalletPage());
+      case RouteName.depositWallet:
+        _logger.log('Navigating to Deposit profile: ${settings.name}');
+        return _buildRoute(settings, const DepositWalletPage());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());

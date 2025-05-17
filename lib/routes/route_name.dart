@@ -14,8 +14,13 @@ class RouteName {
 
   //booking posts
   static const String bookingPost = '/booking-post-screen';
+
+  //profile
   static const String profile = '/profile';
   static const String editProfile = '/edit-profile';
+  //wallet
+  static const String wallet = '/wallet-screen';
+  static const String depositWallet = '/deposit-screen';
   static const String settings = '/settings';
   static const String about = '/about';
   static const String contactUs = '/contact_us';

@@ -1,4 +1,4 @@
 enum PaymentMethod {
   cash,
-  wallet,
+  bank_transfer,
 }
