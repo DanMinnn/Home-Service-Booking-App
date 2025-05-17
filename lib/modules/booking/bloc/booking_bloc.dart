@@ -18,8 +18,15 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     try {
       final req = event.bookingReq;
       final bookingResponse = await bookingRepository.createBookingRequest(req);
-      logger.log('Booking response: ${bookingResponse.toString()}');
-      emit(BookingSuccess(bookingResponse.toString()));
+      if (bookingResponse == 200) {
+        emit(BookingSuccess("Booking created successfully"));
+        return;
+      } else {
+        emit(BookingFailure("Failed to create booking. Check your details."));
+        return;
+      }
+      // logger.log('Booking response: ${bookingResponse.toString()}');
+      // emit(BookingSuccess(bookingResponse.toString()));
     } catch (e) {
       emit(BookingFailure("Error: ${e.toString()}"));
     }

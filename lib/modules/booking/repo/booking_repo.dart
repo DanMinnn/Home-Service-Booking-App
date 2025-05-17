@@ -7,7 +7,7 @@ class BookingRepo {
   LogProvider get logger => const LogProvider("BOOKING-REPO:::::");
   final apiProvider = ApiProvider();
 
-  Future<String> createBookingRequest(BookingReq req) async {
+  Future<int> createBookingRequest(BookingReq req) async {
     try {
       final response = await apiProvider.post(
         '/booking/create-booking',
@@ -17,11 +17,11 @@ class BookingRepo {
           contentType: 'application/json',
         ),
       );
-      if (response.data['status'] == 200) {
+      if (response.data['status'] == 200 || response.data['status'] == 201) {
         logger.log("Booking created successfully: ${response.data}");
-        return response.data['message'] ?? 'Booking created successfully';
+        return response.data['status'] ?? 200;
       } else {
-        return response.data['message'] ?? 'Can not create booking';
+        return response.data['status'] ?? 400;
       }
     } catch (e) {
       logger.log("Error creating booking: ${e.toString()}");
