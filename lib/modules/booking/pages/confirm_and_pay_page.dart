@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/booking/bloc/booking_event.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
 import 'package:home_service/modules/booking/models/booking_req.dart';
@@ -15,6 +16,10 @@ import 'package:home_service/themes/styles_text.dart';
 import 'package:intl/intl.dart';
 
 import '../../../themes/app_assets.dart';
+import '../../wallet/bloc/wallet_bloc.dart';
+import '../../wallet/bloc/wallet_event.dart';
+import '../../wallet/bloc/wallet_state.dart';
+import '../../wallet/repo/wallet_repo.dart';
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_state.dart';
 import '../widget/confirm_box.dart';
@@ -90,20 +95,19 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BlocProvider(
-        create: (context) => BookingBloc(BookingRepo()),
+      bottomNavigationBar: MultiBlocProvider(
+        providers: [
+          BlocProvider<WalletBloc>(
+            create: (context) => WalletBloc(WalletRepo()),
+          ),
+          BlocProvider<BookingBloc>(
+            create: (context) => BookingBloc(BookingRepo()),
+          ),
+        ],
         child: BlocBuilder<BookingBloc, BookingState>(
           builder: (context, state) {
             if (state is BookingLoading) {
               return const Center(child: CircularProgressIndicator());
-            }
-            if (state is BookingFailure) {
-              return Center(
-                child: Text(
-                  'Can not create booking',
-                  style: AppTextStyles.bodyMediumMedium,
-                ),
-              );
             }
 
             if (state is BookingSuccess) {
@@ -156,6 +160,20 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                   longitude: bookingData.longitude,
                 );
 
+                if (_selectedPaymentMethod == PaymentMethod.bank_transfer) {
+                  //check if user has enough balance
+                  context.read<WalletBloc>().add(
+                        WalletFetch(userId: bookingData.user!.id ?? 0),
+                      );
+                  context.read<WalletBloc>().stream.listen((state) {
+                    if (state is WalletLoaded) {
+                      if (state.wallet.balance < bookingData.basePrice!) {
+                        ShowSnackBar.showError(context, 'Not enough balance');
+                        return;
+                      }
+                    }
+                  });
+                }
                 context.read<BookingBloc>().add(BookingSubmitted(bookingReq));
                 logger.log("Booking data: ${updateBookingData.paymentMethod}");
               },
@@ -304,7 +322,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
           _buildPaymentItem(
             Image.asset(AppAssetIcons.digitalPay),
             'Digital Pay',
-            PaymentMethod.wallet,
+            PaymentMethod.bank_transfer,
           ),
           const SizedBox(height: 8),
           _buildPaymentItem(
