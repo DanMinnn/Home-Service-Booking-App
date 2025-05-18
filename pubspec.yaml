@@ -62,4 +62,12 @@ flutter:
     - assets/images/icons/3.0x/
     - .env
 
+  fonts:
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/dm_sans/DMSans-Bold.ttf
+        - asset: assets/fonts/dm_sans/DMSans-Medium.ttf
+        - asset: assets/fonts/dm_sans/DMSans-Regular.ttf
+        - asset: assets/fonts/dm_sans/DMSans-SemiBold.ttf
+
 
