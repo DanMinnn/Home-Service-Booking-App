@@ -1,0 +1,65 @@
+name: home_service_tasker
+description: "App for tasker"
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  #loading indicator
+  loading_indicator: ^3.1.1
+  #split divider
+  dotted_line: ^3.2.3
+
+  flutter_bloc: ^9.1.0
+  equatable:
+  formz:
+  dio:
+  shared_preferences:
+  flutter_dotenv:
+  json_serializable:
+  #deep link
+  uni_links3: ^0.5.3
+  #calendar
+  flutter_datetime_picker_plus: ^2.2.0
+  #format date
+  intl:
+  # files with .svg
+  flutter_svg:
+  #goong map
+  maplibre_gl: ^0.21.0
+  flutter_polyline_points: ^2.1.0
+  http: ^1.4.0
+  geolocator: ^13.0.4
+  #drop down button
+  dropdown_button2: ^2.3.9
+  #dialog
+  awesome_dialog: ^3.2.1
+  #image
+  image_picker: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/backgrounds/
+    - assets/images/backgrounds/2.0x/
+    - assets/images/backgrounds/3.0x/
+    - assets/images/icons/
+    - assets/images/icons/2.0x/
+    - assets/images/icons/3.0x/
+    - .env
+
+
