@@ -67,4 +67,6 @@ class AppAssetIcons {
   static const String heart = '${iconPath}heart_outline_ic.png';
   static const String galleryEdit = '${iconPath}gallery_edit_ic.png';
   static const String trash = '${iconPath}trash_filled_ic.png';
+  static const String calling = '${iconPath}calling_filled_ic.png';
+  static const String sendMessage = '${iconPath}send_ic.png';
 }

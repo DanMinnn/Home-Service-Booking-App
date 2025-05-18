@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
+import 'package:home_service/modules/chat/pages/list_chat_page.dart';
 import 'package:home_service/modules/home/pages/home_page.dart';
+import 'package:home_service/modules/posts/pages/booking_post.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_assets.dart';
-import 'package:home_service/ui/onboarding_page.dart';
 
+import '../modules/profile/pages/profile_page.dart';
 import '../providers/log_provider.dart';
 import '../routes/route_name.dart';
 import '../themes/app_colors.dart';
@@ -22,10 +24,10 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     HomePage(),
-    OnboardingPage(),
+    BookingPost(),
     CategoriesPage(),
-    Center(child: Text('Chat')),
-    Center(child: Text('Profile')),
+    ListChatPage(),
+    ProfilePage(),
   ];
 
   @override

@@ -21,6 +21,10 @@ class RouteName {
   //wallet
   static const String wallet = '/wallet-screen';
   static const String depositWallet = '/deposit-screen';
+
+  //chat
+  static const String listChatPage = '/list-chat-screen';
+  static const String chatPage = '/chat-screen';
   static const String settings = '/settings';
   static const String about = '/about';
   static const String contactUs = '/contact_us';

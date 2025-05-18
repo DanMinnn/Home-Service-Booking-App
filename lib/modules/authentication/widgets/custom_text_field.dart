@@ -17,6 +17,7 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final bool fillColor;
   final bool readOnly;
+  final bool showLabel;
 
   const CustomTextField({
     super.key,
@@ -33,6 +34,7 @@ class CustomTextField extends StatefulWidget {
     this.controller,
     this.fillColor = true,
     this.readOnly = false,
+    this.showLabel = true,
   });
 
   @override
@@ -75,12 +77,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: AppTextStyles.bodyMediumMedium.copyWith(
-            color: AppColors.darkBlue,
-          ),
-        ),
+        widget.showLabel
+            ? Text(
+                widget.label,
+                style: AppTextStyles.bodyMediumMedium.copyWith(
+                  color: AppColors.darkBlue,
+                ),
+              )
+            : const SizedBox(),
         SizedBox(height: 8),
         TextFormField(
           readOnly: widget.readOnly,

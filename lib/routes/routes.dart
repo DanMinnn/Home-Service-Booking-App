@@ -5,6 +5,8 @@ import 'package:home_service/modules/booking/pages/choose_working_time_page.dart
 import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
 import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
+import 'package:home_service/modules/chat/pages/chat_page.dart';
+import 'package:home_service/modules/chat/pages/list_chat_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
 import 'package:home_service/modules/profile/pages/edit_profile.dart';
@@ -59,6 +61,12 @@ class Routes {
       case RouteName.depositWallet:
         _logger.log('Navigating to Deposit profile: ${settings.name}');
         return _buildRoute(settings, const DepositWalletPage());
+      case RouteName.listChatPage:
+        _logger.log('Navigating to List Chat profile: ${settings.name}');
+        return _buildRoute(settings, const ListChatPage());
+      case RouteName.chatPage:
+        _logger.log('Navigating to List Chat profile: ${settings.name}');
+        return _buildRoute(settings, const ChatPage());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());

@@ -10,6 +10,7 @@ class BasicAppBar extends StatelessWidget {
   final String? subtitle;
   final Widget? leading;
   final Widget? trailing;
+  final Widget? action;
   final bool isLeading;
   final bool isTrailing;
 
@@ -21,6 +22,7 @@ class BasicAppBar extends StatelessWidget {
     this.subtitle,
     this.leading,
     this.trailing,
+    this.action,
     required this.isLeading,
     required this.isTrailing,
   });
@@ -40,7 +42,13 @@ class BasicAppBar extends StatelessWidget {
               _buildTitle(),
             ],
           ),
-          _buildTrailing(),
+          Row(
+            children: [
+              _buildAction(),
+              const SizedBox(width: 20),
+              _buildTrailing(),
+            ],
+          ),
         ],
       ),
     );
@@ -110,6 +118,24 @@ class BasicAppBar extends StatelessWidget {
             : null,
         child: trailing ?? const SizedBox(),
       ),
+    );
+  }
+
+  Widget _buildAction() {
+    return GestureDetector(
+      onTap: onPressed,
+      /*child: Container(
+        width: 45,
+        height: 45,
+        decoration: BoxDecoration(
+          color: AppColors.darkBlue.withValues(
+            alpha: 0.05,
+          ),
+          shape: BoxShape.circle,
+        ),
+        child: action ?? const SizedBox(),
+      ),*/
+      child: action ?? const SizedBox(),
     );
   }
 }
