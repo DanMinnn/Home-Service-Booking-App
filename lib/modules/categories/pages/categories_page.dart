@@ -25,24 +25,22 @@ class _CategoriesPageState extends State<CategoriesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BasicAppBar(
-                isLeading: false,
-                isTrailing: false,
-                leading: Image.asset(AppAssetIcons.arrowLeft),
-                title: 'Category',
-                onBackButtonPressed: () {
-                  // Go back to the previous tab instead of hardcoding to home
-                  _navigationService.goBackToPreviousTab();
-                },
-              ),
-              _buildCategories(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BasicAppBar(
+              isLeading: false,
+              isTrailing: false,
+              leading: Image.asset(AppAssetIcons.arrowLeft),
+              title: 'Category',
+              onBackButtonPressed: () {
+                // Go back to the previous tab instead of hardcoding to home
+                _navigationService.goBackToPreviousTab();
+              },
+            ),
+            _buildCategories(),
+          ],
         ),
       ),
     );
