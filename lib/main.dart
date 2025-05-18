@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_service_tasker/theme/styles_text.dart';
+import 'package:home_service_tasker/modules/auth/pages/set_new_password.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,27 +18,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'DMSans',
       ),
-      home: const HomePage(),
+      home: const SetNewPassword(),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // The AppBar uses the app-default Raleway font.
-      appBar: AppBar(title: const Text('Custom Fonts')),
-      body: Center(
-        // This Text widget uses the RobotoMono font.
-        child: Text(
-          'This text uses the DM Sans font.',
-          style: AppTextStyles.headline1,
-        ),
-      ),
     );
   }
 }

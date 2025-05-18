@@ -7,7 +7,12 @@ class AppTextStyles {
       fontSize: 36,
       fontWeight: FontWeight.w700,
       height: 46 / 36,
-      letterSpacing: 0.14,
+      color: AppColors.dark);
+
+  static const TextStyle headlineSubTitle = TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w400,
+      height: 34 / 24,
       color: AppColors.dark);
 
   static const TextStyle headline2 = TextStyle(
@@ -25,9 +30,9 @@ class AppTextStyles {
   );
 
   static const TextStyle headline4 = TextStyle(
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: FontWeight.w700,
-    height: 38 / 28, // Sửa lại chiều cao dòng nếu bạn thấy 18px là sai
+    height: 28 / 18,
     color: AppColors.dark,
   );
 
@@ -42,7 +47,6 @@ class AppTextStyles {
     fontSize: 14,
     fontWeight: FontWeight.w700,
     height: 24 / 14,
-    color: AppColors.dark,
   );
 
   static const TextStyle paragraph1 = TextStyle(
