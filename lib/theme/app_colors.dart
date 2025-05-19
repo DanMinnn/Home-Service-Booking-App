@@ -13,4 +13,17 @@ class AppColors {
   static const Color alertSuccess = Color(0xFF4FBF67);
   static const Color alertFailed = Color(0xFFFF3D00);
   static const Color alertWarning = Color(0xFFFF6628);
+
+  //error color light
+  static const Color iconClose = Color(0xFFc91912);
+  static const Color bubbles = Color(0xFFc81a12);
+  static const Color snackBarError = Color(0xFFf64b3c);
+
+  //error color dark
+  static const Color bubblesDark = Color(0xFF7E1534);
+  static const Color snackBarErrorDark = Color(0xFFC82C41);
+
+  //success color snack bar
+  static const Color snackBarSuccess = Color(0xFF0B7141);
+  static const Color bubblesSuccess = Color(0xFF004E31);
 }

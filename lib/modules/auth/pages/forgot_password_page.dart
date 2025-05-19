@@ -60,6 +60,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 CustomInputField(
                   controller: _emailController,
                   label: 'Email Address',
+                  onChanged: (value) {},
                   isPassword: false,
                 ),
                 const SizedBox(height: 30),

@@ -7,6 +7,8 @@ class CustomInputField extends StatefulWidget {
   final String label;
   final bool isPassword;
   final String? initialValue;
+  final Function(String) onChanged;
+  final List<String>? errorMessages;
 
   const CustomInputField({
     super.key,
@@ -14,6 +16,8 @@ class CustomInputField extends StatefulWidget {
     required this.label,
     required this.isPassword,
     this.initialValue,
+    this.errorMessages,
+    required this.onChanged,
   });
 
   @override
@@ -34,6 +38,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final errorMessages = widget.errorMessages ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -55,12 +60,13 @@ class _CustomInputFieldState extends State<CustomInputField> {
             decoration: BoxDecoration(
               border: Border.all(
                 color: _hasFocus ? AppColors.primary : AppColors.grey,
-                width: 1,
+                width: 1.5,
               ),
               borderRadius: BorderRadius.circular(16),
               color: AppColors.white,
             ),
             child: TextField(
+              onChanged: widget.onChanged,
               controller: widget.controller,
               obscureText: widget.isPassword && _obscureText,
               decoration: InputDecoration(
@@ -84,6 +90,16 @@ class _CustomInputFieldState extends State<CustomInputField> {
                     : null,
               ),
               style: AppTextStyles.paragraph3,
+            ),
+          ),
+        ),
+        SizedBox(height: 4),
+        ...errorMessages.map(
+          (msg) => Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: Text(
+              msg,
+              style: TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
         ),

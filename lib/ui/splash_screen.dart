@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
+import '../blocs/app_state_bloc.dart';
+import '../routes/navigation_service.dart';
+import '../routes/route_name.dart';
 import '../theme/app_assets.dart';
 import '../theme/app_colors.dart';
 
@@ -12,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final NavigationService _navigationService = NavigationService();
   @override
   void initState() {
     super.initState();
@@ -69,13 +74,13 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _redirect() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    /*final appState = context.read<AppStateBloc>().state;
+    final appState = context.read<AppStateBloc>().state;
     if (appState == AppState.authorized) {
       _navigationService.navigateToAndClearStack(RouteName.homeScreen);
     } else if (appState == AppState.unAuthorized) {
-      _navigationService.navigateToAndClearStack(RouteName.authScreen);
+      _navigationService.navigateToAndClearStack(RouteName.loginScreen);
     } else {
-      _navigationService.navigateToAndClearStack(RouteName.onboardingScreen);
-    }*/
+      _navigationService.navigateToAndClearStack(RouteName.loginScreen);
+    }
   }
 }

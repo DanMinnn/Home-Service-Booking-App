@@ -21,9 +21,8 @@ class ApiProvider {
   ApiProvider._internal() {
     final baseOption = BaseOptions(
       baseUrl: dotenv.env['API_URL']!,
-      connectTimeout:
-          const Duration(milliseconds: 30), // Add a 30-second timeout
-      receiveTimeout: const Duration(milliseconds: 30),
+      connectTimeout: const Duration(minutes: 30), // Add a 30-second timeout
+      receiveTimeout: const Duration(minutes: 30),
     );
     _dio = Dio(baseOption);
     setupInterceptors();

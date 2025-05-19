@@ -64,12 +64,14 @@ class _SetNewPasswordState extends State<SetNewPassword> {
                 CustomInputField(
                   controller: _passwordController,
                   label: 'Password',
+                  onChanged: (value) {},
                   isPassword: true,
                 ),
                 const SizedBox(height: 16),
                 CustomInputField(
                   controller: _confirmPassword,
                   label: 'Confirm Password',
+                  onChanged: (value) {},
                   isPassword: true,
                 ),
                 const SizedBox(height: 30),
