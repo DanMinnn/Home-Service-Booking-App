@@ -17,6 +17,7 @@ import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/ui/onboarding_page.dart';
 import 'package:home_service/ui/splash_screen.dart';
 
+import '../modules/authentication/pages/verify_success_page.dart';
 import '../modules/booking/pages/options_service_cooking_page.dart';
 import '../ui/main_screen.dart';
 
@@ -78,6 +79,8 @@ class Routes {
     switch (settings.name) {
       case RouteName.splashScreen:
         return _buildRoute(settings, const Splashscreen());
+      case RouteName.verifiedScreen:
+        return _buildRoute(settings, const VerifySuccessPage());
       case RouteName.onboardingScreen:
         return _buildRoute(settings, const OnboardingPage());
       case RouteName.authScreen:

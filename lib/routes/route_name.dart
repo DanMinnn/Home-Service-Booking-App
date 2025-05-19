@@ -1,5 +1,6 @@
 class RouteName {
   static const String splashScreen = '/';
+  static const String verifiedScreen = '/verified-screen';
   static const String onboardingScreen = '/onboarding-screen';
   static const String authScreen = '/auth-screen';
   static const String homeScreen = '/home-screen';

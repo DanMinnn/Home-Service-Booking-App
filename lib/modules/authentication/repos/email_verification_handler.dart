@@ -5,6 +5,8 @@ import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:uni_links3/uni_links.dart';
 
+import '../../../routes/route_name.dart';
+
 // Remove the global navigatorKey - we'll use the one from NavigationService instead
 
 class EmailVerificationHandler extends StatefulWidget {
@@ -98,7 +100,7 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
     if (mounted && context.mounted) {
       try {
         logger.log('Trying to navigate using context');
-        Navigator.of(context).pushNamed('/verified-screen');
+        Navigator.of(context).pushNamed(RouteName.verifiedScreen);
         return;
       } catch (e) {
         logger.log('Error navigating with context: $e');
@@ -109,7 +111,7 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
     if (_navigationService.navigator != null) {
       logger.log('Navigator is ready, navigating to VerifySuccessPage');
       try {
-        _navigationService.navigateTo('/verified-screen');
+        _navigationService.navigateTo(RouteName.verifiedScreen);
       } catch (e) {
         logger.log('Error navigating with NavigationService: $e');
         if (retryCount < maxRetries) {
@@ -134,7 +136,7 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
       if (mounted && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Xác nhận email thất bại!'),
+            content: Text('Verification failed'),
             backgroundColor: Colors.red,
           ),
         );
