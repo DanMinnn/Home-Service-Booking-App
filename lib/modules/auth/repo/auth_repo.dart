@@ -10,7 +10,7 @@ import '../../../providers/api_provider.dart';
 import '../../../utils/token_manager.dart';
 import '../model/login_req.dart';
 
-class LoginRepo {
+class AuthRepo {
   final LogProvider logger = const LogProvider('LOGIN_REPO:::');
   final apiProvider = ApiProvider();
 

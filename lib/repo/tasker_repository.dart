@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'package:home_service_tasker/models/tasker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../modules/auth/repo/login_repo.dart';
+import '../modules/auth/repo/auth_repo.dart';
 import '../providers/log_provider.dart';
 
 class TaskerRepository {
   LogProvider get logger => const LogProvider('tasker-REPO');
   static final TaskerRepository _instance = TaskerRepository._internal();
   Tasker? _currentTasker;
-  final LoginRepo _loginRepo = LoginRepo();
+  final AuthRepo _loginRepo = AuthRepo();
 
   factory TaskerRepository() {
     return _instance;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_tasker/blocs/form_validate/form_bloc.dart';
-import 'package:home_service_tasker/modules/auth/bloc/bloc_login/login_bloc.dart';
-import 'package:home_service_tasker/modules/auth/bloc/bloc_login/login_event.dart';
-import 'package:home_service_tasker/modules/auth/repo/login_repo.dart';
+import 'package:home_service_tasker/modules/auth/bloc/bloc_login/auth_bloc.dart';
+import 'package:home_service_tasker/modules/auth/bloc/bloc_login/auth_event.dart';
+import 'package:home_service_tasker/modules/auth/repo/auth_repo.dart';
 
 import '../../../common/widget/app_bar.dart';
 import '../../../common/widget/basic_button.dart';
@@ -14,7 +14,7 @@ import '../../../routes/route_name.dart';
 import '../../../theme/app_assets.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/styles_text.dart';
-import '../bloc/bloc_login/login_state.dart';
+import '../bloc/bloc_login/auth_state.dart';
 import '../model/register_req.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -54,15 +54,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   create: (context) => FormFieldBloc(),
                 ),
                 BlocProvider(
-                  create: (context) => LoginBloc(LoginRepo()),
+                  create: (context) => AuthBloc(AuthRepo()),
                 ),
               ],
-              child: BlocListener<LoginBloc, LoginState>(
+              child: BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
-                  if (state is LoginSuccess) {
+                  if (state is AuthSuccess) {
                     ShowSnackBar.showSuccess(
                         context, state.message.toString(), 'Well done!');
-                  } else if (state is LoginFailure) {
+                  } else if (state is AuthFailure) {
                     ShowSnackBar.showError(context, 'Signup failed');
                   }
                 },
@@ -231,7 +231,7 @@ class _RegisterPageState extends State<RegisterPage> {
         state.phoneNumber.isValid &&
         state.password.isValid;
 
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final bool isLoading = state is LoginLoading;
 
@@ -257,6 +257,6 @@ class _RegisterPageState extends State<RegisterPage> {
       status: 'available',
     );
 
-    context.read<LoginBloc>().add(RegisterSubmitted(req));
+    context.read<AuthBloc>().add(RegisterSubmitted(req));
   }
 }

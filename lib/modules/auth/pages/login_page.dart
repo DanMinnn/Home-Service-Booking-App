@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_tasker/common/widget/basic_button.dart';
-import 'package:home_service_tasker/modules/auth/repo/login_repo.dart';
+import 'package:home_service_tasker/modules/auth/repo/auth_repo.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
 import 'package:home_service_tasker/routes/navigation_service.dart';
 import 'package:home_service_tasker/routes/route_name.dart';
@@ -13,9 +13,9 @@ import '../../../blocs/app_state_bloc.dart';
 import '../../../blocs/form_validate/form_bloc.dart';
 import '../../../common/widget/custom_text_field.dart';
 import '../../../common/widget/show_snack_bar.dart';
-import '../bloc/bloc_login/login_bloc.dart';
-import '../bloc/bloc_login/login_event.dart';
-import '../bloc/bloc_login/login_state.dart';
+import '../bloc/bloc_login/auth_bloc.dart';
+import '../bloc/bloc_login/auth_event.dart';
+import '../bloc/bloc_login/auth_state.dart';
 import '../model/login_req.dart';
 
 class LoginPage extends StatefulWidget {
@@ -44,24 +44,24 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.white,
       body: MultiBlocProvider(
         providers: [
-          BlocProvider<LoginBloc>(
-            create: (context) => LoginBloc(LoginRepo()),
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(AuthRepo()),
           ),
           BlocProvider<FormFieldBloc>(
             create: (context) => FormFieldBloc(),
           ),
         ],
-        child: BlocListener<LoginBloc, LoginState>(
+        child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is LoginSuccess) {
+            if (state is AuthSuccess) {
               context.read<AppStateBloc>().changeAppState(AppState.authorized);
               logger.log(
                   "Login successful. Redirecting to home screen. email ${_emailController.text}");
 
               context
-                  .read<LoginBloc>()
+                  .read<AuthBloc>()
                   .add(GetTaskerInfo(_emailController.text));
-            } else if (state is LoginFailure) {
+            } else if (state is AuthFailure) {
               ShowSnackBar.showError(context,
                   'Login failed. Please check your email and password.');
               logger.log("Login failed: ${state.error}");
@@ -113,7 +113,10 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(),
                               const Spacer(),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  _navigationService.navigateTo(
+                                      RouteName.forgotPasswordScreen);
+                                },
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.deepOrange,
                                   padding: EdgeInsets.zero,
@@ -265,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isValidForm = _emailController.text.toString().isNotEmpty &&
         _passwordController.text.toString().isNotEmpty;
 
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, loginState) {
         final bool isLoading = loginState is LoginLoading;
 
@@ -286,7 +289,7 @@ class _LoginPageState extends State<LoginPage> {
       password: _passwordController.text.trim(),
     );
 
-    context.read<LoginBloc>().add(LoginSubmitted(req));
+    context.read<AuthBloc>().add(LoginSubmitted(req));
     logger.log('Login request: ${req.toJson()}');
   }
 }
