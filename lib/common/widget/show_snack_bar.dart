@@ -13,7 +13,7 @@ class ShowSnackBar {
         backgroundColor: AppColors.snackBarError,
         closeColor: AppColors.iconClose,
         bubbleColor: AppColors.bubbles,
-        title: "Oh snap!",
+        title: "Error!",
         message: message,
         icon: "assets/images/icons/close.svg",
       ),

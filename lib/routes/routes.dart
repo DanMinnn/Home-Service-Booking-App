@@ -16,6 +16,14 @@ class Routes {
 
   static Route authorizedRoute(RouteSettings settings) {
     _logger.log('Authorized route request: ${settings.name}');
+    _logger.log('Route arguments: ${settings.arguments}');
+
+    // Special case: SetNewPassword should be accessible from both states
+    if (settings.name == RouteName.setNewPasswordScreen) {
+      _logger.log('Handling SetNewPassword screen in authorized state');
+      return _buildRoute(settings, const SetNewPassword());
+    }
+
     switch (settings.name) {
       case RouteName.splashScreen:
         return _buildRoute(settings, const SplashScreen());
@@ -29,6 +37,14 @@ class Routes {
 
   static Route unAuthorizedRoute(RouteSettings settings) {
     _logger.log('Unauthorized route request: ${settings.name}');
+    _logger.log('Route arguments: ${settings.arguments}');
+
+    // Special case: SetNewPassword should be accessible from both states
+    if (settings.name == RouteName.setNewPasswordScreen) {
+      _logger.log('Handling SetNewPassword screen in unAuthorized state');
+      return _buildRoute(settings, const SetNewPassword());
+    }
+
     switch (settings.name) {
       case RouteName.splashScreen:
         return _buildRoute(settings, const SplashScreen());
@@ -40,8 +56,7 @@ class Routes {
         return _buildRoute(settings, const LoginPage());
       case RouteName.forgotPasswordScreen:
         return _buildRoute(settings, const ForgotPasswordPage());
-      case RouteName.setNewPasswordScreen:
-        return _buildRoute(settings, const SetNewPassword());
+      // Removed duplicate setNewPasswordScreen case
       default:
         _logger.log('Default redirect to: ${settings.name}');
         return _buildRoute(settings, const SplashScreen());
@@ -49,7 +64,8 @@ class Routes {
   }
 
   static MaterialPageRoute _buildRoute(RouteSettings settings, Widget page) {
-    _logger.log('Build route: ${settings.name}');
+    _logger
+        .log('Build route: ${settings.name}, arguments: ${settings.arguments}');
     return MaterialPageRoute(
       builder: (context) => page,
       settings: settings,

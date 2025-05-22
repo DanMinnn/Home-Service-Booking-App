@@ -1,3 +1,4 @@
+import 'package:home_service_tasker/modules/auth/model/change_password_req.dart';
 import 'package:home_service_tasker/modules/auth/model/login_req.dart';
 import 'package:home_service_tasker/modules/auth/model/register_req.dart';
 
@@ -19,4 +20,16 @@ class GetTaskerInfo extends AuthEvent {
   final String email;
 
   GetTaskerInfo(this.email);
+}
+
+class ResetPasswordSubmitted extends AuthEvent {
+  final String email;
+
+  ResetPasswordSubmitted({required this.email});
+}
+
+class ChangePasswordSubmitted extends AuthEvent {
+  final ChangePasswordReq changePasswordReq;
+
+  ChangePasswordSubmitted({required this.changePasswordReq});
 }

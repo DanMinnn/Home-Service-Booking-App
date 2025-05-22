@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 import '../blocs/app_state_bloc.dart';
+import '../modules/auth/repo/email_verified_handler.dart';
+import '../providers/log_provider.dart';
 import '../routes/navigation_service.dart';
 import '../routes/route_name.dart';
 import '../theme/app_assets.dart';
@@ -17,6 +19,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final NavigationService _navigationService = NavigationService();
+  final LogProvider logger = const LogProvider('SPLASH-SCREEN:::');
+
   @override
   void initState() {
     super.initState();
@@ -74,11 +78,40 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _redirect() async {
     await Future.delayed(const Duration(seconds: 2));
 
+    // Check if we have stored deeplink data first
+    if (DeepLinkData.hasData()) {
+      logger.log('Found pending deeplink: ${DeepLinkData.path}');
+
+      if (DeepLinkData.path == '/reset-password') {
+        final token = DeepLinkData.queryParams?['token'] ?? '';
+        logger.log('Handling reset password deeplink with token: $token');
+
+        if (token.isNotEmpty) {
+          _navigationService.navigateToAndClearStack(
+              RouteName.setNewPasswordScreen,
+              arguments: {'token': token});
+          // Clear after handling
+          DeepLinkData.clear();
+          return;
+        }
+      } else if (DeepLinkData.path == '/email-verified') {
+        final success = DeepLinkData.queryParams?['success'] ?? 'false';
+        if (success == 'true') {
+          _navigationService.navigateToAndClearStack(RouteName.verifiedScreen);
+          // Clear after handling
+          DeepLinkData.clear();
+          return;
+        }
+      }
+    }
+
+    // Default flow if no deeplink or failed to handle deeplink
     final appState = context.read<AppStateBloc>().state;
+    logger.log(
+        'No deeplink found or processed, proceeding with normal flow. App state: $appState');
+
     if (appState == AppState.authorized) {
       _navigationService.navigateToAndClearStack(RouteName.homeScreen);
-    } else if (appState == AppState.unAuthorized) {
-      _navigationService.navigateToAndClearStack(RouteName.loginScreen);
     } else {
       _navigationService.navigateToAndClearStack(RouteName.loginScreen);
     }
