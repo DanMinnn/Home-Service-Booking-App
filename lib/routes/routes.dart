@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service/modules/authentication/pages/auth_screen.dart';
+import 'package:home_service/modules/authentication/pages/forgot_password_page.dart';
+import 'package:home_service/modules/authentication/pages/set_new_password_page.dart';
 import 'package:home_service/modules/booking/pages/booking_successfully_page.dart';
 import 'package:home_service/modules/booking/pages/choose_working_time_page.dart';
 import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
@@ -86,6 +88,12 @@ class Routes {
       case RouteName.authScreen:
         _logger.log('Redirecting to AuthScreen as requested');
         return _buildRoute(settings, const AuthScreen());
+      case RouteName.forgotPasswordScreen:
+        _logger.log('Redirecting to ForgotPasswordScreen as requested');
+        return _buildRoute(settings, const ForgotPasswordPage());
+      case RouteName.setNewPasswordScreen:
+        _logger.log('Redirecting to SetNewPasswordScreen as requested');
+        return _buildRoute(settings, const SetNewPasswordPage());
       default:
         _logger.log('Default redirect to AuthScreen: ${settings.name}');
         return _buildRoute(settings, const AuthScreen());

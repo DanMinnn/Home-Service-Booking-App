@@ -7,6 +7,8 @@ import 'package:home_service/themes/app_colors.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 import '../blocs/app_state_bloc.dart';
+import '../modules/authentication/models/deep_link_data.dart';
+import '../providers/log_provider.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -17,6 +19,7 @@ class Splashscreen extends StatefulWidget {
 
 class _SplashscreenState extends State<Splashscreen> {
   final NavigationService _navigationService = NavigationService();
+  final LogProvider logger = const LogProvider('SPLASH-SCREEN:::');
   @override
   void initState() {
     super.initState();
@@ -74,6 +77,32 @@ class _SplashscreenState extends State<Splashscreen> {
   Future<void> _redirect() async {
     await Future.delayed(const Duration(seconds: 2));
 
+    // Check if we have stored deeplink data first
+    if (DeepLinkData.hasData()) {
+      logger.log('Found pending deeplink: ${DeepLinkData.path}');
+
+      if (DeepLinkData.path == '/reset-password') {
+        final token = DeepLinkData.queryParams?['token'] ?? '';
+        logger.log('Handling reset password deeplink with token: $token');
+
+        if (token.isNotEmpty) {
+          _navigationService.navigateToAndClearStack(
+              RouteName.setNewPasswordScreen,
+              arguments: {'token': token});
+          // Clear after handling
+          DeepLinkData.clear();
+          return;
+        }
+      } else if (DeepLinkData.path == '/email-verified') {
+        final success = DeepLinkData.queryParams?['success'] ?? 'false';
+        if (success == 'true') {
+          _navigationService.navigateToAndClearStack(RouteName.verifiedScreen);
+          // Clear after handling
+          DeepLinkData.clear();
+          return;
+        }
+      }
+    }
     final appState = context.read<AppStateBloc>().state;
     if (appState == AppState.authorized) {
       _navigationService.navigateToAndClearStack(RouteName.homeScreen);

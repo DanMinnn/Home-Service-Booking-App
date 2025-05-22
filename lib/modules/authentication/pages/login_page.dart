@@ -199,9 +199,14 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _buildForgetPassword() {
-    return Text(
-      'Forget password?',
-      style: AppTextStyles.bodyMediumRegular.copyWith(color: AppColors.green),
+    return GestureDetector(
+      onTap: () {
+        _navigationService.navigateTo(RouteName.forgotPasswordScreen);
+      },
+      child: Text(
+        'Forget password?',
+        style: AppTextStyles.bodyMediumRegular.copyWith(color: AppColors.green),
+      ),
     );
   }
 

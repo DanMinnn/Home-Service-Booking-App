@@ -3,6 +3,8 @@ class RouteName {
   static const String verifiedScreen = '/verified-screen';
   static const String onboardingScreen = '/onboarding-screen';
   static const String authScreen = '/auth-screen';
+  static const String forgotPasswordScreen = '/forgot-password-screen';
+  static const String setNewPasswordScreen = '/set-new-password-screen';
   static const String homeScreen = '/home-screen';
   static const String categories = '/categories-screen';
   static const String serviceItem = '/option-screen';

@@ -30,12 +30,26 @@
             </intent-filter>
 
             <!-- Deep Links -->
+            <!-- Email verification deep link -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="homeserviceuser"
+                    android:host="authorized"
+                    android:path="/email-verified" />
+            </intent-filter>
 
-                <data android:scheme="homeservice" android:host="email-verified" />
+            <!-- Reset password deep link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="homeserviceuser"
+                    android:host="authorized"
+                    android:path="/reset-password" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
