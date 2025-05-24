@@ -95,8 +95,8 @@ class _SplashScreenState extends State<SplashScreen> {
           return;
         }
       } else if (DeepLinkData.path == '/email-verified') {
-        final success = DeepLinkData.queryParams?['success'] ?? 'false';
-        if (success == 'true') {
+        final token = DeepLinkData.queryParams?['secretCode'] ?? '';
+        if (token.isNotEmpty) {
           _navigationService.navigateToAndClearStack(RouteName.verifiedScreen);
           // Clear after handling
           DeepLinkData.clear();

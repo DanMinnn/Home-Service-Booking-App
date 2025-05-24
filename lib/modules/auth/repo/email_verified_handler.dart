@@ -126,7 +126,7 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
         logger.log(
             'Email verification deep link: success=$success, userType=$userType, secretCode=$secretCode');
 
-        if (success == 'true') {
+        if (secretCode.isNotEmpty) {
           _navigateToSuccessPage();
         } else {
           _showErrorMessage();
@@ -171,45 +171,20 @@ class _EmailVerificationHandlerState extends State<EmailVerificationHandler> {
     });
   }
 
-  void _navigateToSuccessPage({int retryCount = 0}) {
-    const maxRetries = 10; // Increased max retries
-    const retryDelay = Duration(milliseconds: 300); // Increased delay
-
-    logger.log(
-        'Attempting to navigate to VerifySuccessPage, attempt ${retryCount + 1}');
-
-    // Try using context navigation if NavigationService is not ready
-    if (mounted && context.mounted) {
+  void _navigateToSuccessPage() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
-        logger.log('Trying to navigate using context');
-        Navigator.of(context).pushNamed(RouteName.verifiedScreen);
-        return;
-      } catch (e) {
-        logger.log('Error navigating with context: $e');
-      }
-    }
+        // Always try using the navigation service for consistent behavior
+        _navigationService.navigateToAndClearStack(
+          RouteName.verifiedScreen,
+        );
 
-    // Use the NavigationService instead of direct navigatorKey
-    if (_navigationService.navigator != null) {
-      logger.log('Navigator is ready, navigating to VerifySuccessPage');
-      try {
-        _navigationService.navigateTo(RouteName.verifiedScreen);
+        // Clear deeplink data once we've handled it
+        DeepLinkData.clear();
       } catch (e) {
-        logger.log('Error navigating with NavigationService: $e');
-        if (retryCount < maxRetries) {
-          Future.delayed(retryDelay,
-              () => _navigateToSuccessPage(retryCount: retryCount + 1));
-        }
+        logger.log('Error navigating to SetNewPassword: $e');
       }
-    } else if (retryCount < maxRetries) {
-      logger.log(
-          'NavigatorState is still null, retrying (${retryCount + 1}/$maxRetries)...');
-      Future.delayed(
-          retryDelay, () => _navigateToSuccessPage(retryCount: retryCount + 1));
-    } else {
-      logger.log(
-          'Failed to navigate: NavigatorState is not available after $maxRetries retries');
-    }
+    });
   }
 
   void _showErrorMessage() {
