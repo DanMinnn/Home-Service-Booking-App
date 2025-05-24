@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:home_service_tasker/modules/auth/pages/login_page.dart';
 
 import '../../../common/widget/basic_button.dart';
 import '../../../theme/app_colors.dart';
+import '../../../ui/main_screen.dart';
 
 class VerifySuccessPage extends StatelessWidget {
   const VerifySuccessPage({super.key});
@@ -44,7 +44,7 @@ class VerifySuccessPage extends StatelessWidget {
                         "Hello! You have successfully\nverified the account.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: AppColors.white.withValues(alpha: 0.7),
+                          color: AppColors.white.withValues(alpha: 0.9),
                           fontSize: 14,
                         ),
                       ),
@@ -72,10 +72,14 @@ class VerifySuccessPage extends StatelessWidget {
                 width: double.infinity,
                 child: BasicButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MainScreen(showServiceDialog: true),
+                      ),
+                    );
                   },
-                  text: "Browser Login Page",
+                  text: "Let's Started",
                   textColor: AppColors.white,
                   backgroundColor: AppColors.primary,
                 ),

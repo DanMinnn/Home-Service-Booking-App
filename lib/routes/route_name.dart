@@ -5,5 +5,6 @@ class RouteName {
   static const String forgotPasswordScreen = '/forgot-password-screen';
   static const String setNewPasswordScreen = '/set-new-password-screen';
   static const String verifiedScreen = '/verified-screen';
+  static const String mainScreen = '/main-screen';
   static const String homeScreen = '/home-screen';
 }
