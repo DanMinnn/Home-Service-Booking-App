@@ -4,6 +4,8 @@ import 'package:home_service_tasker/blocs/form_validate/form_bloc.dart';
 import 'package:home_service_tasker/modules/auth/bloc/bloc_login/auth_bloc.dart';
 import 'package:home_service_tasker/modules/auth/bloc/bloc_login/auth_event.dart';
 import 'package:home_service_tasker/modules/auth/repo/auth_repo.dart';
+import 'package:home_service_tasker/providers/log_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/widget/app_bar.dart';
 import '../../../common/widget/basic_button.dart';
@@ -31,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _fullName = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  final LogProvider logger = const LogProvider('REGISTER_PAGE:::');
   @override
   void dispose() {
     _emailController.dispose();
@@ -44,102 +47,99 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (context) => FormFieldBloc(),
-                ),
-                BlocProvider(
-                  create: (context) => AuthBloc(AuthRepo()),
-                ),
-              ],
-              child: BlocListener<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthSuccess) {
-                    ShowSnackBar.showSuccess(
-                        context, state.message.toString(), 'Well done!');
-                  } else if (state is AuthFailure) {
-                    ShowSnackBar.showError(context, 'Signup failed');
-                  }
-                },
-                child: BlocBuilder<FormFieldBloc, FormFieldStates>(
-                  builder: (context, state) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        BasicAppBar(
-                          leading: GestureDetector(
-                            onTap: () {
-                              _navigationService.goBack();
-                            },
-                            child: Image.asset(
-                              AppAssetsIcons.arrowLeft,
-                              color: AppColors.dark,
-                            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => FormFieldBloc(),
+              ),
+              BlocProvider(
+                create: (context) => AuthBloc(AuthRepo()),
+              ),
+            ],
+            child: BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthSuccess) {
+                  ShowSnackBar.showSuccess(
+                      context, state.message.toString(), 'Well done!');
+                } else if (state is AuthFailure) {
+                  ShowSnackBar.showError(context, 'Signup failed');
+                }
+              },
+              child: BlocBuilder<FormFieldBloc, FormFieldStates>(
+                builder: (context, state) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BasicAppBar(
+                        leading: GestureDetector(
+                          onTap: () {
+                            _navigationService.goBack();
+                          },
+                          child: Image.asset(
+                            AppAssetsIcons.arrowLeft,
+                            color: AppColors.dark,
                           ),
-                          title: 'Set New Password',
                         ),
-                        Text("Getting Started", style: AppTextStyles.headline1),
-                        const SizedBox(height: 12),
-                        Text(
-                            "Seems you are new here, \nLet’s set up your profile.",
-                            style: AppTextStyles.headlineSubTitle.copyWith(
+                        title: 'Set New Password',
+                      ),
+                      Text("Getting Started", style: AppTextStyles.headline1),
+                      const SizedBox(height: 12),
+                      Text(
+                          "Seems you are new here, \nLet’s set up your profile.",
+                          style: AppTextStyles.headlineSubTitle.copyWith(
+                            color: AppColors.accentGrey.withValues(alpha: 0.5),
+                          )),
+                      const SizedBox(height: 30),
+                      _buildFullNameField(context, state),
+                      const SizedBox(height: 16),
+                      _buildEmailField(context, state),
+                      const SizedBox(height: 16),
+                      _buildPhoneField(context, state),
+                      const SizedBox(height: 16),
+                      _buildPasswordField(context, state),
+                      const SizedBox(height: 24),
+                      _buildRegisterButton(context, state),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account?",
+                            style: AppTextStyles.paragraph3.copyWith(
                               color:
                                   AppColors.accentGrey.withValues(alpha: 0.5),
-                            )),
-                        const SizedBox(height: 30),
-                        _buildFullNameField(context, state),
-                        const SizedBox(height: 16),
-                        _buildEmailField(context, state),
-                        const SizedBox(height: 16),
-                        _buildPhoneField(context, state),
-                        const SizedBox(height: 16),
-                        _buildPasswordField(context, state),
-                        const SizedBox(height: 24),
-                        _buildRegisterButton(context, state),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Already have an account?",
-                              style: AppTextStyles.paragraph3.copyWith(
-                                color:
-                                    AppColors.accentGrey.withValues(alpha: 0.5),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          TextButton(
+                            onPressed: () {
+                              _navigationService
+                                  .navigateTo(RouteName.loginScreen);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Login',
+                              style: AppTextStyles.headline6.copyWith(
+                                color: AppColors.primary,
                               ),
                             ),
-                            const SizedBox(width: 4),
-                            TextButton(
-                              onPressed: () {
-                                _navigationService
-                                    .navigateTo(RouteName.loginScreen);
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                'Login',
-                                style: AppTextStyles.headline6.copyWith(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    );
-                  },
-                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -258,5 +258,12 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     context.read<AuthBloc>().add(RegisterSubmitted(req));
+
+    final prefs = SharedPreferences.getInstance();
+    prefs.then((sharedPrefs) {
+      sharedPrefs.setString('email', _emailController.text.trim());
+    }).catchError((error) {
+      logger.log("Error saving email to SharedPreferences: $error");
+    });
   }
 }

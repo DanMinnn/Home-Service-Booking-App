@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service_tasker/repo/tasker_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/widget/show_snack_bar.dart';
+import '../../../providers/log_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/styles_text.dart';
 import '../../services/bloc/service_bloc.dart';
@@ -10,15 +13,30 @@ import '../../services/bloc/service_state.dart';
 import '../../services/model/tasker_service_req.dart';
 import '../../services/repo/service_repo.dart';
 
-class DialogAddTaskerService extends StatelessWidget {
+class DialogAddTaskerService extends StatefulWidget {
   const DialogAddTaskerService({super.key});
 
+  @override
+  State<DialogAddTaskerService> createState() => _DialogAddTaskerServiceState();
+}
+
+class _DialogAddTaskerServiceState extends State<DialogAddTaskerService> {
   final int maxSelectedServices = 3;
+  String emailPrefs = '';
+  int taskerId = 0;
+  final TaskerRepository taskerRepository = TaskerRepository();
+  final LogProvider logger =
+      const LogProvider(':::DIALOG-ADD-TASKER-SERVICE:::');
+
+  @override
+  void initState() {
+    super.initState();
+    loadTaskerInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
     ValueNotifier<Map<int, String>> selectedServices = ValueNotifier({});
-
     return BlocProvider(
       create: (context) =>
           ServiceBloc(ServiceRepo())..add(GetAllServiceEvent()),
@@ -170,7 +188,7 @@ class DialogAddTaskerService extends StatelessWidget {
                                 .read<ServiceBloc>()
                                 .add(AddTaskerServiceEvent(
                                   req: TaskerServiceReq(
-                                      taskerId: 24,
+                                      taskerId: taskerId,
                                       serviceIds: selected.keys.toList()),
                                 ));
                             ShowSnackBar.showSuccess(
@@ -191,5 +209,20 @@ class DialogAddTaskerService extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> loadTaskerInfo() async {
+    // Fetch email from shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    emailPrefs = prefs.getString('email') ?? '';
+
+    try {
+      await taskerRepository.loadTaskerByEmail(emailPrefs);
+      final tasker = taskerRepository.currentTasker;
+      taskerId = tasker?.id ?? 0;
+      logger.log('Tasker loaded: ${tasker?.name}, ID: $taskerId');
+    } catch (e) {
+      logger.log('Error loading tasker info: $e');
+    }
   }
 }
