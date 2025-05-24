@@ -1,4 +1,4 @@
-import 'package:home_service_tasker/modules/services/model/services.dart';
+import 'package:home_service_tasker/modules/services/model/service_item.dart';
 
 class Tasker {
   int? id;
@@ -7,7 +7,7 @@ class Tasker {
   String? phone;
   String? profileImage;
   bool? active;
-  List<Services>? services;
+  List<ServiceItem>? services;
 
   Tasker({
     this.id,
@@ -27,9 +27,9 @@ class Tasker {
     profileImage = json['profileImage'];
     active = json['active'];
     if (json['services'] != null) {
-      services = <Services>[];
+      services = <ServiceItem>[];
       json['services'].forEach((v) {
-        services!.add(Services.fromJson(v));
+        services!.add(ServiceItem.fromJson(v));
       });
     }
   }

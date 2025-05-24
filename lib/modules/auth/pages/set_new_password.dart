@@ -173,8 +173,7 @@ class _SetNewPasswordState extends State<SetNewPassword> {
         _passwordController.text == _confirmPassword.text;
 
     final req = ChangePasswordReq(
-      secretCode:
-          'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkYW5nb2NtaW5AZ21haWwuY29tIiwiaWF0IjoxNzQ3NzM1MTQ4LCJleHAiOjE3NDc3MzU0NDh9.dHlT9R433cg5fvNSljprARoLrpT4xoHIkMgriI6CzpA',
+      secretCode: token,
       newPassword: _passwordController.text,
       confirmPassword: _confirmPassword.text,
     );

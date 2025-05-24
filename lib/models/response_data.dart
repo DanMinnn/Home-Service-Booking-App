@@ -1,7 +1,7 @@
 class ResponseData {
   int status;
   String message;
-  String? data;
+  dynamic data;
 
   ResponseData({
     required this.status,
