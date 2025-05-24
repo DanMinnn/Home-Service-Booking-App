@@ -12,6 +12,7 @@ class BasicAppBar extends StatelessWidget {
   final Widget? leading;
   final Widget? trailing;
   final bool icon;
+  final bool backgroundColor;
   // final bool isLeading;
   // final bool isTrailing;
 
@@ -24,6 +25,7 @@ class BasicAppBar extends StatelessWidget {
     this.leading,
     this.trailing,
     this.icon = false,
+    this.backgroundColor = false,
     // this.isLeading = false,
     // this.isTrailing = false,
   });
@@ -31,15 +33,22 @@ class BasicAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          leading ?? const SizedBox(),
-          _buildTitle(),
-          trailing ?? const SizedBox(),
-        ],
+      height: 100,
+      padding: const EdgeInsets.only(top: 50, bottom: 20),
+      color: backgroundColor ? AppColors.dark : AppColors.white,
+      child: Padding(
+        padding: icon
+            ? const EdgeInsets.symmetric(horizontal: 24)
+            : const EdgeInsets.symmetric(horizontal: 0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            leading ?? const SizedBox(),
+            _buildTitle(),
+            trailing ?? const SizedBox(),
+          ],
+        ),
       ),
     );
   }
