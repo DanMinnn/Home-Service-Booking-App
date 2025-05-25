@@ -5,6 +5,7 @@ import 'package:home_service_tasker/modules/auth/pages/register_page.dart';
 import 'package:home_service_tasker/modules/auth/pages/set_new_password.dart';
 import 'package:home_service_tasker/modules/auth/pages/verified_success_page.dart';
 import 'package:home_service_tasker/modules/home/page/home_page.dart';
+import 'package:home_service_tasker/modules/home/page/task_detail_page.dart';
 import 'package:home_service_tasker/routes/route_name.dart';
 import 'package:home_service_tasker/ui/main_screen.dart';
 import 'package:home_service_tasker/ui/splash_screen.dart';
@@ -57,9 +58,12 @@ class Routes {
         return _buildRoute(settings, const LoginPage());
       case RouteName.forgotPasswordScreen:
         return _buildRoute(settings, const ForgotPasswordPage());
-      // case login
       case RouteName.mainScreen:
         return _buildRoute(settings, const MainScreen());
+      case RouteName.taskDetailScreen:
+        return _buildRoute(settings, const TaskDetailPage());
+      case RouteName.homeScreen:
+        return _buildRoute(settings, const HomePage());
       default:
         _logger.log('Default redirect to: ${settings.name}');
         return _buildRoute(settings, const SplashScreen());

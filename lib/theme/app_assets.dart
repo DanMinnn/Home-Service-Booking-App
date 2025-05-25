@@ -21,4 +21,12 @@ class AppAssetsIcons {
   static const String menuIc = '${iconPath}menu_ic.png';
   static const String notificationIc = '${iconPath}notification_ic.png';
   static const String raiseHand = '${iconPath}raise_hand.png';
+
+  //new task
+  static const String calendarIc = '${iconPath}calendar_outline_ic.png';
+  static const String locationIc = '${iconPath}location_ic.png';
+  static const String locationFilledIc = '${iconPath}location_filled_ic.png';
+  static const String timerIc = '${iconPath}clock_ic.png';
+  static const String noteIc = '${iconPath}note_ic.png';
+  static const String arrowRightIc = '${iconPath}arrow_right_ic.png';
 }
