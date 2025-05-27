@@ -42,6 +42,19 @@ class Tasker {
     data['phoneNumber'] = phone;
     data['profileImage'] = profileImage;
     data['active'] = active;
+
+    if (services != null) {
+      data['services'] = services!
+          .map((service) => {
+                'id': service.id,
+                'name': service.name,
+                'description': service.description,
+                'icon': service.icon,
+                'isActive': service.isActive
+              })
+          .toList();
+    }
+
     return data;
   }
 }

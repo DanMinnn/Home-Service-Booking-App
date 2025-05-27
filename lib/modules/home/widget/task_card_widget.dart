@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_tasker/modules/home/models/task.dart';
+import 'package:home_service_tasker/providers/log_provider.dart';
+import 'package:intl/intl.dart';
 
 import '../../../theme/app_assets.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/styles_text.dart';
 
-class TaskCardWidget extends StatefulWidget {
-  const TaskCardWidget({super.key});
+class TaskCardWidget extends StatelessWidget {
+  final Task task;
+  final LogProvider logger = const LogProvider(':::TASK-CARD-WIDGET:::');
 
-  @override
-  State<TaskCardWidget> createState() => _TaskCardWidgetState();
-}
+  const TaskCardWidget({
+    super.key,
+    required this.task,
+  });
 
-class _TaskCardWidgetState extends State<TaskCardWidget> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: _buildTaskCard(),
-    );
-  }
-
-  Widget _buildTaskCard() {
     return Card(
       color: AppColors.white,
       shadowColor: AppColors.grey,
@@ -32,9 +30,55 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildFirstRow(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.alertSuccess.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+                    child: Text(
+                      task.serviceName,
+                      style: AppTextStyles.headline5,
+                    ),
+                  ),
+                ),
+                Text(_getMainAddress(task.address),
+                    style: AppTextStyles.headline4),
+              ],
+            ),
             const SizedBox(height: 8),
-            _buildSecondRow(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            AppColors.primary, BlendMode.srcIn),
+                        child: Image.asset(AppAssetsIcons.calendarIc,
+                            width: 20, height: 20)),
+                    const SizedBox(width: 8),
+                    Text(showDateWork(task.scheduledStart),
+                        style: AppTextStyles.paragraph1),
+                  ],
+                ),
+                Row(
+                  children: [
+                    ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            AppColors.sunsetOrange, BlendMode.srcIn),
+                        child: Image.asset(AppAssetsIcons.timerIc,
+                            width: 20, height: 20)),
+                    const SizedBox(width: 8),
+                    Text(showDurationTime(), style: AppTextStyles.paragraph1),
+                  ],
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             Divider(
               color: AppColors.grey,
@@ -45,10 +89,12 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(),
-                Text('175,000đ',
-                    style: AppTextStyles.headline3.copyWith(
-                      color: AppColors.sunsetOrange,
-                    )),
+                Text(
+                  '${formatPrice(task.totalPrice)}đ',
+                  style: AppTextStyles.headline3.copyWith(
+                    color: AppColors.sunsetOrange,
+                  ),
+                ),
               ],
             )
           ],
@@ -57,55 +103,35 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
     );
   }
 
-  Widget _buildFirstRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.alertSuccess.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
-            child: Text(
-              'Cleaning',
-              style: AppTextStyles.headline5,
-            ),
-          ),
-        ),
-        Text('Chicago, IL', style: AppTextStyles.headline4),
-      ],
-    );
+  String formatPrice(double price) {
+    final formatter = NumberFormat('#,###');
+    String formattedPrice = formatter.format(price);
+    return formattedPrice;
   }
 
-  Widget _buildSecondRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            ColorFiltered(
-                colorFilter:
-                    ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
-                child: Image.asset(AppAssetsIcons.calendarIc,
-                    width: 20, height: 20)),
-            const SizedBox(width: 8),
-            Text('03/07/2025', style: AppTextStyles.paragraph1),
-          ],
-        ),
-        Row(
-          children: [
-            ColorFiltered(
-                colorFilter:
-                    ColorFilter.mode(AppColors.sunsetOrange, BlendMode.srcIn),
-                child:
-                    Image.asset(AppAssetsIcons.timerIc, width: 20, height: 20)),
-            const SizedBox(width: 8),
-            Text('09:30 - 11:30', style: AppTextStyles.paragraph1),
-          ],
-        ),
-      ],
-    );
+  String _getMainAddress(String address) {
+    return address.split(',').first;
+  }
+
+  String showDurationTime() {
+    try {
+      final startTime = task.scheduledStart;
+      final endTime = task.scheduledEnd;
+      final timeFormatter = DateFormat('H:mm');
+      return '${timeFormatter.format(startTime)} - ${timeFormatter.format(endTime)}';
+    } catch (e) {
+      logger.log("Error parsing date: $e");
+      return 'Invalid date';
+    }
+  }
+
+  String showDateWork(DateTime startTime) {
+    try {
+      final outputFormat = DateFormat('dd/MM/yyyy');
+      return outputFormat.format(startTime);
+    } catch (e) {
+      logger.log("Error parsing date: $e");
+      return 'Invalid date';
+    }
   }
 }

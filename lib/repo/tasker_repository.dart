@@ -7,7 +7,7 @@ import '../modules/auth/repo/auth_repo.dart';
 import '../providers/log_provider.dart';
 
 class TaskerRepository {
-  LogProvider get logger => const LogProvider('tasker-REPO');
+  LogProvider get logger => const LogProvider('TASKER-REPO');
   static final TaskerRepository _instance = TaskerRepository._internal();
   Tasker? _currentTasker;
   final AuthRepo _loginRepo = AuthRepo();
@@ -37,7 +37,7 @@ class TaskerRepository {
   Future<void> saveTaskerToStorage(Tasker tasker) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('Tasker_data', json.encode(tasker.toJson()));
+      await prefs.setString('tasker_data', json.encode(tasker.toJson()));
       logger.log("Tasker saved to storage: ${tasker.toString()}");
     } catch (e) {
       logger.log("Error saving tasker to storage: ${e.toString()}");

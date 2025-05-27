@@ -9,6 +9,7 @@ import 'blocs/app_state_bloc.dart';
 import 'modules/auth/repo/email_verified_handler.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   runApp(
     EmailVerificationHandler(

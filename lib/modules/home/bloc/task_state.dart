@@ -1,0 +1,31 @@
+import 'package:home_service_tasker/modules/home/models/task.dart';
+
+abstract class TaskState {}
+
+class TaskInitialState extends TaskState {}
+
+class TaskLoadingState extends TaskState {}
+
+class TaskLoadedState extends TaskState {
+  final List<Task> tasks;
+
+  TaskLoadedState(this.tasks);
+}
+
+class TaskAssignedState extends TaskState {
+  final String message;
+
+  TaskAssignedState(this.message);
+}
+
+class TaskErrorState extends TaskState {
+  final String error;
+
+  TaskErrorState(this.error);
+}
+
+class TaskAssignedListState extends TaskState {
+  final List<Task> tasks;
+
+  TaskAssignedListState(this.tasks);
+}

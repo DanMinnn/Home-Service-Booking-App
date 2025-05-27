@@ -1,0 +1,52 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service_tasker/modules/home/bloc/task_event.dart';
+import 'package:home_service_tasker/modules/home/bloc/task_state.dart';
+import 'package:home_service_tasker/modules/home/repo/task_repo.dart';
+
+class TaskBloc extends Bloc<TaskEvent, TaskState> {
+  final TaskRepo _taskRepo;
+  TaskBloc(this._taskRepo) : super(TaskInitialState()) {
+    on<LoadTasksEvent>(_onLoadTasks);
+    on<AssignTaskEvent>(_onAssignTask);
+    on<LoadTaskAssignedEvent>(_onLoadTaskAssigned);
+  }
+
+  Future<void> _onLoadTasks(
+      LoadTasksEvent event, Emitter<TaskState> emit) async {
+    emit(TaskLoadingState());
+    try {
+      final tasks = await _taskRepo.getAllTasksPending(event.serviceIds);
+      emit(TaskLoadedState(tasks));
+    } catch (e) {
+      emit(TaskErrorState(e.toString()));
+    }
+  }
+
+  Future<void> _onAssignTask(
+      AssignTaskEvent event, Emitter<TaskState> emit) async {
+    emit(TaskLoadingState());
+    try {
+      final response =
+          await _taskRepo.taskerGetTask(event.bookingId, event.taskerId);
+      if (response.status == 400) {
+        emit(TaskErrorState(response.message));
+        return;
+      }
+      emit(TaskAssignedState(response.message));
+    } catch (e) {
+      emit(TaskErrorState(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadTaskAssigned(
+      LoadTaskAssignedEvent event, Emitter<TaskState> emit) async {
+    emit(TaskLoadingState());
+    try {
+      final tasks =
+          await _taskRepo.getTaskAssigned(event.taskerId, event.selectedDate);
+      emit(TaskAssignedListState(tasks));
+    } catch (e) {
+      emit(TaskErrorState(e.toString()));
+    }
+  }
+}

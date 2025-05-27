@@ -1,0 +1,18 @@
+abstract class TaskEvent {}
+
+class LoadTasksEvent extends TaskEvent {
+  final List<int> serviceIds;
+  LoadTasksEvent({required this.serviceIds});
+}
+
+class AssignTaskEvent extends TaskEvent {
+  final int bookingId;
+  final int taskerId;
+  AssignTaskEvent({required this.bookingId, required this.taskerId});
+}
+
+class LoadTaskAssignedEvent extends TaskEvent {
+  final int taskerId;
+  final String selectedDate;
+  LoadTaskAssignedEvent({required this.taskerId, required this.selectedDate});
+}
