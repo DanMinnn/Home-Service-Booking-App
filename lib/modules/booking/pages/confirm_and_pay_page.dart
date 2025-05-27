@@ -39,6 +39,8 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
   PaymentMethod? _selectedPaymentMethod = PaymentMethod.cash;
 
   late BookingData bookingData;
+  DateTime scheduledEnd = DateTime.now();
+  int duration = 0;
 
   @override
   void didChangeDependencies() {
@@ -122,6 +124,11 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                   paymentMethod: _selectedPaymentMethod?.name,
                 );
 
+                endAndDurationTime(
+                  bookingData.scheduledStart!,
+                  bookingData.packageName!,
+                );
+
                 Map<String, Object> taskDetails = {};
 
                 final bool isCookingService =
@@ -150,10 +157,10 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                   serviceId: bookingData.serviceId,
                   packageId: bookingData.packageId,
                   address: bookingData.address,
-                  scheduledDate: bookingData.dateTime,
-                  duration:
-                      '${bookingData.packageName}, from ${convertStringToDateTime(bookingData.dateTime!, bookingData.packageName!)}',
+                  scheduledStart: bookingData.scheduledStart,
+                  scheduledEnd: scheduledEnd,
                   taskDetails: taskDetails,
+                  duration: duration,
                   totalPrice: bookingData.basePrice,
                   methodType: _selectedPaymentMethod?.name,
                   latitude: bookingData.latitude,
@@ -402,6 +409,18 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
     } catch (e) {
       logger.log("Error parsing date: $e");
       return 'Invalid date';
+    }
+  }
+
+  void endAndDurationTime(DateTime scheduledStart, String durationStr) {
+    try {
+      final durationParts = int.parse(durationStr.split(' ').first);
+      scheduledEnd = scheduledStart.add(Duration(hours: durationParts));
+      logger.log("Scheduled end time: $scheduledEnd");
+      duration = scheduledEnd.difference(scheduledStart).inMinutes;
+      logger.log("Duration in minutes: $duration");
+    } catch (e) {
+      logger.log("Error calculating end time: $e");
     }
   }
 

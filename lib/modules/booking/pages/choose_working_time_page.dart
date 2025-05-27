@@ -37,6 +37,8 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
   double _latitude = 0.001;
   double _longitude = 0.002;
 
+  DateTime scheduledStart = DateTime.now().add(const Duration(minutes: 30));
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -91,6 +93,7 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
             //Update booking data with the collected information
             bookingData = bookingData.copyWith(
               dateTime: _selectedDateTime.text,
+              scheduledStart: scheduledStart,
               address: _selectedAddress.text,
               notes: _description.text,
               latitude: _latitude,
@@ -307,8 +310,10 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
             _selectedDateTime.text = formatted;
           });
 
+          scheduledStart = date;
+
           context.read<FormFieldBloc>().add(DateTimeChanged(formatted));
-          logger.log('Selected date: $formatted');
+          logger.log('scheduledStart: $scheduledStart');
         } catch (e) {
           logger.log('Error formatting date: $e');
           ShowSnackBar.showError(context, 'Invalid date format');

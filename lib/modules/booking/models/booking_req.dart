@@ -3,8 +3,9 @@ class BookingReq {
   int? serviceId;
   int? packageId;
   String? address;
-  String? scheduledDate;
-  String? duration;
+  DateTime? scheduledStart;
+  DateTime? scheduledEnd;
+  int? duration;
   Map<String, Object>? taskDetails;
   double? totalPrice;
   String? bookingStatus;
@@ -22,7 +23,8 @@ class BookingReq {
     this.serviceId,
     this.packageId,
     this.address,
-    this.scheduledDate,
+    this.scheduledStart,
+    this.scheduledEnd,
     this.duration,
     this.taskDetails,
     this.totalPrice,
@@ -42,8 +44,9 @@ class BookingReq {
     serviceId = json['serviceId'];
     packageId = json['packageId'];
     address = json['address'];
-    scheduledDate = json['scheduledDate'];
-    duration = json['duration'];
+    scheduledStart = json['scheduledStart'];
+    scheduledEnd = json['scheduledEnd'];
+    duration = json['durationMinutes'];
     taskDetails = json['taskDetails'] != null
         ? Map<String, Object>.from(json['taskDetails'])
         : null;
@@ -65,8 +68,9 @@ class BookingReq {
     data['serviceId'] = serviceId;
     data['packageId'] = packageId;
     data['address'] = address;
-    data['scheduledDate'] = scheduledDate;
-    data['duration'] = duration;
+    data['scheduledStart'] = scheduledStart?.toIso8601String();
+    data['scheduledEnd'] = scheduledEnd?.toIso8601String();
+    data['durationMinutes'] = duration;
     if (taskDetails != null) {
       data['taskDetails'] = taskDetails!;
     }

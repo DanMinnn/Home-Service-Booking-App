@@ -16,6 +16,8 @@ class BookingData {
   final List<String> addOns;
 
   // Date and time
+  final DateTime? scheduledStart;
+  final DateTime? scheduledEnd;
   final String? dateTime;
 
   // Location
@@ -48,6 +50,8 @@ class BookingData {
     this.formattedPrice = '',
     this.addOns = const [],
     this.dateTime,
+    this.scheduledStart,
+    this.scheduledEnd,
     this.address,
     this.notes,
     this.paymentMethod,
@@ -72,6 +76,8 @@ class BookingData {
     String? formattedPrice,
     List<String>? addOns,
     String? dateTime,
+    DateTime? scheduledStart,
+    DateTime? scheduledEnd,
     String? address,
     String? notes,
     String? paymentMethod,
@@ -95,6 +101,8 @@ class BookingData {
       formattedPrice: formattedPrice ?? this.formattedPrice,
       addOns: addOns ?? this.addOns,
       dateTime: dateTime ?? this.dateTime,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
       address: address ?? this.address,
       notes: notes ?? this.notes,
       paymentMethod: paymentMethod ?? this.paymentMethod,
