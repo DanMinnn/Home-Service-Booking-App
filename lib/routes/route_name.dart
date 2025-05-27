@@ -8,4 +8,5 @@ class RouteName {
   static const String mainScreen = '/main-screen';
   static const String homeScreen = '/home-screen';
   static const String taskDetailScreen = '/task-detail-screen';
+  static const String mapsScreen = '/maps-screen';
 }

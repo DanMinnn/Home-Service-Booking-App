@@ -29,4 +29,5 @@ class AppAssetsIcons {
   static const String timerIc = '${iconPath}clock_ic.png';
   static const String noteIc = '${iconPath}note_ic.png';
   static const String arrowRightIc = '${iconPath}arrow_right_ic.png';
+  static const String gpsIc = '${iconPath}gps_ic.png';
 }
