@@ -12,6 +12,7 @@ import '../../../routes/route_name.dart';
 import '../../../utils/load_tasker_info.dart';
 import '../bloc/task_state.dart';
 import '../model/schedule_date.dart';
+import '../models/task.dart';
 import '../widget/task_card_widget.dart';
 
 class MyTaskPage extends StatefulWidget {
@@ -35,9 +36,20 @@ class _MyTaskPageState extends State<MyTaskPage> {
   final TaskRepo _taskRepo = TaskRepo();
   int _lastTaskCount = -1; // Track last task count to avoid unnecessary updates
 
+  // Cache for tasks by date
+  final Map<String, List<Task>> _tasksCache = {};
+  // Track when the cache was last updated for each date
+  final Map<String, DateTime> _cacheFreshness = {};
+  // Maximum age of cache before refreshing (5 minutes)
+  final Duration _cacheMaxAge = Duration(minutes: 5);
+
+  late TaskBloc _taskBloc;
+
   @override
   initState() {
     super.initState();
+    _taskBloc = TaskBloc(_taskRepo);
+
     schedule = List.generate(7, (index) {
       final date = DateTime.now().add(Duration(days: index));
       return ScheduleDate(date: date, taskCount: 0);
@@ -45,10 +57,26 @@ class _MyTaskPageState extends State<MyTaskPage> {
 
     _loadTasker().then((_) {
       setState(() {
-        selectedDateStr = DateFormat('dd/MM').format(selectedDate);
+        selectedDateStr = DateFormat('dd/MM/yyyy').format(selectedDate);
       });
       _loadTaskCountsForAllDates();
     });
+  }
+
+  @override
+  void dispose() {
+    _taskBloc.close();
+    super.dispose();
+  }
+
+  // Check if cache for a date is stale and needs refresh
+  bool _isCacheStale(String dateStr) {
+    if (!_tasksCache.containsKey(dateStr)) return true;
+    if (!_cacheFreshness.containsKey(dateStr)) return true;
+
+    final lastUpdate = _cacheFreshness[dateStr]!;
+    final now = DateTime.now();
+    return now.difference(lastUpdate) > _cacheMaxAge;
   }
 
   // Load task counts for all dates in schedule
@@ -57,14 +85,22 @@ class _MyTaskPageState extends State<MyTaskPage> {
 
     for (int i = 0; i < schedule.length; i++) {
       final date = schedule[i].date;
-      final dateStr = DateFormat('dd/MM').format(date);
+      final dateStr = DateFormat('dd/MM/yyyy').format(date);
 
       try {
-        // Use the repository to get tasks for this date
-        final tasks = await _taskRepo.getTaskAssigned(
-          taskerId,
-          dateStr,
-        );
+        List<Task> tasks;
+
+        // Use cache if available and fresh
+        if (!_isCacheStale(dateStr)) {
+          tasks = _tasksCache[dateStr]!;
+          logger.log('Using cached tasks for date $dateStr');
+        } else {
+          // Fetch from API if cache is stale or missing
+          tasks = await _taskRepo.getTaskAssigned(taskerId, dateStr);
+          _tasksCache[dateStr] = tasks;
+          _cacheFreshness[dateStr] = DateTime.now();
+          logger.log('Fetched tasks for date $dateStr from API');
+        }
 
         setState(() {
           schedule[i] = ScheduleDate(date: date, taskCount: tasks.length);
@@ -98,8 +134,9 @@ class _MyTaskPageState extends State<MyTaskPage> {
 
   // Update the task count for a specific date
   void _updateTaskCount(DateTime date, int count) {
-    if (isSameDay(date, selectedDate) && taskCount == count)
+    if (isSameDay(date, selectedDate) && taskCount == count) {
       return; // Avoid unnecessary updates
+    }
 
     setState(() {
       for (int i = 0; i < schedule.length; i++) {
@@ -115,19 +152,42 @@ class _MyTaskPageState extends State<MyTaskPage> {
     });
   }
 
+  // Load tasks with caching for the selected date
+  void _loadTasksForSelectedDate() {
+    final dateStr = DateFormat('dd/MM/yyyy').format(selectedDate);
+
+    // Check if we need to fetch from API or can use cache
+    if (_isCacheStale(dateStr)) {
+      logger.log('Loading tasks from API for date: $dateStr');
+      _taskBloc.add(LoadTaskAssignedEvent(
+        taskerId: taskerId,
+        selectedDate: dateStr,
+      ));
+    } else {
+      // Use cached data
+      logger.log('Using cached tasks for date: $dateStr');
+      final tasks = _tasksCache[dateStr]!;
+      _taskBloc.emit(TaskAssignedListState(tasks));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return taskerId != 0
-        ? BlocProvider(
-            create: (context) => TaskBloc(TaskRepo())
-              ..add(LoadTaskAssignedEvent(
-                  taskerId: taskerId, selectedDate: selectedDateStr)),
+        ? BlocProvider.value(
+            value: _taskBloc,
             child: BlocBuilder<TaskBloc, TaskState>(
               builder: (context, state) {
                 // Schedule the update after the build is complete
                 if (state is TaskAssignedListState &&
                     state.tasks.length != _lastTaskCount) {
                   _lastTaskCount = state.tasks.length;
+
+                  // Store in cache when we get new data
+                  final dateStr = DateFormat('dd/MM/yyyy').format(selectedDate);
+                  _tasksCache[dateStr] = state.tasks;
+                  _cacheFreshness[dateStr] = DateTime.now();
+
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     _updateTaskCount(selectedDate, state.tasks.length);
                   });
@@ -151,14 +211,9 @@ class _MyTaskPageState extends State<MyTaskPage> {
                               setState(() {
                                 selectedDate = item.date;
                                 logger.log('Selected date: $selectedDate');
-                                selectedDateStr =
-                                    DateFormat('dd/MM').format(selectedDate);
-                                context.read<TaskBloc>().add(
-                                      LoadTaskAssignedEvent(
-                                        taskerId: taskerId,
-                                        selectedDate: selectedDateStr,
-                                      ),
-                                    );
+                                selectedDateStr = DateFormat('dd/MM/yyyy')
+                                    .format(selectedDate);
+                                _loadTasksForSelectedDate();
                               });
                             },
                             child: Container(
