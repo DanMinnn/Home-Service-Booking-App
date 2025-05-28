@@ -271,38 +271,55 @@ class _MyTaskPageState extends State<MyTaskPage> {
                       )
                     else if (state is TaskAssignedListState) ...[
                       if (state.tasks.isEmpty)
-                        Center(
-                          child: Text(
-                            'You have no tasks for this date',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 18,
+                        RefreshIndicator(
+                          onRefresh: _refreshTasks,
+                          child: SizedBox(
+                            height: 200,
+                            child: ListView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              children: [
+                                Container(
+                                  height: 200,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'You have no tasks assigned for this date.',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
                         )
                       else
                         Expanded(
-                          child: ListView.builder(
-                            itemCount: state.tasks.length,
-                            itemBuilder: (context, index) {
-                              final task = state.tasks[index];
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 10.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _navigationService.navigateTo(
-                                      RouteName.taskDetailScreen,
-                                      arguments: {
-                                        'task': task,
-                                        'taskerId': taskerId,
-                                        'selectedDate': selectedDateStr,
-                                      },
-                                    );
-                                  },
-                                  child: TaskCardWidget(task: task),
-                                ),
-                              );
-                            },
+                          child: RefreshIndicator(
+                            onRefresh: _refreshTasks,
+                            child: ListView.builder(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount: state.tasks.length,
+                              itemBuilder: (context, index) {
+                                final task = state.tasks[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _navigationService.navigateTo(
+                                        RouteName.taskDetailScreen,
+                                        arguments: {
+                                          'task': task,
+                                          'taskerId': taskerId,
+                                          'selectedDate': selectedDateStr,
+                                        },
+                                      );
+                                    },
+                                    child: TaskCardWidget(task: task),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         )
                     ] else if (state is TaskErrorState)
@@ -323,6 +340,16 @@ class _MyTaskPageState extends State<MyTaskPage> {
         : Center(
             child: const CircularProgressIndicator(),
           );
+  }
+
+  Future<void> _refreshTasks() {
+    final dateStr = DateFormat('dd/MM/yyyy').format(selectedDate);
+    return Future.delayed(const Duration(milliseconds: 500), () {
+      _taskBloc.add(LoadTaskAssignedEvent(
+        taskerId: taskerId,
+        selectedDate: dateStr,
+      ));
+    });
   }
 
   bool isSameDay(DateTime d1, DateTime d2) {
