@@ -31,9 +31,20 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   bool isFinished = false;
 
   late Task task;
+  late TaskBloc _taskBloc;
+  final TaskRepo _taskRepo = TaskRepo();
   int taskerId = 0;
   String selectedDateStr = '';
   bool enableBtn = true;
+  bool isAssigned = true;
+  bool isCompleted = false;
+  DateTime currentDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _taskBloc = TaskBloc(_taskRepo);
+  }
 
   @override
   void didChangeDependencies() {
@@ -47,7 +58,26 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       taskerId = args['taskerId'] as int? ?? 0;
       if (args.containsKey('selectedDate')) {
         selectedDateStr = args['selectedDate'] as String;
+
+        setState(() {
+          _checkDateTask();
+        });
       }
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _taskBloc.close();
+  }
+
+  void _checkDateTask() {
+    if (currentDate.isAfter(task.scheduledStart) &&
+        currentDate.isBefore(task.scheduledEnd)) {
+      isAssigned = false;
+    } else if (currentDate.isAfter(task.scheduledEnd)) {
+      isCompleted = true;
     }
   }
 
@@ -162,12 +192,6 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
           maps
               ? GestureDetector(
                   onTap: () {
-                    /* _navigationService
-                        .navigateTo(RouteName.mapsScreen, arguments: {
-                      'latitude': task.latitude,
-                      'longitude': task.longitude,
-                      'address': task.address,
-                    });*/
                     openGoogleMaps(task.latitude, task.longitude);
                   },
                   child: Container(
@@ -192,8 +216,8 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   }
 
   Widget _buildSwipeBtnGetTask() {
-    return BlocProvider(
-      create: (context) => TaskBloc(TaskRepo()),
+    return BlocProvider.value(
+      value: _taskBloc,
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is TaskAssignedState) {
@@ -209,7 +233,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Center(
                 child: selectedDateStr.isEmpty
-                    ? _buildSwipeGetCancel(
+                    ? _buildSwipeGetTask(
                         context, 'Slide to get task', AppColors.dodgerBlue)
                     : _buildButtonCancelJob(context)),
           );
@@ -218,14 +242,14 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     );
   }
 
-  Widget _buildSwipeGetCancel(
+  Widget _buildSwipeGetTask(
       BuildContext context, String title, Color backgroundColor) {
     return SwipeableButtonView(
       onFinish: () async {
-        context.read<TaskBloc>().add(AssignTaskEvent(
-              bookingId: task.bookingId,
-              taskerId: taskerId,
-            ));
+        _taskBloc.add(AssignTaskEvent(
+          bookingId: task.bookingId,
+          taskerId: taskerId,
+        ));
         Navigator.push(
           context,
           PageTransition(
@@ -253,6 +277,41 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   }
 
   Widget _buildButtonCancelJob(BuildContext context) {
+    if (!isAssigned) {
+      return const SizedBox.shrink();
+    } else if (isCompleted) {
+      return GestureDetector(
+        onTap: () {
+          _taskBloc.add(CompleteTaskEvent(bookingId: task.bookingId));
+        },
+        child: BlocListener<TaskBloc, TaskState>(
+          listener: (context, state) {
+            if (state is LoadingSuccessState) {
+              Future.delayed(Duration.zero, () {
+                ShowSnackBar.showSuccess(context, state.message, 'Well done!');
+              });
+            } else if (state is TaskErrorState) {
+              ShowSnackBar.showError(context, state.error);
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.alertSuccess,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Completed',
+                style: AppTextStyles.headline5.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return GestureDetector(
       onTap: enableBtn
           ? () {

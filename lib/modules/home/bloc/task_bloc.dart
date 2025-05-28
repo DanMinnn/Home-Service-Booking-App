@@ -10,6 +10,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<AssignTaskEvent>(_onAssignTask);
     on<LoadTaskAssignedEvent>(_onLoadTaskAssigned);
     on<CancelTaskEvent>(_onCancelTask);
+    on<CompleteTaskEvent>(_onCompleteTask);
   }
 
   Future<void> _onLoadTasks(
@@ -62,6 +63,17 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         return;
       }
       emit(LoadingSuccessState(response.message));
+    } catch (e) {
+      emit(TaskErrorState(e.toString()));
+    }
+  }
+
+  Future<void> _onCompleteTask(
+      CompleteTaskEvent event, Emitter<TaskState> emit) async {
+    emit(TaskLoadingState());
+    try {
+      final response = await _taskRepo.taskerCompleteTask(event.bookingId);
+      emit(LoadingSuccessState(response));
     } catch (e) {
       emit(TaskErrorState(e.toString()));
     }

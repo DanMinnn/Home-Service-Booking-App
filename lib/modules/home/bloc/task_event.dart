@@ -22,3 +22,8 @@ class CancelTaskEvent extends TaskEvent {
   final String reason;
   CancelTaskEvent({required this.bookingId, required this.reason});
 }
+
+class CompleteTaskEvent extends TaskEvent {
+  final int bookingId;
+  CompleteTaskEvent({required this.bookingId});
+}

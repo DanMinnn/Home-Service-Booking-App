@@ -7,14 +7,40 @@ import '../../../theme/app_assets.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/styles_text.dart';
 
-class TaskCardWidget extends StatelessWidget {
+class TaskCardWidget extends StatefulWidget {
   final Task task;
-  final LogProvider logger = const LogProvider(':::TASK-CARD-WIDGET:::');
 
   const TaskCardWidget({
     super.key,
     required this.task,
   });
+
+  @override
+  State<TaskCardWidget> createState() => _TaskCardWidgetState();
+}
+
+class _TaskCardWidgetState extends State<TaskCardWidget> {
+  final LogProvider logger = const LogProvider(':::TASK-CARD-WIDGET:::');
+  bool inProgress = false;
+  bool completed = false;
+  late Task task;
+  DateTime currentDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    task = widget.task;
+    _checkDateTask();
+  }
+
+  void _checkDateTask() {
+    if (currentDate.isAfter(task.scheduledStart) &&
+        currentDate.isBefore(task.scheduledEnd)) {
+      inProgress = true;
+    } else if (currentDate.isAfter(task.scheduledEnd)) {
+      completed = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +114,20 @@ class TaskCardWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(),
+                if (inProgress)
+                  Text(
+                    'In Progress',
+                    style: AppTextStyles.headline4.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  )
+                else if (completed)
+                  Text(
+                    'Completed',
+                    style: AppTextStyles.headline4.copyWith(
+                      color: AppColors.alertSuccess,
+                    ),
+                  ),
                 Text(
                   '${formatPrice(task.totalPrice)}đ',
                   style: AppTextStyles.headline3.copyWith(

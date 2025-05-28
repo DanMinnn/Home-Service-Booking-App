@@ -115,4 +115,21 @@ class TaskRepo {
       rethrow;
     }
   }
+
+  //complete task
+  Future<String> taskerCompleteTask(int bookingId) async {
+    try {
+      final response = await _apiProvider.put(
+        '/booking/$bookingId/completed-booking',
+      );
+      if (response.data['status'] == 200) {
+        return response.data['message'] ?? 'Task completed successfully';
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      logger.log('Error completing task: $e');
+      rethrow;
+    }
+  }
 }
