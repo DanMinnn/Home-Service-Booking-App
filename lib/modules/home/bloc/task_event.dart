@@ -16,3 +16,9 @@ class LoadTaskAssignedEvent extends TaskEvent {
   final String selectedDate;
   LoadTaskAssignedEvent({required this.taskerId, required this.selectedDate});
 }
+
+class CancelTaskEvent extends TaskEvent {
+  final int bookingId;
+  final String reason;
+  CancelTaskEvent({required this.bookingId, required this.reason});
+}

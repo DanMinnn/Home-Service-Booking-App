@@ -85,4 +85,34 @@ class TaskRepo {
       rethrow;
     }
   }
+
+  //tasker cancel task
+  Future<ResponseData> taskerCancelTask(int bookingId, String reason) async {
+    try {
+      ResponseData responseData = ResponseData(status: 0, message: '');
+      final response = await _apiProvider.post(
+          '/booking/$bookingId/cancel-booking-by-tasker',
+          queryParameters: {
+            'cancelReason': reason,
+          });
+
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 400) {
+          return responseData = ResponseData(
+            status: response.data['status'],
+            message: 'Limit of 2 cancellations in 7 days.',
+          );
+        }
+        return responseData = ResponseData(
+          status: response.data['status'],
+          message: response.data['message'] ?? 'Cancel task successfully',
+        );
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      logger.log('Error assign tasker: $e');
+      rethrow;
+    }
+  }
 }

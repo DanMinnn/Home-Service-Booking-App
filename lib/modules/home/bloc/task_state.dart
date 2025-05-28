@@ -18,6 +18,12 @@ class TaskAssignedState extends TaskState {
   TaskAssignedState(this.message);
 }
 
+class LoadingSuccessState extends TaskState {
+  final String message;
+
+  LoadingSuccessState(this.message);
+}
+
 class TaskErrorState extends TaskState {
   final String error;
 

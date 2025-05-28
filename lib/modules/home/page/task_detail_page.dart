@@ -4,6 +4,7 @@ import 'package:home_service_tasker/common/widget/app_bar.dart';
 import 'package:home_service_tasker/common/widget/show_snack_bar.dart';
 import 'package:home_service_tasker/modules/home/bloc/task_bloc.dart';
 import 'package:home_service_tasker/modules/home/bloc/task_event.dart';
+import 'package:home_service_tasker/modules/home/page/note_cancel_job_dialog.dart';
 import 'package:home_service_tasker/modules/home/repo/task_repo.dart';
 import 'package:home_service_tasker/theme/app_colors.dart';
 import 'package:page_transition/page_transition.dart';
@@ -32,6 +33,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   late Task task;
   int taskerId = 0;
   String selectedDateStr = '';
+  bool enableBtn = true;
 
   @override
   void didChangeDependencies() {
@@ -209,8 +211,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                 child: selectedDateStr.isEmpty
                     ? _buildSwipeGetCancel(
                         context, 'Slide to get task', AppColors.dodgerBlue)
-                    : _buildSwipeGetCancel(context, 'Slide to cancel task',
-                        AppColors.sunsetOrange)),
+                    : _buildButtonCancelJob(context)),
           );
         },
       ),
@@ -220,33 +221,19 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   Widget _buildSwipeGetCancel(
       BuildContext context, String title, Color backgroundColor) {
     return SwipeableButtonView(
-      onFinish: selectedDateStr.isEmpty
-          ? () async {
-              context.read<TaskBloc>().add(AssignTaskEvent(
-                    bookingId: task.bookingId,
-                    taskerId: taskerId,
-                  ));
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.fade,
-                  child: const MainScreen(),
-                ),
-              );
-            }
-          : () async {
-              context.read<TaskBloc>().add(AssignTaskEvent(
-                    bookingId: task.bookingId,
-                    taskerId: taskerId,
-                  ));
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.fade,
-                  child: const MainScreen(),
-                ),
-              );
-            },
+      onFinish: () async {
+        context.read<TaskBloc>().add(AssignTaskEvent(
+              bookingId: task.bookingId,
+              taskerId: taskerId,
+            ));
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: const MainScreen(),
+          ),
+        );
+      },
       buttonText: title,
       buttontextstyle: AppTextStyles.headline5.copyWith(
         color: AppColors.white,
@@ -262,6 +249,39 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
           });
         });
       },
+    );
+  }
+
+  Widget _buildButtonCancelJob(BuildContext context) {
+    return GestureDetector(
+      onTap: enableBtn
+          ? () {
+              showDialog(
+                context: context,
+                builder: (context) =>
+                    NoteCancelJobDialog(bookingId: task.bookingId),
+              ).then((result) {
+                setState(() {
+                  enableBtn = false;
+                });
+              });
+            }
+          : null,
+      child: Container(
+        decoration: BoxDecoration(
+          color: enableBtn ? AppColors.sunsetOrange : AppColors.grey,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Cancel Job',
+            style: AppTextStyles.headline5.copyWith(
+              color: AppColors.white,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
