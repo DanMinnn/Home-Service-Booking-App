@@ -147,11 +147,26 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
               true,
             ),
             const SizedBox(height: 8),
-            _buildTaskDetailItem(
-              AppAssetsIcons.homeIc,
-              task.taskDetails['workload'] ?? 'General',
-              false,
-            ),
+            if (task.taskDetails['people'] != null &&
+                task.taskDetails['course'] != null &&
+                task.taskDetails['courses'] != null) ...[
+              _buildTaskDetailItem(
+                AppAssetsIcons.grPeopleIc,
+                task.taskDetails['people'] ?? '1',
+                false,
+              ),
+              _buildTaskDetailItem(
+                AppAssetsIcons.dinnerIc,
+                handleCoursesNames(task.taskDetails['courses']).join(' - '),
+                false,
+              ),
+            ] else ...[
+              _buildTaskDetailItem(
+                AppAssetsIcons.homeIc,
+                task.taskDetails['workload'] ?? 'N/A',
+                false,
+              ),
+            ],
             const SizedBox(height: 8),
             _buildTaskDetailItem(AppAssetsIcons.timerIc,
                 'Do in ${task.durations} minutes', false),
@@ -169,47 +184,45 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Image.asset(
-                icon,
-                width: 20,
-                height: 20,
+          Image.asset(
+            icon,
+            width: 20,
+            height: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.paragraph1.copyWith(
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(width: 12),
-              Text(
-                text,
-                style: AppTextStyles.paragraph1.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
+            ),
           ),
           const SizedBox(width: 8),
-          maps
-              ? GestureDetector(
-                  onTap: () {
-                    openGoogleMaps(task.latitude, task.longitude);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        AppAssetsIcons.locationFilledIc,
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
+          if (maps)
+            GestureDetector(
+              onTap: () {
+                openGoogleMaps(task.latitude, task.longitude);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    AppAssetsIcons.locationFilledIc,
+                    width: 20,
+                    height: 20,
                   ),
-                )
-              : const SizedBox(),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -376,5 +389,12 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
         const SnackBar(content: Text('Error opening Google Maps')),
       );
     }
+  }
+
+  List<dynamic> handleCoursesNames(List<dynamic> coursesNames) {
+    List<String> cleanedNames =
+        coursesNames.map((name) => name.toString().trim()).toList();
+
+    return cleanedNames;
   }
 }
