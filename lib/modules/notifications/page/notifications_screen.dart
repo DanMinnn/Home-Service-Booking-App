@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_service_tasker/models/notification.dart';
 import 'package:home_service_tasker/modules/notifications/bloc/notification_bloc.dart';
 import 'package:home_service_tasker/modules/notifications/bloc/notification_event.dart';
+import 'package:home_service_tasker/modules/notifications/model/notification.dart';
 import 'package:home_service_tasker/modules/notifications/repo/notifications_repo.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
 import 'package:home_service_tasker/routes/navigation_service.dart';
@@ -13,7 +13,7 @@ import 'package:home_service_tasker/theme/styles_text.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../modules/notifications/bloc/notification_state.dart';
+import '../bloc/notification_state.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

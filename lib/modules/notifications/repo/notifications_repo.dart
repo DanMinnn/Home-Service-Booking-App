@@ -4,8 +4,8 @@ import 'package:home_service_tasker/modules/notifications/model/fcm_token_req.da
 import 'package:home_service_tasker/providers/log_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../models/notification.dart';
 import '../../../providers/api_provider.dart';
+import '../model/notification.dart';
 
 class NotificationsRepo {
   final LogProvider logger = LogProvider('::::NOTIFICATIONS-REPO::::');

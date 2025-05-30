@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_service_tasker/screens/notifications_screen.dart';
+import 'package:home_service_tasker/modules/notifications/page/notifications_screen.dart';
 
 import '../modules/home/page/home_page.dart';
 import '../providers/log_provider.dart';
