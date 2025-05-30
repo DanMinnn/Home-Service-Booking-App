@@ -38,6 +38,7 @@ class TaskerRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('tasker_data', json.encode(tasker.toJson()));
+      await prefs.setInt('taskerId', tasker.id!);
       logger.log("Tasker saved to storage: ${tasker.toString()}");
     } catch (e) {
       logger.log("Error saving tasker to storage: ${e.toString()}");

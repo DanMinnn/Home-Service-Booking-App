@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_tasker/screens/notifications_screen.dart';
 
 import '../modules/home/page/home_page.dart';
 import '../providers/log_provider.dart';
@@ -8,6 +9,7 @@ import '../theme/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   final bool showServiceDialog;
+
   const MainScreen({super.key, this.showServiceDialog = false});
 
   @override
@@ -16,22 +18,21 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final NavigationService _navigationService = NavigationService();
+
   LogProvider get logger => const LogProvider(':::MAIN-SCREEN:::');
 
   int _selectedIndex = 0;
-  late final List<Widget> _pages;
+  final List<Widget> _pages = [
+    HomePage(),
+    NotificationsScreen(),
+    Center(
+      child: Text('Logout'),
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _pages = [
-      HomePage(
-        showDialogOnLoad: widget.showServiceDialog,
-      ),
-      const Center(child: Text('Email')),
-      const Center(child: Text('Profile')),
-    ];
-
     _navigationService.tabStream.listen((index) {
       setState(() {
         _selectedIndex = index;
