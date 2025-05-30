@@ -92,4 +92,20 @@ class NotificationsRepo {
       logger.log('Failed to mark notification as read ${e.toString()}');
     }
   }
+
+  //Get unread count
+  Future<int> getUnreadNotifications(int taskerId) async {
+    try {
+      final response = await _apiProvider
+          .get('/notifications/taskers/$taskerId/unread-count');
+      if (response.data['status'] == 200) {
+        return response.data['data'];
+      } else {
+        throw Exception('Error');
+      }
+    } catch (e) {
+      logger.log('Failed to mark notification as read ${e.toString()}');
+      rethrow;
+    }
+  }
 }

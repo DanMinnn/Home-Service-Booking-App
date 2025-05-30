@@ -6,6 +6,7 @@ import 'package:home_service_tasker/providers/log_provider.dart';
 import 'package:home_service_tasker/routes/navigation_service.dart';
 import 'package:home_service_tasker/theme/app_colors.dart';
 import 'package:home_service_tasker/theme/styles_text.dart';
+import 'package:home_service_tasker/widgets/notification_badge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/widget/app_bar.dart';
@@ -94,10 +95,11 @@ class _HomePageState extends State<HomePage>
             backgroundColor: true,
             leading: Image.asset(AppAssetsIcons.menuIc),
             trailing: GestureDetector(
-                onTap: () {
-                  _navigationService.changeTab(1);
-                },
-                child: Image.asset(AppAssetsIcons.notificationIc)),
+              onTap: () {
+                _navigationService.changeTab(1);
+              },
+              child: NotificationBadge(),
+            ),
           ),
           Expanded(
             child: Container(
