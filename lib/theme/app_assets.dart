@@ -2,6 +2,7 @@ class AppAssetsBackgrounds {
   static const String imagePath = 'assets/images/backgrounds/';
 
   static const String logo = '${imagePath}logo_app.png';
+  static const String notification = '${imagePath}notifications.png';
 }
 
 class AppAssetsIcons {
@@ -32,4 +33,5 @@ class AppAssetsIcons {
   static const String gpsIc = '${iconPath}gps_ic.png';
   static const String grPeopleIc = '${iconPath}gr_people_ic.png';
   static const String dinnerIc = '${iconPath}dinner_ic.png';
+  static const String cancelIc = '${iconPath}cancel_ic.png';
 }

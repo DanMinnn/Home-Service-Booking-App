@@ -3,6 +3,7 @@ import 'package:home_service_tasker/modules/home/page/my_task_page.dart';
 import 'package:home_service_tasker/modules/home/page/new_task_page.dart';
 import 'package:home_service_tasker/modules/home/widget/dialog_add_tasker_service.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
+import 'package:home_service_tasker/routes/navigation_service.dart';
 import 'package:home_service_tasker/theme/app_colors.dart';
 import 'package:home_service_tasker/theme/styles_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +33,8 @@ class _HomePageState extends State<HomePage>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
+  final NavigationService _navigationService = NavigationService();
 
   @override
   void initState() {
@@ -90,7 +93,11 @@ class _HomePageState extends State<HomePage>
             icon: true,
             backgroundColor: true,
             leading: Image.asset(AppAssetsIcons.menuIc),
-            trailing: Image.asset(AppAssetsIcons.notificationIc),
+            trailing: GestureDetector(
+                onTap: () {
+                  _navigationService.changeTab(1);
+                },
+                child: Image.asset(AppAssetsIcons.notificationIc)),
           ),
           Expanded(
             child: Container(

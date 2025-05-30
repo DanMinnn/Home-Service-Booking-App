@@ -48,6 +48,13 @@ dependencies:
   page_transition:
   #open url
   url_launcher: ^6.3.1
+  # Firebase packages
+  firebase_core:
+  firebase_messaging:
+  flutter_local_notifications:
+
+  # Other dependencies
+  device_info_plus:
 
 dev_dependencies:
   flutter_test:

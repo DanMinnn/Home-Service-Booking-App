@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "928821696620",
+    "project_id": "home-service-app-226d5",
+    "storage_bucket": "home-service-app-226d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928821696620:android:dbbcc0c6a70c4c087d2049",
+        "android_client_info": {
+          "package_name": "com.example.home_service_tasker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8HOZJgut6lETuze-JHRHX-9SOuaQKjjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,6 +6,7 @@ import 'package:home_service_tasker/modules/auth/pages/set_new_password.dart';
 import 'package:home_service_tasker/modules/auth/pages/verified_success_page.dart';
 import 'package:home_service_tasker/modules/home/page/task_detail_page.dart';
 import 'package:home_service_tasker/routes/route_name.dart';
+import 'package:home_service_tasker/screens/notifications_screen.dart';
 import 'package:home_service_tasker/ui/main_screen.dart';
 import 'package:home_service_tasker/ui/maps_page.dart';
 import 'package:home_service_tasker/ui/splash_screen.dart';
@@ -35,6 +36,8 @@ class Routes {
         return _buildRoute(settings, const TaskDetailPage());
       case RouteName.mapsScreen:
         return _buildRoute(settings, const MapsPage());
+      case RouteName.notificationScreen:
+        return _buildRoute(settings, const NotificationsScreen());
       default:
         _logger.log('Default redirect to: ${settings.name}');
         return _buildRoute(settings, const SplashScreen());
