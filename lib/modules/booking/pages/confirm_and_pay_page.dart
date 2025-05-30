@@ -35,7 +35,6 @@ class ConfirmAndPayPage extends StatefulWidget {
 class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
   LogProvider get logger => const LogProvider("CONFIRM-AND-PAY-PAGE:::::");
   final NavigationService navigationService = NavigationService();
-
   PaymentMethod? _selectedPaymentMethod = PaymentMethod.cash;
 
   late BookingData bookingData;
@@ -270,7 +269,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
           _itemTaskInfo('Course', bookingData.numberOfCourses.toString()),
           const SizedBox(height: 8),
           _itemTaskInfo('Courses',
-              handleCoursesNames(bookingData.coursesNames!).join(', ')),
+              handleCoursesNames(bookingData.coursesNames!).join(' - ')),
           if (bookingData.preferStyle != null) ...[
             _itemTaskInfo('Prefer Style', bookingData.preferStyle!),
           ],

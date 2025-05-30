@@ -337,10 +337,11 @@ class _BookingPostState extends State<BookingPost> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              _buildItemRow(
-                  AppAssetIcons.calendarFilled, post.scheduleDate ?? ''),
+              _buildItemRow(AppAssetIcons.calendarFilled,
+                  showDateWork(post.scheduledStart!)),
               const SizedBox(height: 8),
-              _buildItemRow(AppAssetIcons.timer, post.duration ?? ''),
+              _buildItemRow(AppAssetIcons.timer,
+                  showDurationTime(post.scheduledStart!, post.scheduledEnd!)),
               const SizedBox(height: 8),
               _buildItemRow(AppAssetIcons.locationFilled, post.address ?? ''),
             ],
@@ -382,5 +383,25 @@ class _BookingPostState extends State<BookingPost> {
   String capitalize(String text) {
     if (text.isEmpty) return text;
     return text[0].toUpperCase() + text.substring(1);
+  }
+
+  String showDurationTime(DateTime startTime, DateTime endTime) {
+    try {
+      final timeFormatter = DateFormat('H:mm');
+      return '${timeFormatter.format(startTime)} - ${timeFormatter.format(endTime)}';
+    } catch (e) {
+      logger.log("Error parsing date: $e");
+      return 'Invalid date';
+    }
+  }
+
+  String showDateWork(DateTime startTime) {
+    try {
+      final outputFormat = DateFormat('dd/MM/yyyy');
+      return outputFormat.format(startTime);
+    } catch (e) {
+      logger.log("Error parsing date: $e");
+      return 'Invalid date';
+    }
   }
 }

@@ -1,17 +1,19 @@
 class Post {
   int? bookingId;
   String? serviceName;
-  String? scheduleDate;
+  DateTime? scheduledStart;
+  DateTime? scheduledEnd;
   String? status;
   double? price;
   String? address;
-  String? duration;
+  int? duration;
   String? paymentStatus;
 
   Post({
     this.bookingId,
     this.serviceName,
-    this.scheduleDate,
+    this.scheduledStart,
+    this.scheduledEnd,
     this.status,
     this.price,
     this.address,
@@ -22,7 +24,12 @@ class Post {
   Post.fromJson(Map<String, dynamic> json) {
     bookingId = json['bookingId'];
     serviceName = json['serviceName'];
-    scheduleDate = json['scheduleDate'];
+    scheduledStart = json['scheduledStart'] != null
+        ? DateTime.parse(json['scheduledStart'])
+        : null;
+    scheduledStart = json['scheduledEnd'] != null
+        ? DateTime.parse(json['scheduledEnd'])
+        : null;
     status = json['status'];
     price = (json['totalPrice'] as num?)?.toDouble();
     address = json['address'];
@@ -34,7 +41,8 @@ class Post {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['bookingId'] = bookingId;
     data['serviceName'] = serviceName;
-    data['scheduleDate'] = scheduleDate;
+    data['scheduledStart'] = scheduledStart?.toIso8601String();
+    data['scheduledEnd'] = scheduledEnd?.toIso8601String();
     data['status'] = status;
     data['price'] = price;
     data['address'] = address;
