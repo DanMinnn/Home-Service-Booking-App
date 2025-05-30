@@ -33,4 +33,7 @@ class RouteName {
   static const String contactUs = '/contact_us';
   static const String termsAndConditions = '/terms_and_conditions';
   static const String privacyPolicy = '/privacy_policy';
+
+  //notifications
+  static const String notifications = '/notifications';
 }

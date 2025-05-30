@@ -10,6 +10,7 @@ import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/modules/chat/pages/chat_page.dart';
 import 'package:home_service/modules/chat/pages/list_chat_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
+import 'package:home_service/modules/notifications/pages/notification_screen.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
 import 'package:home_service/modules/profile/pages/edit_profile.dart';
 import 'package:home_service/modules/wallet/pages/deposit_wallet_page.dart';
@@ -70,6 +71,9 @@ class Routes {
       case RouteName.chatPage:
         _logger.log('Navigating to List Chat profile: ${settings.name}');
         return _buildRoute(settings, const ChatPage());
+      case RouteName.notifications:
+        _logger.log('Navigating to List Chat profile: ${settings.name}');
+        return _buildRoute(settings, const NotificationsScreen());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());
