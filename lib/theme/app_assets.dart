@@ -34,4 +34,9 @@ class AppAssetsIcons {
   static const String grPeopleIc = '${iconPath}gr_people_ic.png';
   static const String dinnerIc = '${iconPath}dinner_ic.png';
   static const String cancelIc = '${iconPath}cancel_ic.png';
+
+  //chat
+  static const String phoneIc = '${iconPath}phone_ic.png';
+  static const String chatIc = '${iconPath}chat_ic.png';
+  static const String sendIc = '${iconPath}send_ic.png';
 }

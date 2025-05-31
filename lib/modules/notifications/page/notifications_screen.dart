@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service_tasker/common/widget/app_bar.dart';
 import 'package:home_service_tasker/modules/notifications/bloc/notification_bloc.dart';
 import 'package:home_service_tasker/modules/notifications/bloc/notification_event.dart';
 import 'package:home_service_tasker/modules/notifications/model/notification.dart';
 import 'package:home_service_tasker/modules/notifications/repo/notifications_repo.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
-import 'package:home_service_tasker/routes/navigation_service.dart';
 import 'package:home_service_tasker/theme/app_assets.dart';
 import 'package:home_service_tasker/theme/app_colors.dart';
 import 'package:home_service_tasker/theme/styles_text.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../widgets/notification_badge.dart';
 import '../bloc/notification_state.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -25,7 +26,6 @@ class NotificationsScreen extends StatefulWidget {
 class NotificationsScreenState extends State<NotificationsScreen>
     with SingleTickerProviderStateMixin {
   final LogProvider logger = LogProvider(':::::NOTIFICATION-SCREEN:::::');
-  final NavigationService _navigationService = NavigationService();
   late NotificationBloc _notificationBloc;
   late AnimationController _animationController;
   int taskerId = 0;
@@ -85,74 +85,98 @@ class NotificationsScreenState extends State<NotificationsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primary,
-              ),
-            )
-          : BlocProvider.value(
-              value: _notificationBloc,
-              child: BlocBuilder<NotificationBloc, NotificationState>(
-                builder: (context, state) {
-                  if (state is NotificationLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    );
-                  } else if (state is NotificationLoaded) {
-                    final notifications = state.notifications;
-                    if (notifications.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.notifications_off_sharp,
-                                size: 50, color: AppColors.grey),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No Notifications!',
-                              style: AppTextStyles.headline4,
-                            )
-                          ],
+        backgroundColor: AppColors.dark,
+        body: Column(
+          children: [
+            BasicAppBar(
+              title: 'Notification',
+              backgroundColor: true,
+              leading: Image.asset(AppAssetsIcons.menuIc),
+              trailing: NotificationBadge(),
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                decoration: BoxDecoration(
+                  color: AppColors.bgNotification,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
+                ),
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
                         ),
-                      );
-                    } else {
-                      return RefreshIndicator(
-                        color: AppColors.primary,
-                        backgroundColor: AppColors.white,
-                        onRefresh: _fetchNotifications,
-                        child: ListView.separated(
-                          itemCount: notifications.length,
-                          itemBuilder: (context, index) {
-                            final notification = notifications[index];
-                            return _buildNotificationItem(notification);
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Divider(
-                              height: 2,
-                              color: AppColors.grey,
-                              thickness: 1,
+                      )
+                    : BlocProvider.value(
+                        value: _notificationBloc,
+                        child: BlocBuilder<NotificationBloc, NotificationState>(
+                          builder: (context, state) {
+                            if (state is NotificationLoading) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primary,
+                                ),
+                              );
+                            } else if (state is NotificationLoaded) {
+                              final notifications = state.notifications;
+                              if (notifications.isEmpty) {
+                                return Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.notifications_off_sharp,
+                                          size: 50, color: AppColors.grey),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'No Notifications!',
+                                        style: AppTextStyles.headline4,
+                                      )
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return RefreshIndicator(
+                                  color: AppColors.primary,
+                                  backgroundColor: AppColors.white,
+                                  onRefresh: _fetchNotifications,
+                                  child: ListView.separated(
+                                    itemCount: notifications.length,
+                                    itemBuilder: (context, index) {
+                                      final notification = notifications[index];
+                                      return _buildNotificationItem(
+                                          notification);
+                                    },
+                                    separatorBuilder:
+                                        (BuildContext context, int index) {
+                                      return Divider(
+                                        height: 2,
+                                        color: AppColors.grey,
+                                        thickness: 1,
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                            }
+                            return Center(
+                              child: Text(
+                                'Something went wrong!',
+                                style: AppTextStyles.headline4.copyWith(
+                                  color: AppColors.alertFailed,
+                                ),
+                              ),
                             );
                           },
                         ),
-                      );
-                    }
-                  }
-                  return Center(
-                    child: Text(
-                      'Something went wrong!',
-                      style: AppTextStyles.headline4.copyWith(
-                        color: AppColors.alertFailed,
                       ),
-                    ),
-                  );
-                },
               ),
             ),
-    );
+          ],
+        ));
   }
 
   Widget _buildNotificationItem(NotificationModel notification) {
@@ -169,15 +193,15 @@ class NotificationsScreenState extends State<NotificationsScreen>
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {},
       child: Material(
-        color: AppColors.white,
+        color: AppColors.bgNotification,
         child: InkWell(
           onTap: () => _playTapAnimation(notification.id),
-          splashColor: AppColors.primary.withOpacity(0.1),
-          highlightColor: AppColors.primary.withOpacity(0.5),
+          splashColor: AppColors.primary.withValues(alpha: 0.1),
+          highlightColor: AppColors.primary.withValues(alpha: 0.5),
           child: SizedBox(
             height: 140,
             child: Card(
-                color: AppColors.white,
+                color: AppColors.bgNotification,
                 elevation: 0,
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Padding(

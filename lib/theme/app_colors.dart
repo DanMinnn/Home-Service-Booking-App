@@ -13,6 +13,8 @@ class AppColors {
   static const Color alertSuccess = Color(0xFF4FBF67);
   static const Color alertFailed = Color(0xFFFF3D00);
   static const Color alertWarning = Color(0xFFFF6628);
+  static const Color bgNotification = Color(0xFFFAFAFA);
+  static const Color secondaryBlack = Color(0xFF040415);
 
   //error color light
   static const Color iconClose = Color(0xFFc91912);

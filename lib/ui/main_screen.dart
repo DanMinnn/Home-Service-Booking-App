@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_tasker/modules/chat/pages/chat_page.dart';
 import 'package:home_service_tasker/modules/notifications/page/notifications_screen.dart';
 
 import '../modules/home/page/home_page.dart';
@@ -24,6 +25,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     HomePage(),
+    ChatPage(),
     NotificationsScreen(),
     Center(
       child: Text('Logout'),
@@ -77,16 +79,22 @@ class _MainScreenState extends State<MainScreen> {
                   index: 0,
                 ),
                 _buildNavItem(
-                  icon: AppAssetsIcons.emailActive,
-                  label: 'Email',
-                  activeIcon: AppAssetsIcons.emailActive,
+                  icon: AppAssetsIcons.chatIc,
+                  label: 'Chat',
+                  activeIcon: AppAssetsIcons.chatIc,
                   index: 1,
+                ),
+                _buildNavItem(
+                  icon: AppAssetsIcons.notificationIc,
+                  label: 'Notification',
+                  activeIcon: AppAssetsIcons.notificationIc,
+                  index: 2,
                 ),
                 _buildNavItem(
                   icon: AppAssetsIcons.profileActive,
                   label: 'Profile',
                   activeIcon: AppAssetsIcons.profileActive,
-                  index: 2,
+                  index: 3,
                 ),
               ],
             ),
