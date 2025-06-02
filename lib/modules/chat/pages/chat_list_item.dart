@@ -1,61 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
-import 'package:home_service/routes/route_name.dart';
-import 'package:home_service/themes/app_colors.dart';
 import 'package:home_service/themes/styles_text.dart';
 
-import '../../../services/navigation_service.dart';
-import '../../../themes/app_assets.dart';
+import '../../../themes/app_colors.dart';
 
-class ListChatPage extends StatefulWidget {
-  const ListChatPage({super.key});
-
-  @override
-  State<ListChatPage> createState() => _ListChatPageState();
-}
-
-class _ListChatPageState extends State<ListChatPage> {
-  final NavigationService _navigationService = NavigationService();
+class ChatListItem extends StatelessWidget {
+  final VoidCallback onTap;
+  const ChatListItem({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: Column(
-        children: [
-          BasicAppBar(
-            isLeading: false,
-            isTrailing: false,
-            leading: GestureDetector(
-              onTap: () {
-                _navigationService.goBack(true);
-              },
-              child: Image.asset(AppAssetIcons.arrowLeft),
-            ),
-            title: 'Chat',
-          ),
-          Expanded(child: _buildListChat()),
-          //_buildChatItem(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListChat() {
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return _buildChatItem();
-      },
-    );
-  }
-
-  Widget _buildChatItem() {
-    return GestureDetector(
-      onTap: () {
-        _navigationService.navigateTo(RouteName.chatPage);
-      },
+    return InkWell(
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         decoration: BoxDecoration(
