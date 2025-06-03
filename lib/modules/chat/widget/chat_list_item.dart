@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service_tasker/modules/chat/model/chat_room_model.dart';
 import 'package:home_service_tasker/theme/styles_text.dart';
 
-import '../model/chat_model.dart';
+import '../../../theme/app_colors.dart';
+import '../bloc/chat_bloc.dart';
+import '../bloc/chat_state.dart';
 
 class ChatListItem extends StatelessWidget {
-  final ChatModel chat;
+  final ChatRoomModel room;
+  final int taskerId;
+  final String userType;
   final VoidCallback onTap;
+  final ChatBloc chatBloc;
 
   const ChatListItem({
     super.key,
-    required this.chat,
+    required this.room,
+    required this.taskerId,
+    required this.userType,
     required this.onTap,
+    required this.chatBloc,
   });
 
   @override
@@ -27,29 +37,43 @@ class ChatListItem extends StatelessWidget {
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: Color(0xFFFF6B35),
-                  child: Text(
-                    chat.avatar,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: room.userProfile != null
+                      ? ClipOval(
+                          child: Image.network(
+                            '${room.userProfile}',
+                            width: 56, // 2 * radius
+                            height: 56,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        )
+                      : Icon(
+                          Icons.person,
+                          size: 32,
+                          color: Colors.white,
+                        ),
+                ),
+                Positioned(
+                  right: 2,
+                  bottom: 2,
+                  child: BlocBuilder<ChatBloc, ChatState>(
+                    builder: (context, state) {
+                      final isConnected = chatBloc.isConnected;
+                      return Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: isConnected
+                              ? AppColors.alertSuccess
+                              : AppColors.transparent,
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(color: Color(0xFF2C2C2C), width: 2),
+                        ),
+                      );
+                    },
                   ),
                 ),
-                if (chat.isOnline)
-                  Positioned(
-                    right: 2,
-                    bottom: 2,
-                    child: Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Color(0xFF2C2C2C), width: 2),
-                      ),
-                    ),
-                  ),
               ],
             ),
             SizedBox(width: 12),
@@ -61,24 +85,22 @@ class ChatListItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(chat.name, style: AppTextStyles.headline6),
+                      Text(room.userName!, style: AppTextStyles.headline4),
                       Text(
-                        chat.time,
+                        _formatTime(room.lastMessageAt!),
                         style: TextStyle(
                           color: Color(0xFFB4B1B0),
-                          fontSize: 12,
-                          height: 16 / 12,
+                          fontSize: 14,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4),
                   Row(
                     children: [
                       Expanded(
                         child: Text(
-                          chat.lastMessage,
+                          room.lastMessage!.messageText,
                           style: AppTextStyles.paragraph3.copyWith(
                             color: Color(0xFF000000).withValues(alpha: 0.5),
                           ),
@@ -86,24 +108,6 @@ class ChatListItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (chat.unreadCount > 0)
-                        Container(
-                          margin: EdgeInsets.only(left: 8),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFF6B35),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            chat.unreadCount.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ],
@@ -113,5 +117,19 @@ class ChatListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    if (messageDate == today) {
+      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } else if (messageDate == today.subtract(const Duration(days: 1))) {
+      return 'Yesterday';
+    } else {
+      return '${dateTime.day}/${dateTime.month}';
+    }
   }
 }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../model/message_model.dart';
+import '../model/chat_message_model.dart';
 
 class ChatMessageItem extends StatelessWidget {
-  final MessageModel message;
+  final ChatMessageModel message;
+  final bool isMe;
 
-  const ChatMessageItem({super.key, required this.message});
+  const ChatMessageItem({super.key, required this.message, required this.isMe});
 
   @override
   Widget build(BuildContext context) {
@@ -13,41 +14,38 @@ class ChatMessageItem extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment:
-            message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!message.isMe) SizedBox(width: 8),
+          if (isMe) SizedBox(width: 8),
           Flexible(
             child: Column(
-              crossAxisAlignment: message.isMe
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: message.isMe ? Color(0xFFFF6B35) : Color(0xFFE5E5E5),
+                    color: isMe ? Color(0xFFFF6B35) : Color(0xFFE5E5E5),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
-                      bottomLeft: message.isMe
-                          ? Radius.circular(20)
-                          : Radius.circular(4),
-                      bottomRight: message.isMe
-                          ? Radius.circular(4)
-                          : Radius.circular(20),
+                      bottomLeft:
+                          isMe ? Radius.circular(20) : Radius.circular(4),
+                      bottomRight:
+                          isMe ? Radius.circular(4) : Radius.circular(20),
                     ),
                   ),
                   child: Text(
-                    message.text,
+                    message.messageText,
                     style: TextStyle(
-                      color: message.isMe ? Colors.white : Colors.black87,
+                      color: isMe ? Colors.white : Colors.black87,
                       fontSize: 16,
                     ),
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  message.time,
+                  _formatTime(message.sentAt),
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 12,
@@ -56,9 +54,13 @@ class ChatMessageItem extends StatelessWidget {
               ],
             ),
           ),
-          if (message.isMe) SizedBox(width: 8),
+          if (isMe) SizedBox(width: 8),
         ],
       ),
     );
+  }
+
+  String _formatTime(DateTime dateTime) {
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
