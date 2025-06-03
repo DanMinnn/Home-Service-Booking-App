@@ -41,7 +41,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     // When returning to this page, refresh chat rooms if already initialized
     if (_isInitialized && mounted) {
       logger.log("didChangeDependencies - refreshing chat rooms");
-      _chatBloc.add(ChatRoomsLoadedEvent(userId));
+      _chatBloc.add(ChatRoomsLoadedEvent(taskerId));
     }
   }
 
