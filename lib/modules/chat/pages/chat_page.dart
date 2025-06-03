@@ -36,6 +36,16 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // When returning to this page, refresh chat rooms if already initialized
+    if (_isInitialized && mounted) {
+      logger.log("didChangeDependencies - refreshing chat rooms");
+      _chatBloc.add(ChatRoomsLoadedEvent(userId));
+    }
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed && _isInitialized) {
@@ -244,7 +254,13 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                             ),
                                           ),
                                         ),
-                                      );
+                                      ).then((_) {
+                                        // Refresh rooms when returning from detail page
+                                        if (mounted) {
+                                          _chatBloc.add(
+                                              ChatRoomsLoadedEvent(taskerId));
+                                        }
+                                      });
                                     },
                                   );
                                 },
