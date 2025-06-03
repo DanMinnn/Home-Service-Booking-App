@@ -8,7 +8,6 @@ import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
 import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/modules/chat/pages/chat_page.dart';
-import 'package:home_service/modules/chat/pages/list_chat_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/modules/notifications/pages/notification_screen.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
@@ -65,9 +64,6 @@ class Routes {
       case RouteName.depositWallet:
         _logger.log('Navigating to Deposit profile: ${settings.name}');
         return _buildRoute(settings, const DepositWalletPage());
-      case RouteName.listChatPage:
-        _logger.log('Navigating to List Chat profile: ${settings.name}');
-        return _buildRoute(settings, const ListChatPage());
       case RouteName.chatPage:
         _logger.log('Navigating to List Chat profile: ${settings.name}');
         return _buildRoute(settings, const ChatPage());

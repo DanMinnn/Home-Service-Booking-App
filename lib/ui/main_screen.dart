@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
-import 'package:home_service/modules/chat/pages/list_chat_page.dart';
+import 'package:home_service/modules/chat/pages/chat_page.dart';
 import 'package:home_service/modules/home/pages/home_page.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
 import 'package:home_service/services/navigation_service.dart';
@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(),
     BookingPost(),
     CategoriesPage(),
-    ListChatPage(),
+    ChatPage(),
     ProfilePage(),
   ];
 

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:home_service/modules/chat/models/chat_message_model.dart';
 
 import '../../../themes/app_colors.dart';
 import '../../../themes/styles_text.dart';
 
 class ChatMessageItem extends StatelessWidget {
+  final ChatMessageModel message;
   final bool isMe;
-  const ChatMessageItem({super.key, required this.isMe});
+
+  const ChatMessageItem({
+    super.key,
+    required this.isMe,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +26,7 @@ class ChatMessageItem extends StatelessWidget {
                 isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isMe
                       ? AppColors.green.withValues(alpha: 0.2)
@@ -34,7 +41,7 @@ class ChatMessageItem extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Hello, how can I help you?',
+                  message.messageText,
                   style: AppTextStyles.bodyMediumRegular.copyWith(
                     color: AppColors.darkBlue,
                     fontSize: 16,
@@ -44,7 +51,7 @@ class ChatMessageItem extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '12:30',
+                _formatTime(message.sentAt),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 12,

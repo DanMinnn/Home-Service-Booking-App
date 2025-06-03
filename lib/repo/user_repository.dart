@@ -37,6 +37,7 @@ class UserRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_data', json.encode(user.toJson()));
+      await prefs.setInt('userId', user.id!);
       logger.log("User saved to storage: ${user.toString()}");
     } catch (e) {
       logger.log("Error saving user to storage: ${e.toString()}");
