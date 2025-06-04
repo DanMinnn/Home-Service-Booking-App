@@ -43,6 +43,12 @@ class ChatTypingState extends ChatState {
   ChatTypingState(this.roomId, this.typingUsers);
 }
 
+class ChatOnlineStatusState extends ChatState {
+  final Map<int, bool> onlineUsers;
+
+  ChatOnlineStatusState(this.onlineUsers);
+}
+
 class ChatError extends ChatState {
   final String message;
 

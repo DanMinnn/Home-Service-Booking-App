@@ -19,6 +19,7 @@ class ChatService {
   late StreamController<ChatMessageModel> _messageStreamController;
   late StreamController<Map<String, dynamic>> _typingStreamController;
   late StreamController<Map<String, dynamic>> _readReceiptStreamController;
+  late StreamController<Map<String, dynamic>> _userStatusStreamController;
   late StreamController<bool> _connectionStatusController;
 
   bool _isInitialized = false;
@@ -35,6 +36,8 @@ class ChatService {
 
   Stream<Map<String, dynamic>> get readReceiptStream =>
       _readReceiptStreamController.stream;
+  Stream<Map<String, dynamic>> get onlineStatusStream =>
+      _userStatusStreamController.stream;
 
   Stream<bool> get connectionStatusStream => _connectionStatusController.stream;
 
@@ -69,6 +72,8 @@ class ChatService {
     _typingStreamController =
         StreamController<Map<String, dynamic>>.broadcast();
     _readReceiptStreamController =
+        StreamController<Map<String, dynamic>>.broadcast();
+    _userStatusStreamController =
         StreamController<Map<String, dynamic>>.broadcast();
     _connectionStatusController = StreamController<bool>.broadcast();
   }
@@ -148,6 +153,12 @@ class ChatService {
         destination: '/user/queue/errors',
         callback: _handleError,
       );
+
+      // Subscribe to user status updates
+      _stompClient!.subscribe(
+        destination: '/topic/user-status',
+        callback: _handleUserStatusUpdate,
+      );
     } catch (e) {
       logger.log('Error in onConnect handler: $e');
     }
@@ -191,7 +202,7 @@ class ChatService {
 
       final data = json.decode(frame.body!);
 
-      if (data['type'] == 'typing' && !_typingStreamController.isClosed) {
+      /*if (data['type'] == 'typing' && !_typingStreamController.isClosed) {
         _typingStreamController.add(data);
       } else if ((data['type'] == 'messageRead' ||
               data['type'] == 'messagesRead') &&
@@ -201,7 +212,9 @@ class ChatService {
         // Regular chat message
         final message = ChatMessageModel.fromJson(data);
         _messageStreamController.add(message);
-      }
+      }*/
+      final message = ChatMessageModel.fromJson(data);
+      _messageStreamController.add(message);
     } catch (e) {
       logger.log('Error parsing incoming message: $e');
     }
@@ -213,6 +226,20 @@ class ChatService {
       logger.log('Chat Error: ${error['error']}');
     } catch (e) {
       logger.log('Error parsing error message: $e');
+    }
+  }
+
+  void _handleUserStatusUpdate(StompFrame frame) {
+    try {
+      if (_isDisposed) return;
+
+      final data = json.decode(frame.body!);
+      if (data['type'] == 'userStatus' &&
+          !_userStatusStreamController.isClosed) {
+        _userStatusStreamController.add(data);
+      }
+    } catch (e) {
+      logger.log('Error parsing user status update: $e');
     }
   }
 
@@ -285,10 +312,15 @@ class ChatService {
     try {
       if (!_messageStreamController.isClosed) _messageStreamController.close();
       if (!_typingStreamController.isClosed) _typingStreamController.close();
-      if (!_readReceiptStreamController.isClosed)
+      if (!_readReceiptStreamController.isClosed) {
         _readReceiptStreamController.close();
-      if (!_connectionStatusController.isClosed)
+      }
+      if (!_connectionStatusController.isClosed) {
         _connectionStatusController.close();
+      }
+      if (!_userStatusStreamController.isClosed) {
+        _userStatusStreamController.close();
+      }
     } catch (e) {
       logger.log('Error closing stream controllers: $e');
     }

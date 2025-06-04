@@ -35,11 +35,16 @@ class ChatMessageItem extends StatelessWidget {
                           isMe ? Radius.circular(4) : Radius.circular(20),
                     ),
                   ),
-                  child: Text(
-                    message.messageText,
-                    style: TextStyle(
-                      color: isMe ? Colors.white : Colors.black87,
-                      fontSize: 16,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.5,
+                    ),
+                    child: Text(
+                      message.messageText,
+                      style: TextStyle(
+                        color: isMe ? Colors.white : Colors.black87,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),

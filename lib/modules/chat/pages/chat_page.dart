@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service_tasker/common/widget/show_snack_bar.dart';
 import 'package:home_service_tasker/modules/chat/bloc/chat_bloc.dart';
 import 'package:home_service_tasker/modules/chat/bloc/chat_event.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
@@ -157,12 +158,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                     BlocConsumer<ChatBloc, ChatState>(
                       listener: (context, state) {
                         if (state is ChatError) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.message),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          ShowSnackBar.showError(
+                              context, 'Something went wrong');
                         } else if (state is ChatConnected &&
                             state.isConnected) {
                           // Load rooms when connected

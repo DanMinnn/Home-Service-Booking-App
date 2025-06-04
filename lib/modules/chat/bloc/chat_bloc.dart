@@ -14,11 +14,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   StreamSubscription<ChatMessageModel>? _messageSubscription;
   StreamSubscription<Map<String, dynamic>>? _typingSubscription;
   StreamSubscription<Map<String, dynamic>>? _readReceiptSubscription;
+  StreamSubscription<Map<String, dynamic>>? _onlineStatusSubscription;
   StreamSubscription<bool>? _connectionSubscription;
 
   final Map<int, List<ChatMessageModel>> _messagesCache = {};
   final Map<int, bool> _typingUsers = {};
   int? _currentRoomId;
+  final Map<int, bool> _onlineUsers = {};
+  // Check if user is online
+  bool isUserOnline(int userId) => _onlineUsers[userId] ?? false;
   bool get isConnected => _chatService.isConnected;
   ChatBloc() : super(ChatInitial()) {
     on<ChatInitialized>(_onChatInitialized);
@@ -34,6 +38,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ChatTypingStopped>(_onChatTypingStopped);
     on<ChatTypingIndicatorReceived>(_onChatTypingIndicatorReceived);
     on<ChatReadReceiptReceived>(_onChatReadReceiptReceived);
+    on<ChatUserOnlineStatusEvent>(_onChatUserOnlineStatusReceived);
   }
 
   Future<void> _onChatInitialized(
@@ -48,6 +53,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await _typingSubscription?.cancel();
       await _readReceiptSubscription?.cancel();
       await _connectionSubscription?.cancel();
+      await _onlineStatusSubscription?.cancel();
 
       // Initialize service
       _chatService.initialize(event.authToken, event.userId, event.userType);
@@ -67,6 +73,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (data) => add(ChatReadReceiptReceived(data)),
         onError: (error) =>
             add(ChatErrorEvent('Read receipt stream error: $error')),
+      );
+
+      _onlineStatusSubscription = _chatService.onlineStatusStream.listen(
+        (data) => add(ChatUserOnlineStatusEvent(data)),
+        onError: (error) =>
+            add(ChatErrorEvent('Online status stream error: $error')),
       );
 
       _connectionSubscription = _chatService.connectionStatusStream.listen(
@@ -318,12 +330,32 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
+  Future<void> _onChatUserOnlineStatusReceived(
+    ChatUserOnlineStatusEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final data = event.data;
+
+    if (data['type'] == 'userStatus') {
+      final userId = data['userId'] as int;
+      final isOnline = data['isOnline'] as bool;
+
+      _onlineUsers[userId] = isOnline;
+      if (!isOnline) {
+        _onlineUsers.remove(userId);
+      }
+
+      emit(ChatOnlineStatusState(Map.from(_onlineUsers)));
+    }
+  }
+
   @override
   Future<void> close() {
     _messageSubscription?.cancel();
     _typingSubscription?.cancel();
     _readReceiptSubscription?.cancel();
     _connectionSubscription?.cancel();
+    _onlineStatusSubscription?.cancel();
     _chatService.dispose();
     return super.close();
   }

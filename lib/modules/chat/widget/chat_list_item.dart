@@ -25,6 +25,8 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lastMessage = room.lastMessage;
+    final messageAt = room.lastMessageAt;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -57,15 +59,23 @@ class ChatListItem extends StatelessWidget {
                   right: 2,
                   bottom: 2,
                   child: BlocBuilder<ChatBloc, ChatState>(
+                    buildWhen: (previous, current) =>
+                        current is ChatOnlineStatusState,
                     builder: (context, state) {
-                      final isConnected = chatBloc.isConnected;
+                      bool isOnline = false;
+                      if (state is ChatOnlineStatusState) {
+                        isOnline = state.onlineUsers[room.userId] ?? false;
+                      } else {
+                        isOnline =
+                            context.read<ChatBloc>().isUserOnline(room.userId);
+                      }
                       return Container(
                         width: 16,
                         height: 16,
                         decoration: BoxDecoration(
-                          color: isConnected
+                          color: isOnline
                               ? AppColors.alertSuccess
-                              : AppColors.transparent,
+                              : AppColors.alertFailed,
                           shape: BoxShape.circle,
                           border:
                               Border.all(color: Color(0xFF2C2C2C), width: 2),
@@ -87,7 +97,9 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Text(room.userName!, style: AppTextStyles.headline4),
                       Text(
-                        _formatTime(room.lastMessageAt!),
+                        messageAt != null
+                            ? _formatTime(room.lastMessageAt!)
+                            : '',
                         style: TextStyle(
                           color: Color(0xFFB4B1B0),
                           fontSize: 14,
@@ -100,7 +112,9 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          room.lastMessage!.messageText,
+                          lastMessage != null
+                              ? room.lastMessage!.messageText
+                              : 'No messages yet',
                           style: AppTextStyles.paragraph3.copyWith(
                             color: Color(0xFF000000).withValues(alpha: 0.5),
                           ),

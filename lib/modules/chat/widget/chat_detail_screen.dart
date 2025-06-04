@@ -167,47 +167,66 @@ class ChatDetailScreenState extends State<ChatDetailScreen>
                                     fontWeight: FontWeight.w500,
                                   )),
                               SizedBox(height: 4),
-                              BlocBuilder<ChatBloc, ChatState>(
-                                builder: (context, state) {
-                                  if (state is ChatTypingState &&
-                                      state.typingUsers.isNotEmpty) {
-                                    return const Text(
-                                      'typing...',
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.white70),
+                              BlocProvider.value(
+                                value: context.read<ChatBloc>(),
+                                child: BlocBuilder<ChatBloc, ChatState>(
+                                  buildWhen: (previous, current) =>
+                                      current is ChatOnlineStatusState ||
+                                      (current is ChatInitial &&
+                                          previous is! ChatInitial),
+                                  builder: (context, state) {
+                                    bool isOnline = false;
+                                    if (state is ChatOnlineStatusState) {
+                                      isOnline = state.onlineUsers[
+                                              widget.room.userId] ??
+                                          false;
+                                    }
+                                    if (state is! ChatOnlineStatusState) {
+                                      try {
+                                        final chatBloc =
+                                            context.read<ChatBloc>();
+                                        if (chatBloc.state
+                                            is ChatOnlineStatusState) {
+                                          final onlineState = chatBloc.state
+                                              as ChatOnlineStatusState;
+                                          isOnline = onlineState.onlineUsers[
+                                                  widget.room.userId] ??
+                                              false;
+                                        } else {
+                                          isOnline = chatBloc
+                                              .isUserOnline(widget.room.userId);
+                                        }
+                                      } catch (e) {
+                                        //Handle the case where the bloc is not available
+                                      }
+                                    }
+
+                                    return Row(
+                                      children: [
+                                        Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                            color: isOnline
+                                                ? AppColors.alertSuccess
+                                                : Colors.grey,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          isOnline ? 'Online' : 'Offline',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: isOnline
+                                                ? AppColors.alertSuccess
+                                                : Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
                                     );
-                                  }
-                                  return BlocBuilder<ChatBloc, ChatState>(
-                                    builder: (context, state) {
-                                      final isConnected =
-                                          context.read<ChatBloc>().isConnected;
-                                      return Row(
-                                        children: [
-                                          Container(
-                                            width: 8,
-                                            height: 8,
-                                            decoration: BoxDecoration(
-                                              color: isConnected
-                                                  ? AppColors.alertSuccess
-                                                  : Colors.grey,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            isConnected ? 'Online' : 'Offline',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: isConnected
-                                                  ? AppColors.alertSuccess
-                                                  : Colors.grey[600],
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
+                                  },
+                                ),
                               ),
                             ],
                           ),
