@@ -77,6 +77,12 @@ class ChatReadReceiptReceived extends ChatEvent {
   ChatReadReceiptReceived(this.data);
 }
 
+class ChatUserOnlineStatusEvent extends ChatEvent {
+  final Map<String, dynamic> data;
+
+  ChatUserOnlineStatusEvent(this.data);
+}
+
 class ChatErrorEvent extends ChatEvent {
   final String message;
 

@@ -40,13 +40,19 @@ class ChatMessageItem extends StatelessWidget {
                         isMe ? Radius.circular(22) : Radius.circular(20),
                   ),
                 ),
-                child: Text(
-                  message.messageText,
-                  style: AppTextStyles.bodyMediumRegular.copyWith(
-                    color: AppColors.darkBlue,
-                    fontSize: 16,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.5,
                   ),
-                  textAlign: TextAlign.center,
+                  child: Text(
+                    message.messageText,
+                    style: AppTextStyles.bodyMediumRegular.copyWith(
+                      color: AppColors.darkBlue,
+                      fontSize: 16,
+                    ),
+                    softWrap: true,
+                    overflow: TextOverflow.visible,
+                  ),
                 ),
               ),
               SizedBox(height: 4),

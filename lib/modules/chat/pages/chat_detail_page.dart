@@ -142,15 +142,23 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                   child: BlocProvider.value(
                     value: context.read<ChatBloc>(),
                     child: BlocBuilder<ChatBloc, ChatState>(
+                      buildWhen: (previous, current) =>
+                          current is ChatOnlineStatusState,
                       builder: (context, state) {
-                        final isConnected =
-                            context.read<ChatBloc>().isConnected;
+                        bool isOnline = false;
+                        if (state is ChatOnlineStatusState) {
+                          isOnline =
+                              state.onlineUsers[widget.room.taskerId] ?? false;
+                        } else {
+                          isOnline = context
+                              .read<ChatBloc>()
+                              .isUserOnline(widget.room.taskerId);
+                        }
                         return Container(
                           width: 12,
                           height: 12,
                           decoration: BoxDecoration(
-                            color:
-                                isConnected ? AppColors.green : AppColors.red,
+                            color: isOnline ? AppColors.green : AppColors.red,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white,

@@ -15,25 +15,34 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   StreamSubscription<Map<String, dynamic>>? _typingSubscription;
   StreamSubscription<Map<String, dynamic>>? _readReceiptSubscription;
   StreamSubscription<bool>? _connectionSubscription;
+  StreamSubscription<Map<String, dynamic>>? _onlineStatusSubscription;
 
   final Map<int, List<ChatMessageModel>> _messagesCache = {};
   final Map<int, bool> _typingUsers = {};
   int? _currentRoomId;
+  final Map<int, bool> _onlineUsers = {};
+  // Check if user is online
+  bool isUserOnline(int userId) => _onlineUsers[userId] ?? false;
   bool get isConnected => _chatService.isConnected;
   ChatBloc() : super(ChatInitial()) {
+    //Connect events to handlers
     on<ChatInitialized>(_onChatInitialized);
     on<ChatConnectedEvent>(_onChatConnected);
     on<ChatDisconnected>(_onChatDisconnected);
+    // Load chat rooms
     on<ChatRoomsLoadedEvent>(_onChatRoomsLoaded);
     on<ChatRoomSelected>(_onChatRoomSelected);
     on<ChatMessagesLoadedEvent>(_onChatMessagesLoaded);
     on<ChatMessageSent>(_onChatMessageSent);
     on<ChatMessageReceived>(_onChatMessageReceived);
+    // Mark messages as read
     on<ChatMessagesMarkedAsRead>(_onChatMessagesMarkedAsRead);
     on<ChatTypingStarted>(_onChatTypingStarted);
     on<ChatTypingStopped>(_onChatTypingStopped);
     on<ChatTypingIndicatorReceived>(_onChatTypingIndicatorReceived);
     on<ChatReadReceiptReceived>(_onChatReadReceiptReceived);
+    // Online status events
+    on<ChatUserOnlineStatusEvent>(_onChatUserOnlineStatusReceived);
   }
 
   Future<void> _onChatInitialized(
@@ -47,6 +56,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await _typingSubscription?.cancel();
       await _readReceiptSubscription?.cancel();
       await _connectionSubscription?.cancel();
+      await _onlineStatusSubscription?.cancel();
 
       //initialize service
       _chatService.initialize(event.authToken, event.userId, event.userType);
@@ -66,6 +76,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (data) => add(ChatReadReceiptReceived(data)),
         onError: (error) =>
             add(ChatErrorEvent('Read receipt stream error: $error')),
+      );
+
+      _onlineStatusSubscription = _chatService.userStatusStream.listen(
+        (data) => add(ChatUserOnlineStatusEvent(data)),
+        onError: (error) =>
+            add(ChatErrorEvent('Online status stream error: $error')),
       );
 
       _connectionSubscription = _chatService.connectionStatusStream.listen(
@@ -315,12 +331,32 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
+  Future<void> _onChatUserOnlineStatusReceived(
+    ChatUserOnlineStatusEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final data = event.data;
+
+    if (data['type'] == 'userStatus') {
+      final userId = data['userId'] as int;
+      final isOnline = data['isOnline'] as bool;
+
+      _onlineUsers[userId] = isOnline;
+      if (!isOnline) {
+        _onlineUsers.remove(userId);
+      }
+
+      emit(ChatOnlineStatusState(Map.from(_onlineUsers)));
+    }
+  }
+
   @override
   Future<void> close() {
     _messageSubscription?.cancel();
     _typingSubscription?.cancel();
     _readReceiptSubscription?.cancel();
     _connectionSubscription?.cancel();
+    _onlineStatusSubscription?.cancel();
     _chatService.dispose();
     return super.close();
   }
