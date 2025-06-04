@@ -1,6 +1,8 @@
 class Task {
   int bookingId;
   int serviceId;
+  int userId;
+  int taskerId;
   String serviceName;
   DateTime scheduledStart;
   DateTime scheduledEnd;
@@ -17,6 +19,8 @@ class Task {
   Task({
     required this.bookingId,
     required this.serviceId,
+    required this.userId,
+    required this.taskerId,
     required this.serviceName,
     required this.scheduledStart,
     required this.scheduledEnd,
@@ -35,6 +39,8 @@ class Task {
     return Task(
       bookingId: json['bookingId'],
       serviceId: json['serviceId'],
+      userId: json['userId'],
+      taskerId: json['taskerId'] ?? 0,
       serviceName: json['serviceName'],
       scheduledStart: DateTime.parse(json['scheduledStart']),
       scheduledEnd: DateTime.parse(json['scheduledEnd']),

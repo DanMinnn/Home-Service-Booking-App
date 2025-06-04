@@ -1,3 +1,5 @@
+import '../../chat/model/chat_room_req.dart';
+
 abstract class TaskEvent {}
 
 class LoadTasksEvent extends TaskEvent {
@@ -26,4 +28,10 @@ class CancelTaskEvent extends TaskEvent {
 class CompleteTaskEvent extends TaskEvent {
   final int bookingId;
   CompleteTaskEvent({required this.bookingId});
+}
+
+class CreateChatRoomEvent extends TaskEvent {
+  final ChatRoomReq chatRoomReq;
+
+  CreateChatRoomEvent(this.chatRoomReq);
 }

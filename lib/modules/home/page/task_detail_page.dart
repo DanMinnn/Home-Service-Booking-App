@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_tasker/common/widget/app_bar.dart';
 import 'package:home_service_tasker/common/widget/show_snack_bar.dart';
+import 'package:home_service_tasker/modules/chat/model/chat_room_req.dart';
 import 'package:home_service_tasker/modules/home/bloc/task_bloc.dart';
 import 'package:home_service_tasker/modules/home/bloc/task_event.dart';
 import 'package:home_service_tasker/modules/home/page/note_cancel_job_dialog.dart';
@@ -236,10 +237,54 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
           if (state is TaskAssignedState) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ShowSnackBar.showSuccess(context, state.message, 'Well done!');
+              showDialog<String>(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) => Dialog(
+                        backgroundColor: AppColors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                  'Get Job Successfully! \n  Chat with the client.'),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.of(context).pop();
+                                  await Future.delayed(
+                                      Duration(milliseconds: 100));
+                                  _taskBloc.add(
+                                    CreateChatRoomEvent(
+                                      ChatRoomReq(
+                                        bookingId: task.bookingId,
+                                        userId: task.userId,
+                                        taskerId: taskerId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'Chat',
+                                  style: AppTextStyles.headline5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ));
             });
           } else if (state is TaskErrorState) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ShowSnackBar.showError(context, state.error);
+            });
+          } else if (state is ChatRoomCreated) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ShowSnackBar.showSuccess(
+                  context, state.message, 'Chat Room Created');
+              _navigationService.changeTab(1);
             });
           }
           return Padding(

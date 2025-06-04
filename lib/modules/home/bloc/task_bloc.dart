@@ -11,6 +11,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<LoadTaskAssignedEvent>(_onLoadTaskAssigned);
     on<CancelTaskEvent>(_onCancelTask);
     on<CompleteTaskEvent>(_onCompleteTask);
+    on<CreateChatRoomEvent>(_onCreateChatRoom);
   }
 
   Future<void> _onLoadTasks(
@@ -76,6 +77,22 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       emit(LoadingSuccessState(response));
     } catch (e) {
       emit(TaskErrorState(e.toString()));
+    }
+  }
+
+  Future<void> _onCreateChatRoom(
+    CreateChatRoomEvent event,
+    Emitter<TaskState> emit,
+  ) async {
+    try {
+      final room = await _taskRepo.createChatRoom(event.chatRoomReq);
+      if (room.status == 201) {
+        emit(ChatRoomCreated(room.message));
+      } else {
+        emit(TaskErrorState(room.message));
+      }
+    } catch (e) {
+      emit(TaskErrorState('Failed to create chat room: ${e.toString()}'));
     }
   }
 

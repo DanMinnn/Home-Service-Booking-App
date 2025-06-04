@@ -35,3 +35,9 @@ class TaskAssignedListState extends TaskState {
 
   TaskAssignedListState(this.tasks);
 }
+
+class ChatRoomCreated extends TaskState {
+  final String message;
+
+  ChatRoomCreated(this.message);
+}

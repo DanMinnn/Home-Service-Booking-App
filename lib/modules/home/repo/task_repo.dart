@@ -3,6 +3,7 @@ import 'package:home_service_tasker/modules/home/models/task.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
 
 import '../../../providers/api_provider.dart';
+import '../../chat/model/chat_room_req.dart';
 
 class TaskRepo {
   final LogProvider logger = const LogProvider(':::TASK-REPO:::');
@@ -129,6 +130,32 @@ class TaskRepo {
       }
     } catch (e) {
       logger.log('Error completing task: $e');
+      rethrow;
+    }
+  }
+
+  //create chat room to communicate with customer
+  Future<ResponseData> createChatRoom(ChatRoomReq req) async {
+    try {
+      ResponseData responseData = ResponseData(status: 0, message: '');
+      final response = await _apiProvider.post(
+        '/chat/rooms/create',
+        data: req.toJson(),
+      );
+
+      if (response.data['status'] == 201) {
+        return responseData = ResponseData(
+          status: response.data['status'],
+          message: response.data['message'] ?? 'Chat room created successfully',
+        );
+      } else {
+        return responseData = ResponseData(
+          status: response.data['status'],
+          message: response.data['message'] ?? 'Failed to create chat room',
+        );
+      }
+    } catch (e) {
+      logger.log('Error creating chat room: $e');
       rethrow;
     }
   }
