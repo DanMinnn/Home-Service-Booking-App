@@ -5,9 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/notification_model.dart';
 import '../providers/api_provider.dart';
+import '../providers/log_provider.dart';
 
 class NotificationService {
   final ApiProvider _apiProvider = ApiProvider();
+  final LogProvider logger = LogProvider('::::NOTIFICATION-SERVICE::::');
   final UserRepository _userRepo = UserRepository();
   final String _notificationsKey = 'user_notifications';
 
@@ -30,7 +32,7 @@ class NotificationService {
 
       return notifications;
     } catch (e) {
-      print('Error fetching notifications: $e');
+      logger.log('Error fetching notifications: $e');
       // If API call fails, return locally saved notifications
       return await getLocalNotifications();
     }
@@ -44,7 +46,7 @@ class NotificationService {
       final notificationsJson = notifications.map((n) => n.toJson()).toList();
       await prefs.setString(_notificationsKey, json.encode(notificationsJson));
     } catch (e) {
-      print('Error saving notifications locally: $e');
+      logger.log('Error saving notifications locally: $e');
     }
   }
 
@@ -61,7 +63,7 @@ class NotificationService {
           .map((item) => NotificationModel.fromJson(item))
           .toList();
     } catch (e) {
-      print('Error retrieving local notifications: $e');
+      logger.log('Error retrieving local notifications: $e');
       return [];
     }
   }
@@ -81,14 +83,24 @@ class NotificationService {
       }
       await _saveNotificationsLocally(notifications);
     } catch (e) {
-      print('Error marking notification as read: $e');
+      logger.log('Error marking notification as read: $e');
     }
   }
 
-  // Get unread notification count
-  Future<int> getUnreadCount() async {
-    final notifications = await getLocalNotifications();
-    return notifications.where((n) => !n.isRead).length;
+  //Get unread count
+  Future<int> getUnreadNotifications(int userId) async {
+    try {
+      final response =
+          await _apiProvider.get('/notifications/users/$userId/unread-count');
+      if (response.data['status'] == 200) {
+        return response.data['data'];
+      } else {
+        throw Exception('Error');
+      }
+    } catch (e) {
+      logger.log('Failed to mark notification as read ${e.toString()}');
+      rethrow;
+    }
   }
 
   // Clear all notifications
@@ -105,7 +117,7 @@ class NotificationService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_notificationsKey);
     } catch (e) {
-      print('Error clearing notifications: $e');
+      logger.log('Error clearing notifications: $e');
     }
   }
 }

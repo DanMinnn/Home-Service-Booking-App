@@ -3,6 +3,7 @@ class AppAssetsBackgrounds {
 
   static const String logo = '${imagePath}logo_app.png';
   static const String carousel = '${imagePath}img_carousel.png';
+  static const String notification = '${imagePath}notifications.png';
 }
 
 class AppAssetIcons {
@@ -69,4 +70,6 @@ class AppAssetIcons {
   static const String trash = '${iconPath}trash_filled_ic.png';
   static const String calling = '${iconPath}calling_filled_ic.png';
   static const String sendMessage = '${iconPath}send_ic.png';
+
+  static const String cancelIc = '${iconPath}cancel_ic.png';
 }

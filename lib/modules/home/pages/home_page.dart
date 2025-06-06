@@ -12,6 +12,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/styles_text.dart';
 import '../../categories/bloc/service_cubit.dart';
 import '../../categories/bloc/service_state.dart';
+import '../../notifications/pages/notification_badge.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   bool _isFocused = false;
 
   String _userName = 'User';
-
+  int _userId = 0;
   @override
   void initState() {
     super.initState();
@@ -43,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     if (currentUser != null && currentUser.name != null) {
       setState(() {
         _userName = currentUser.name!;
+        _userId = currentUser.id ?? 0;
       });
       logger.log('Load user from cache: $_userName');
       return;
@@ -54,6 +56,7 @@ class _HomePageState extends State<HomePage> {
     if (userStorage != null && userStorage.name != null) {
       setState(() {
         _userName = userStorage.name!;
+        _userId = userStorage.id ?? 0;
       });
       logger.log('Load user from local storage: $_userName');
       return;
@@ -88,7 +91,20 @@ class _HomePageState extends State<HomePage> {
             leading: Image.asset(AppAssetIcons.logoHouse),
             title: 'Welcome,',
             subtitle: _userName,
-            trailing: Image.asset(AppAssetIcons.notification),
+            trailing: GestureDetector(
+              onTap: () {
+                _navigationService.changeTab(1);
+              },
+              child: GestureDetector(
+                onTap: () {
+                  _navigationService
+                      .navigateTo(RouteName.notifications, arguments: {
+                    'userId': _userId,
+                  });
+                },
+                child: NotificationBadge(),
+              ),
+            ),
           ),
           _buildBody(),
         ],
@@ -102,6 +118,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
           _buildSearchBar(),
           const SizedBox(height: 30),
           _buildCategories(),

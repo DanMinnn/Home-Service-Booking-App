@@ -88,6 +88,16 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _buildItem(
+              title: 'Notification',
+              icon: AppAssetIcons.notification,
+              onTap: () {
+                navigationService
+                    .navigateTo(RouteName.notifications, arguments: {
+                  'userId': _userId,
+                });
+              },
+            ),
+            _buildItem(
               title: 'Logout',
               icon: AppAssetIcons.logout,
               onTap: () {

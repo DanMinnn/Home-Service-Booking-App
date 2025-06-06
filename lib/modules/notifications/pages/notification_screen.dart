@@ -1,120 +1,170 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../models/notification_model.dart';
-import '../../../services/notification_service.dart';
+import '../../../providers/log_provider.dart';
+import '../../../services/navigation_service.dart';
+import '../../../themes/app_assets.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/styles_text.dart';
+import '../bloc/notification_bloc.dart';
+import '../bloc/notification_event.dart';
+import '../bloc/notification_state.dart';
+import '../repo/notification_repo.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  _NotificationsScreenState createState() => _NotificationsScreenState();
+  NotificationsScreenState createState() => NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
-  final NotificationService _notificationService = NotificationService();
-  List<NotificationModel> _notifications = [];
-  bool _isLoading = true;
+class NotificationsScreenState extends State<NotificationsScreen>
+    with SingleTickerProviderStateMixin {
+  final LogProvider logger = LogProvider(':::::NOTIFICATION-SCREEN:::::');
+  final navigationService = NavigationService();
+  late NotificationBloc _notificationBloc;
+  late AnimationController _animationController;
+  int userId = 0;
+  final NotificationsRepo notificationsRepo = NotificationsRepo();
 
   @override
   void initState() {
     super.initState();
-    _fetchNotifications();
+    _notificationBloc = NotificationBloc(NotificationsRepo());
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    //_fetchNotifications();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      userId = args['userId'] as int;
+      if (userId != 0) {
+        _notificationBloc.add(NotificationFetch(userId));
+      } else {
+        logger.log('User ID is not provided or is zero.');
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _notificationBloc.close();
+    super.dispose();
   }
 
   Future<void> _fetchNotifications() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final notifications = await _notificationService.fetchNotifications();
-      setState(() {
-        _notifications = notifications;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load notifications: $e')),
-      );
+    if (userId != 0) {
+      _notificationBloc.add(NotificationFetch(userId));
+      logger.log('Fetching notifications for user ID: $userId');
     }
   }
 
-  Future<void> _markAsRead(NotificationModel notification) async {
-    try {
-      await _notificationService.markAsRead(notification.id);
-      setState(() {
-        final index = _notifications.indexWhere((n) => n.id == notification.id);
-        if (index != -1) {
-          _notifications[index] = notification.copyWith(isRead: true);
-        }
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to mark notification as read: $e')),
-      );
-    }
-  }
-
-  Future<void> _clearAllNotifications() async {
-    try {
-      await _notificationService.clearAllNotifications();
-      setState(() {
-        _notifications = [];
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to clear notifications: $e')),
-      );
-    }
+  void _playTapAnimation(int notificationId) {
+    HapticFeedback.lightImpact();
+    _notificationBloc.add(NotificationMarkAsRead(notificationId));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        actions: [
-          if (_notifications.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_sweep),
-              onPressed: () => _showClearConfirmationDialog(),
-              tooltip: 'Clear all notifications',
-            ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _fetchNotifications,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _notifications.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.notifications_off,
-                            size: 64, color: Colors.grey),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No notifications yet',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.grey,
-                                  ),
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: BlocProvider.value(
+          value: _notificationBloc,
+          child: Column(
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                leading: GestureDetector(
+                  onTap: () {
+                    navigationService.goBack();
+                  },
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
+                title: 'Notifications',
+              ),
+              Expanded(
+                child: BlocBuilder<NotificationBloc, NotificationState>(
+                  builder: (context, state) {
+                    if (state is NotificationLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.darkBlue,
                         ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _notifications.length,
-                    itemBuilder: (context, index) {
-                      final notification = _notifications[index];
-                      return _buildNotificationItem(notification);
-                    },
-                  ),
+                      );
+                    } else if (state is NotificationLoaded) {
+                      final notifications = state.notifications;
+                      if (notifications.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.notifications_off_sharp,
+                                  size: 50, color: AppColors.darkBlue20),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No Notifications!',
+                                style: AppTextStyles.bodyLargeSemiBold,
+                              )
+                            ],
+                          ),
+                        );
+                      } else {
+                        return RefreshIndicator(
+                          color: AppColors.darkBlue,
+                          backgroundColor: AppColors.white,
+                          onRefresh: _fetchNotifications,
+                          child: ListView.separated(
+                            padding: EdgeInsets.zero,
+                            itemCount: notifications.length,
+                            itemBuilder: (context, index) {
+                              final notification = notifications[index];
+                              return _buildNotificationItem(notification);
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: Divider(
+                                  height: 2,
+                                  color: AppColors.darkBlue20,
+                                  thickness: 1,
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    }
+                    return Center(
+                      child: Text(
+                        'Something went wrong!',
+                        style: AppTextStyles.bodyLargeSemiBold.copyWith(
+                          color: AppColors.redMedium,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -131,51 +181,83 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // Remove notification from list
-        setState(() {
-          _notifications.removeWhere((n) => n.id == notification.id);
-        });
-        // TODO: Implement API call to delete notification
+      onDismissed: (direction) async {
+        await notificationsRepo.deleteNotification(notification.id);
       },
-      child: Card(
-        elevation: notification.isRead ? 0 : 2,
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        color: notification.isRead ? null : Colors.blue.shade50,
-        child: ListTile(
-          leading: _getNotificationIcon(notification.type),
-          title: Text(
-            notification.title,
-            style: TextStyle(
-              fontWeight:
-                  notification.isRead ? FontWeight.normal : FontWeight.bold,
-            ),
+      child: Material(
+        color: AppColors.white,
+        child: InkWell(
+          onTap: () => _playTapAnimation(notification.id),
+          splashColor: AppColors.darkBlue.withValues(alpha: 0.1),
+          highlightColor: AppColors.darkBlue.withValues(alpha: 0.5),
+          child: SizedBox(
+            height: 140,
+            child: Card(
+                color: AppColors.white,
+                elevation: 0,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _getNotificationIcon(notification.type),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    notification.title,
+                                    style: AppTextStyles.bodyLargeSemiBold
+                                        .copyWith(
+                                      color: AppColors.black,
+                                      fontWeight: notification.isRead
+                                          ? FontWeight.normal
+                                          : FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                if (!notification.isRead)
+                                  Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.darkBlue,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              notification.message,
+                              style: AppTextStyles.bodyLargeSemiBold.copyWith(
+                                color: Color(0xFF8F92A1),
+                                fontWeight: FontWeight.w500,
+                              ),
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              dateFormat.format(notification.createdAt),
+                              style: AppTextStyles.bodyMediumRegular.copyWith(
+                                color: AppColors.black,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )),
           ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(notification.message),
-              const SizedBox(height: 4),
-              Text(
-                dateFormat.format(notification.createdAt),
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
-          ),
-          isThreeLine: true,
-          onTap: () {
-            if (!notification.isRead) {
-              _markAsRead(notification);
-            }
-
-            // Navigate based on notification type
-            if (notification.type == 'new_job') {
-              // Navigate to job details
-            } else if (notification.type == 'job_accepted') {
-              // Navigate to accepted job details
-            }
-            // Add more navigation logic as needed
-          },
         ),
       ),
     );
@@ -183,15 +265,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Widget _getNotificationIcon(String type) {
     switch (type) {
-      case 'new_job':
-        return const CircleAvatar(
-          backgroundColor: Colors.orange,
-          child: Icon(Icons.work, color: Colors.white),
+      case 'JOB_ACCEPTED':
+        return Container(
+          height: 70,
+          width: 70,
+          decoration: BoxDecoration(
+            color: Color(0xFFEEEEF7),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Image.asset(AppAssetsBackgrounds.notification),
         );
-      case 'job_accepted':
-        return const CircleAvatar(
-          backgroundColor: Colors.green,
-          child: Icon(Icons.check_circle, color: Colors.white),
+      case 'JOB_CANCELLED':
+        return Container(
+          height: 70,
+          width: 70,
+          decoration: BoxDecoration(
+            color: Color(0xFFF4E1E1),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Image.asset(AppAssetIcons.cancelIc),
         );
       default:
         return const CircleAvatar(
@@ -199,29 +291,5 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           child: Icon(Icons.notifications, color: Colors.white),
         );
     }
-  }
-
-  void _showClearConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Notifications'),
-        content:
-            const Text('Are you sure you want to clear all notifications?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () {
-              _clearAllNotifications();
-              Navigator.of(context).pop();
-            },
-            child: const Text('CLEAR'),
-          ),
-        ],
-      ),
-    );
   }
 }

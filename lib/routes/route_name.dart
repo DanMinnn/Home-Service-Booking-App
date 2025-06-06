@@ -35,5 +35,5 @@ class RouteName {
   static const String privacyPolicy = '/privacy_policy';
 
   //notifications
-  static const String notifications = '/notifications';
+  static const String notifications = '/notifications-screen';
 }
