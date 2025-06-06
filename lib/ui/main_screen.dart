@@ -6,6 +6,7 @@ import 'package:home_service/modules/posts/pages/booking_post.dart';
 import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_assets.dart';
 
+import '../modules/chatbot/pages/floating_chat_bot.dart';
 import '../modules/profile/pages/profile_page.dart';
 import '../providers/log_provider.dart';
 import '../routes/route_name.dart';
@@ -13,14 +14,17 @@ import '../themes/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   final NavigationService _navigationService = NavigationService();
-  LogProvider get logger => const LogProvider('MAINSCR:::');
 
+  LogProvider get logger => const LogProvider('MAIN-SCR:::');
+
+  bool _showChatBot = false;
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     HomePage(),
@@ -64,7 +68,17 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: _pages[_selectedIndex],
+      body: Stack(children: [
+        _pages[_selectedIndex],
+        if (_showChatBot)
+          FloatingChatBot(
+            onClose: () {
+              setState(() {
+                _showChatBot = false;
+              });
+            },
+          ),
+      ]),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -118,6 +132,17 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
+      floatingActionButton: !_showChatBot
+          ? FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  _showChatBot = true;
+                });
+              },
+              backgroundColor: AppColors.darkBlue,
+              child: Icon(Icons.chat_bubble, color: AppColors.white),
+            )
+          : null,
     );
   }
 
