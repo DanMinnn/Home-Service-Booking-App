@@ -233,33 +233,35 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
                 });
               }
 
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BasicAppBar(
-                      isLeading: false,
-                      isTrailing: false,
-                      leading: GestureDetector(
-                        onTap: () {
-                          _navigationService.goBack();
-                        },
-                        child: Image.asset(AppAssetIcons.arrowLeft),
+              return SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BasicAppBar(
+                        isLeading: false,
+                        isTrailing: false,
+                        leading: GestureDetector(
+                          onTap: () {
+                            _navigationService.goBack();
+                          },
+                          child: Image.asset(AppAssetIcons.arrowLeft),
+                        ),
+                        title: 'Choose Options Cooking',
                       ),
-                      title: 'Choose Options Cooking',
-                    ),
-                    _buildSelectPerson(state),
-                    const SizedBox(height: 16),
-                    _buildCourse(state),
-                    const SizedBox(height: 16),
-                    _buildPreferStyle(),
-                    if (_selectedPackage != null) ...[
+                      _buildSelectPerson(state),
                       const SizedBox(height: 16),
-                      _buildSelectedPackageInfo(),
+                      _buildCourse(state),
+                      const SizedBox(height: 16),
+                      _buildPreferStyle(),
+                      if (_selectedPackage != null) ...[
+                        const SizedBox(height: 16),
+                        _buildSelectedPackageInfo(),
+                      ],
+                      const SizedBox(height: 16),
                     ],
-                    const SizedBox(height: 16),
-                  ],
+                  ),
                 ),
               );
             }

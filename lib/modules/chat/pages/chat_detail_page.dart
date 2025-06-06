@@ -89,153 +89,156 @@ class _ChatDetailPageState extends State<ChatDetailPage>
     final displayImage = widget.room.taskerProfile;
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BasicAppBar(
-            isLeading: false,
-            isTrailing: false,
-            leading: GestureDetector(
-              onTap: () {
-                _navigationService.goBack();
-              },
-              child: Image.asset(AppAssetIcons.arrowLeft),
-            ),
-            action: GestureDetector(
-              onTap: () {
-                //_navigationService.navigateTo(RouteName.chatPage);
-              },
-              child: Image.asset(AppAssetIcons.calling),
-            ),
-            trailing: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                displayImage != null
-                    ? CircleAvatar(
-                        radius: 24,
-                        child: ClipOval(
-                          child: Image.network(
-                            displayImage,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.darkBlue.withValues(alpha: 0.05),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.person,
-                          size: 32,
-                          color: AppColors.darkBlue,
-                        ),
-                      ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: BlocProvider.value(
-                    value: context.read<ChatBloc>(),
-                    child: BlocBuilder<ChatBloc, ChatState>(
-                      buildWhen: (previous, current) =>
-                          current is ChatOnlineStatusState,
-                      builder: (context, state) {
-                        bool isOnline = false;
-                        if (state is ChatOnlineStatusState) {
-                          isOnline =
-                              state.onlineUsers[widget.room.taskerId] ?? false;
-                        } else {
-                          isOnline = context
-                              .read<ChatBloc>()
-                              .isUserOnline(widget.room.taskerId);
-                        }
-                        return Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: isOnline ? AppColors.green : AppColors.red,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BasicAppBar(
+              isLeading: false,
+              isTrailing: false,
+              leading: GestureDetector(
+                onTap: () {
+                  _navigationService.goBack();
+                },
+                child: Image.asset(AppAssetIcons.arrowLeft),
+              ),
+              action: GestureDetector(
+                onTap: () {
+                  //_navigationService.navigateTo(RouteName.chatPage);
+                },
+                child: Image.asset(AppAssetIcons.calling),
+              ),
+              trailing: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  displayImage != null
+                      ? CircleAvatar(
+                          radius: 24,
+                          child: ClipOval(
+                            child: Image.network(
+                              displayImage,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
                             ),
                           ),
+                        )
+                      : Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.darkBlue.withValues(alpha: 0.05),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.person,
+                            size: 32,
+                            color: AppColors.darkBlue,
+                          ),
+                        ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: BlocProvider.value(
+                      value: context.read<ChatBloc>(),
+                      child: BlocBuilder<ChatBloc, ChatState>(
+                        buildWhen: (previous, current) =>
+                            current is ChatOnlineStatusState,
+                        builder: (context, state) {
+                          bool isOnline = false;
+                          if (state is ChatOnlineStatusState) {
+                            isOnline =
+                                state.onlineUsers[widget.room.taskerId] ??
+                                    false;
+                          } else {
+                            isOnline = context
+                                .read<ChatBloc>()
+                                .isUserOnline(widget.room.taskerId);
+                          }
+                          return Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: isOnline ? AppColors.green : AppColors.red,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              title: displayName,
+            ),
+            BlocConsumer<ChatBloc, ChatState>(
+              listener: (context, state) {
+                if (state is ChatError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else if (state is ChatMessagesLoaded &&
+                    state.roomId == widget.room.id) {
+                  // Scroll to bottom when new message arrives
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (_scrollController.hasClients) {
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    }
+                  });
+                }
+              },
+              builder: (context, state) {
+                if (state is ChatMessagesLoaded &&
+                    state.roomId == widget.room.id) {
+                  final messages = state.messages.reversed.toList();
+                  return Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      controller: _scrollController,
+                      itemCount: messages.length,
+                      reverse: true,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMe = message.senderId == widget.userId;
+                        return ChatMessageItem(
+                          message: messages[index],
+                          isMe: isMe,
                         );
                       },
                     ),
-                  ),
-                ),
-              ],
-            ),
-            title: displayName,
-          ),
-          BlocConsumer<ChatBloc, ChatState>(
-            listener: (context, state) {
-              if (state is ChatError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              } else if (state is ChatMessagesLoaded &&
-                  state.roomId == widget.room.id) {
-                // Scroll to bottom when new message arrives
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (_scrollController.hasClients) {
-                    _scrollController.animateTo(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeOut,
-                    );
-                  }
-                });
-              }
-            },
-            builder: (context, state) {
-              if (state is ChatMessagesLoaded &&
-                  state.roomId == widget.room.id) {
-                final messages = state.messages.reversed.toList();
-                return Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    controller: _scrollController,
-                    itemCount: messages.length,
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final isMe = message.senderId == widget.userId;
-                      return ChatMessageItem(
-                        message: messages[index],
-                        isMe: isMe,
-                      );
-                    },
-                  ),
-                );
-              }
-              if (state is ChatLoading) {
+                  );
+                }
+                if (state is ChatLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
                 return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return Center(
-                child: Text(
-                  'No messages yet',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
+                  child: Text(
+                    'No messages yet',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          _buildSendMessage(),
-        ],
+                );
+              },
+            ),
+            _buildSendMessage(),
+          ],
+        ),
       ),
     );
   }

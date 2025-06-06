@@ -70,21 +70,23 @@ class _ChooseWorkingTimePageState extends State<ChooseWorkingTimePage> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            BasicAppBar(
-              isLeading: false,
-              isTrailing: false,
-              leading: GestureDetector(
-                onTap: Navigator.of(context).pop,
-                child: Image.asset(AppAssetIcons.arrowLeft),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                leading: GestureDetector(
+                  onTap: Navigator.of(context).pop,
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
+                title: 'Choose Working Time',
               ),
-              title: 'Choose Working Time',
-            ),
-            StepComponent(isDone: true),
-            _buildEnterInformation(),
-          ],
+              StepComponent(isDone: true),
+              _buildEnterInformation(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: GestureDetector(

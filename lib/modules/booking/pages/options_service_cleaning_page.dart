@@ -97,24 +97,26 @@ class _OptionsServiceCleaningPageState
                 ),
               );
             }
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BasicAppBar(
-                    isLeading: false,
-                    isTrailing: false,
-                    leading: GestureDetector(
-                        onTap: () {
-                          _navigationService.goBack();
-                        },
-                        child: Image.asset(AppAssetIcons.arrowLeft)),
-                    title: 'Choose Options',
-                  ),
-                  _buildDuration(state),
-                  _addOnService(),
-                ],
+            return SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BasicAppBar(
+                      isLeading: false,
+                      isTrailing: false,
+                      leading: GestureDetector(
+                          onTap: () {
+                            _navigationService.goBack();
+                          },
+                          child: Image.asset(AppAssetIcons.arrowLeft)),
+                      title: 'Choose Options',
+                    ),
+                    _buildDuration(state),
+                    _addOnService(),
+                  ],
+                ),
               ),
             );
           },

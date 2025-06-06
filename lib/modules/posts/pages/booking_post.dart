@@ -61,80 +61,82 @@ class _BookingPostState extends State<BookingPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            BasicAppBar(
-              isLeading: false,
-              isTrailing: false,
-              leading: GestureDetector(
-                onTap: () {
-                  _navigationService.goBackToPreviousTab();
-                },
-                child: Image.asset(AppAssetIcons.arrowLeft),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                leading: GestureDetector(
+                  onTap: () {
+                    _navigationService.goBackToPreviousTab();
+                  },
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
+                title: 'Bookings',
               ),
-              title: 'Bookings',
-            ),
-            _sortByStatus(),
-            BlocProvider(
-              create: (context) {
-                _postBloc = PostBloc(PostsRepo())
-                  ..add(
-                    PostFetchEvent(
-                      userId: _userId,
-                      status: selectedValue?.toLowerCase(),
-                    ),
-                  );
-                return _postBloc;
-              },
-              child: BlocBuilder<PostBloc, PostState>(
-                builder: (context, state) {
-                  if (state is PostLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+              _sortByStatus(),
+              BlocProvider(
+                create: (context) {
+                  _postBloc = PostBloc(PostsRepo())
+                    ..add(
+                      PostFetchEvent(
+                        userId: _userId,
+                        status: selectedValue?.toLowerCase(),
+                      ),
                     );
-                  } else if (state is PostLoaded) {
-                    final posts = state.posts;
-                    if (posts.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 24),
-                          child: Text(
-                            'No bookings found for this status',
-                            style: AppTextStyles.bodySmallSemiBold.copyWith(
-                              color: AppColors.redMedium,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                  return _postBloc;
+                },
+                child: BlocBuilder<PostBloc, PostState>(
+                  builder: (context, state) {
+                    if (state is PostLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is PostLoaded) {
+                      final posts = state.posts;
+                      if (posts.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 24),
+                            child: Text(
+                              'No bookings found for this status',
+                              style: AppTextStyles.bodySmallSemiBold.copyWith(
+                                color: AppColors.redMedium,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
+                        );
+                      }
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: posts.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 0),
+                        itemBuilder: (context, index) {
+                          return _buildBookingCard(posts[index]);
+                        },
                       );
                     }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: posts.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 0),
-                      itemBuilder: (context, index) {
-                        return _buildBookingCard(posts[index]);
-                      },
-                    );
-                  }
-                  return Center(
-                    child: Text(
-                      'No bookings found',
-                      style: AppTextStyles.bodySmallSemiBold.copyWith(
-                        color: AppColors.redMedium,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    return Center(
+                      child: Text(
+                        'No bookings found',
+                        style: AppTextStyles.bodySmallSemiBold.copyWith(
+                          color: AppColors.redMedium,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

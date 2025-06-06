@@ -114,8 +114,7 @@ class _EditProfileState extends State<EditProfile> {
             }
           },
           builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+            return SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,19 +135,26 @@ class _EditProfileState extends State<EditProfile> {
                     const SizedBox(height: 10),
                     _buildProfileInfo(),
                     const SizedBox(height: 16),
-                    _buildDivider(),
-                    const SizedBox(height: 24),
-                    _buildEditName(),
-                    const SizedBox(height: 16),
-                    _buildAddress(),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: _buttonSave(
-                          context: context,
-                          enable: !_isEmpty && !_isUpdating,
-                          backgroundColor: AppColors.blue),
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        children: [
+                          _buildDivider(),
+                          const SizedBox(height: 24),
+                          _buildEditName(),
+                          const SizedBox(height: 16),
+                          _buildAddress(),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: _buttonSave(
+                                context: context,
+                                enable: !_isEmpty && !_isUpdating,
+                                backgroundColor: AppColors.blue),
+                          ),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 40),
                     _buildDeleteAccount(context),
                     const SizedBox(height: 40),
                   ],

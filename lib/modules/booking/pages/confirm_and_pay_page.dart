@@ -56,44 +56,46 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BasicAppBar(
-              isLeading: false,
-              isTrailing: false,
-              title: "Confirm And Pay",
-              leading: GestureDetector(
-                onTap: Navigator.of(context).pop,
-                child: Image.asset(AppAssetIcons.arrowLeft),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                title: "Confirm And Pay",
+                leading: GestureDetector(
+                  onTap: Navigator.of(context).pop,
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
               ),
-            ),
-            StepComponent(isDone: false),
-            const SizedBox(height: 16),
-            ConfirmBox(
-              title: 'Location',
-              children: [
-                _buildItemLocation(
-                    Image.asset(AppAssetIcons.locationFilled),
-                    _getMainAddress(bookingData.address!),
-                    _getSecondAddress(bookingData.address!)),
-                _buildItemLocation(Image.asset(AppAssetIcons.profileFilled),
-                    bookingData.user!.name, bookingData.user!.phone),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: ConfirmBox(
-                title: 'Task Info',
+              StepComponent(isDone: false),
+              const SizedBox(height: 16),
+              ConfirmBox(
+                title: 'Location',
                 children: [
-                  _buildItemTaskInfo(),
+                  _buildItemLocation(
+                      Image.asset(AppAssetIcons.locationFilled),
+                      _getMainAddress(bookingData.address!),
+                      _getSecondAddress(bookingData.address!)),
+                  _buildItemLocation(Image.asset(AppAssetIcons.profileFilled),
+                      bookingData.user!.name, bookingData.user!.phone),
                 ],
               ),
-            ),
-            _buildPaymentMethod(),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: ConfirmBox(
+                  title: 'Task Info',
+                  children: [
+                    _buildItemTaskInfo(),
+                  ],
+                ),
+              ),
+              _buildPaymentMethod(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: MultiBlocProvider(

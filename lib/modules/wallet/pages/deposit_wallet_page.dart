@@ -92,23 +92,25 @@ class _DepositWalletPageState extends State<DepositWalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BasicAppBar(
-              isLeading: false,
-              isTrailing: false,
-              leading: GestureDetector(
-                onTap: () {
-                  navigationService.goBack(true);
-                },
-                child: Image.asset(AppAssetIcons.arrowLeft),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                leading: GestureDetector(
+                  onTap: () {
+                    navigationService.goBack(true);
+                  },
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
+                title: 'Deposit',
               ),
-              title: 'Deposit',
-            ),
-            _buildBodyDeposit(),
-          ],
+              _buildBodyDeposit(),
+            ],
+          ),
         ),
       ),
     );

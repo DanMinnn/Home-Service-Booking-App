@@ -55,60 +55,62 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            BasicAppBar(
-              isLeading: false,
-              isTrailing: false,
-              leading: GestureDetector(
-                onTap: () {
-                  navigationService.goBackToPreviousTab();
-                },
-                child: Image.asset(AppAssetIcons.arrowLeft),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                leading: GestureDetector(
+                  onTap: () {
+                    navigationService.goBackToPreviousTab();
+                  },
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
+                title: 'Profile',
               ),
-              title: 'Profile',
-            ),
-            _buildHeader(),
-            const SizedBox(height: 24),
-            _buildItem(
-              title: 'Wallet',
-              icon: AppAssetIcons.digitalPay,
-              onTap: () {
-                navigationService.navigateTo(RouteName.wallet, arguments: {
-                  'userId': _userId,
-                });
-              },
-            ),
-            _buildItem(
-              title: 'Favorite Taskers',
-              icon: AppAssetIcons.heart,
-              onTap: () {
-                //navigationService.navigateTo('/my-orders');
-              },
-            ),
-            _buildItem(
-              title: 'Notification',
-              icon: AppAssetIcons.notification,
-              onTap: () {
-                navigationService
-                    .navigateTo(RouteName.notifications, arguments: {
-                  'userId': _userId,
-                });
-              },
-            ),
-            _buildItem(
-              title: 'Logout',
-              icon: AppAssetIcons.logout,
-              onTap: () {
-                context.read<AppStateBloc>().logout();
-                Future.delayed(const Duration(milliseconds: 500), () {
+              _buildHeader(),
+              const SizedBox(height: 24),
+              _buildItem(
+                title: 'Wallet',
+                icon: AppAssetIcons.digitalPay,
+                onTap: () {
+                  navigationService.navigateTo(RouteName.wallet, arguments: {
+                    'userId': _userId,
+                  });
+                },
+              ),
+              _buildItem(
+                title: 'Favorite Taskers',
+                icon: AppAssetIcons.heart,
+                onTap: () {
+                  //navigationService.navigateTo('/my-orders');
+                },
+              ),
+              _buildItem(
+                title: 'Notification',
+                icon: AppAssetIcons.notification,
+                onTap: () {
                   navigationService
-                      .navigateToAndClearStack(RouteName.authScreen);
-                });
-              },
-            ),
-          ],
+                      .navigateTo(RouteName.notifications, arguments: {
+                    'userId': _userId,
+                  });
+                },
+              ),
+              _buildItem(
+                title: 'Logout',
+                icon: AppAssetIcons.logout,
+                onTap: () {
+                  context.read<AppStateBloc>().logout();
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    navigationService
+                        .navigateToAndClearStack(RouteName.authScreen);
+                  });
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -40,23 +40,25 @@ class _WalletPageState extends State<WalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BasicAppBar(
-              isLeading: false,
-              isTrailing: false,
-              leading: GestureDetector(
-                onTap: () {
-                  navigationService.goBack();
-                },
-                child: Image.asset(AppAssetIcons.arrowLeft),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BasicAppBar(
+                isLeading: false,
+                isTrailing: false,
+                leading: GestureDetector(
+                  onTap: () {
+                    navigationService.goBack();
+                  },
+                  child: Image.asset(AppAssetIcons.arrowLeft),
+                ),
+                title: 'Wallet',
               ),
-              title: 'Wallet',
-            ),
-            _buildBodyWallet(),
-          ],
+              _buildBodyWallet(),
+            ],
+          ),
         ),
       ),
     );

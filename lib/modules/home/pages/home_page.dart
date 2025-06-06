@@ -82,32 +82,34 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BasicAppBar(
-            isLeading: true,
-            isTrailing: true,
-            leading: Image.asset(AppAssetIcons.logoHouse),
-            title: 'Welcome,',
-            subtitle: _userName,
-            trailing: GestureDetector(
-              onTap: () {
-                _navigationService.changeTab(1);
-              },
-              child: GestureDetector(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BasicAppBar(
+              isLeading: true,
+              isTrailing: true,
+              leading: Image.asset(AppAssetIcons.logoHouse),
+              title: 'Welcome,',
+              subtitle: _userName,
+              trailing: GestureDetector(
                 onTap: () {
-                  _navigationService
-                      .navigateTo(RouteName.notifications, arguments: {
-                    'userId': _userId,
-                  });
+                  _navigationService.changeTab(1);
                 },
-                child: NotificationBadge(),
+                child: GestureDetector(
+                  onTap: () {
+                    _navigationService
+                        .navigateTo(RouteName.notifications, arguments: {
+                      'userId': _userId,
+                    });
+                  },
+                  child: NotificationBadge(),
+                ),
               ),
             ),
-          ),
-          _buildBody(),
-        ],
+            _buildBody(),
+          ],
+        ),
       ),
     );
   }
