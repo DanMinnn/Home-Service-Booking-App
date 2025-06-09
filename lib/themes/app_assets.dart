@@ -72,4 +72,7 @@ class AppAssetIcons {
   static const String sendMessage = '${iconPath}send_ic.png';
 
   static const String cancelIc = '${iconPath}cancel_ic.png';
+  static const String historyIc = '${iconPath}history_ic.png';
+  static const String completedIc = '${iconPath}completed_ic.png';
+  static const String starIc = '${iconPath}star_ic.png';
 }

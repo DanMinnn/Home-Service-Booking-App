@@ -5,6 +5,7 @@ import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
 import 'package:home_service/modules/posts/blocs/post_state.dart';
 import 'package:home_service/modules/posts/models/post.dart';
 import 'package:home_service/modules/posts/repos/posts_repo.dart';
+import 'package:home_service/modules/review/pages/rating_dialog.dart';
 import 'package:home_service/providers/log_provider.dart';
 import 'package:home_service/repo/user_repository.dart';
 import 'package:home_service/themes/app_colors.dart';
@@ -29,6 +30,7 @@ class _BookingPostState extends State<BookingPost> {
   final NavigationService _navigationService = NavigationService();
   int _userId = 0;
   late PostBloc _postBloc;
+  bool _isCompleted = false;
 
   @override
   void initState() {
@@ -77,6 +79,7 @@ class _BookingPostState extends State<BookingPost> {
                 title: 'Bookings',
               ),
               _sortByStatus(),
+              const SizedBox(height: 16),
               BlocProvider(
                 create: (context) {
                   _postBloc = PostBloc(PostsRepo())
@@ -201,6 +204,7 @@ class _BookingPostState extends State<BookingPost> {
                   userId: _userId,
                   status: statusFilter,
                 ));
+                _isCompleted = value == 'Completed';
               });
             },
             buttonStyleData: ButtonStyleData(
@@ -340,12 +344,40 @@ class _BookingPostState extends State<BookingPost> {
           child: Column(
             children: [
               _buildItemRow(AppAssetIcons.calendarFilled,
-                  showDateWork(post.scheduledStart!)),
-              const SizedBox(height: 8),
+                  showDateWork(post.scheduledStart)),
+              const SizedBox(height: 12),
               _buildItemRow(AppAssetIcons.timer,
-                  showDurationTime(post.scheduledStart!, post.scheduledEnd!)),
+                  showDurationTime(post.scheduledStart, post.scheduledEnd)),
               const SizedBox(height: 8),
               _buildItemRow(AppAssetIcons.locationFilled, post.address ?? ''),
+              if (_isCompleted) ...[
+                const SizedBox(height: 8),
+                _buildItemRow(AppAssetIcons.completedIc,
+                    'Task completed at ${showCompletedAt(post.completedAt)}'),
+                const SizedBox(height: 8),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      RatingDialog.show(
+                        context,
+                        bookingId: post.bookingId ?? 0,
+                        reviewerId: _userId,
+                        taskerName: post.taskerName ?? '',
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Review',
+                      style: AppTextStyles.bodyLargeSemiBold,
+                    ),
+                  ),
+                )
+              ],
             ],
           ),
         ),
@@ -387,20 +419,30 @@ class _BookingPostState extends State<BookingPost> {
     return text[0].toUpperCase() + text.substring(1);
   }
 
-  String showDurationTime(DateTime startTime, DateTime endTime) {
+  String showDurationTime(DateTime? startTime, DateTime? endTime) {
     try {
       final timeFormatter = DateFormat('H:mm');
-      return '${timeFormatter.format(startTime)} - ${timeFormatter.format(endTime)}';
+      return '${timeFormatter.format(startTime!)} - ${timeFormatter.format(endTime!)}';
     } catch (e) {
       logger.log("Error parsing date: $e");
       return 'Invalid date';
     }
   }
 
-  String showDateWork(DateTime startTime) {
+  String showDateWork(DateTime? startTime) {
     try {
       final outputFormat = DateFormat('dd/MM/yyyy');
-      return outputFormat.format(startTime);
+      return outputFormat.format(startTime!);
+    } catch (e) {
+      logger.log("Error parsing date: $e");
+      return 'Invalid date';
+    }
+  }
+
+  String showCompletedAt(DateTime? completedAt) {
+    try {
+      final outputFormat = DateFormat('dd/MM/yyyy H:mm');
+      return outputFormat.format(completedAt!);
     } catch (e) {
       logger.log("Error parsing date: $e");
       return 'Invalid date';
