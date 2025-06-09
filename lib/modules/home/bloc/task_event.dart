@@ -3,8 +3,9 @@ import '../../chat/model/chat_room_req.dart';
 abstract class TaskEvent {}
 
 class LoadTasksEvent extends TaskEvent {
+  final int taskerId;
   final List<int> serviceIds;
-  LoadTasksEvent({required this.serviceIds});
+  LoadTasksEvent({required this.taskerId, required this.serviceIds});
 }
 
 class AssignTaskEvent extends TaskEvent {

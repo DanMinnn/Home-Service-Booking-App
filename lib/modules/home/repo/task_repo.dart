@@ -10,10 +10,11 @@ class TaskRepo {
   final _apiProvider = ApiProvider();
 
   //get new tasks
-  Future<List<Task>> getAllTasksPending(List<int> serviceIds) async {
+  Future<List<Task>> getAllTasksPending(
+      int taskerId, List<int> serviceIds) async {
     try {
       final response = await _apiProvider.get(
-        '/booking/all-task-for-tasker',
+        '/booking/all-task-for-tasker/$taskerId',
         queryParameters: {
           'serviceIds': serviceIds.join(','),
         },

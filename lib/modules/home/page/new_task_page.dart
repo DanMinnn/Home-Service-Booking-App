@@ -68,7 +68,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
             : BlocProvider(
                 create: (context) => TaskBloc(TaskRepo())
                   ..add(
-                    LoadTasksEvent(serviceIds: serviceIds),
+                    LoadTasksEvent(taskerId: taskerId, serviceIds: serviceIds),
                   ),
                 child: BlocBuilder<TaskBloc, TaskState>(
                   builder: (context, state) {

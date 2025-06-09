@@ -18,7 +18,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       LoadTasksEvent event, Emitter<TaskState> emit) async {
     emit(TaskLoadingState());
     try {
-      final tasks = await _taskRepo.getAllTasksPending(event.serviceIds);
+      final tasks =
+          await _taskRepo.getAllTasksPending(event.taskerId, event.serviceIds);
       emit(TaskLoadedState(tasks));
     } catch (e) {
       emit(TaskErrorState(e.toString()));
