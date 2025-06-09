@@ -45,22 +45,6 @@ class TaskerRepository {
     }
   }
 
-  Future<void> updateTaskerInStorage(String name, String imagePath) async {
-    try {
-      await loadTaskerFromStorage();
-      final tasker = _currentTasker;
-
-      if (tasker != null) {
-        tasker.name = name;
-        tasker.profileImage = imagePath;
-        await saveTaskerToStorage(tasker);
-      }
-      logger.log("Tasker updated in storage: ${tasker.toString()}");
-    } catch (e) {
-      logger.log("Error updating tasker in storage: ${e.toString()}");
-    }
-  }
-
   void setCurrentTasker(Tasker tasker) {
     _currentTasker = tasker;
     saveTaskerToStorage(tasker);

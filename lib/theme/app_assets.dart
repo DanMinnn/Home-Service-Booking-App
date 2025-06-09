@@ -39,4 +39,10 @@ class AppAssetsIcons {
   static const String phoneIc = '${iconPath}phone_ic.png';
   static const String chatIc = '${iconPath}chat_ic.png';
   static const String sendIc = '${iconPath}send_ic.png';
+
+  //profile
+  static const String historyIc = '${iconPath}history_ic.png';
+  static const String logoutIc = '${iconPath}logout_ic.png';
+  static const String arrowBackRightIc = '${iconPath}arrow_back_right_ic.png';
+  static const String cameraIc = '${iconPath}camera_ic.png';
 }

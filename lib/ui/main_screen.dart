@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_tasker/modules/chat/pages/chat_page.dart';
 import 'package:home_service_tasker/modules/notifications/page/notifications_screen.dart';
+import 'package:home_service_tasker/modules/profile/pages/profile_page.dart';
 
 import '../modules/home/page/home_page.dart';
 import '../providers/log_provider.dart';
@@ -27,9 +28,7 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(),
     ChatPage(),
     NotificationsScreen(),
-    Center(
-      child: Text('Logout'),
-    ),
+    Profile(),
   ];
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_service_tasker/repo/tasker_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/log_provider.dart';
@@ -8,7 +9,7 @@ enum AppState { loading, unAuthorized, authorized }
 
 class AppStateBloc extends Cubit<AppState> {
   LogProvider get logger => const LogProvider('APP-STATE-BLOC:::');
-  //final UserRepository _userRepository = UserRepository();
+  final TaskerRepository _taskerRepository = TaskerRepository();
   AppStateBloc() : super(AppState.loading) {
     _launchApp();
   }
@@ -20,7 +21,7 @@ class AppStateBloc extends Cubit<AppState> {
     logger.log('Authorization level: $authorLevel');
 
     if (authorLevel == 2) {
-      //await _userRepository.loadUserFromStorage();
+      await _taskerRepository.loadTaskerFromStorage();
       emit(AppState.authorized);
       logger.log('User is authorized');
     } else {
@@ -39,7 +40,12 @@ class AppStateBloc extends Cubit<AppState> {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(PrefsKey.authorLevel);
-    //await _userRepository.clearUser();
+    await prefs.remove('email');
+    await prefs.remove('hasShownServiceDialog');
+    await prefs.remove('taskerId');
+    await prefs.remove('access_token');
+    await prefs.remove('refresh_token');
+    await _taskerRepository.clearTasker();
     logger.log('User logged out');
     emit(AppState.unAuthorized);
   }

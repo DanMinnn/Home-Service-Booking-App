@@ -21,11 +21,11 @@ class Tasker {
 
   Tasker.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['firstLastName'];
+    name = json['fullName'];
     email = json['email'];
     phone = json['phoneNumber'];
     profileImage = json['profileImage'];
-    active = json['active'];
+    active = json['isActive'];
     if (json['services'] != null) {
       services = <ServiceItem>[];
       json['services'].forEach((v) {
@@ -37,7 +37,7 @@ class Tasker {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['firstLastName'] = name;
+    data['fullName'] = name;
     data['email'] = email;
     data['phoneNumber'] = phone;
     data['profileImage'] = profileImage;

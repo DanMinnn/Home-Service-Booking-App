@@ -111,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen> {
         'No deeplink found or processed, proceeding with normal flow. App state: $appState');
 
     if (appState == AppState.authorized) {
-      _navigationService.navigateToAndClearStack(RouteName.homeScreen);
+      _navigationService.navigateToAndClearStack(RouteName.mainScreen);
     } else {
       _navigationService.navigateToAndClearStack(RouteName.loginScreen);
     }

@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage>
             leading: Image.asset(AppAssetsIcons.menuIc),
             trailing: GestureDetector(
               onTap: () {
-                _navigationService.changeTab(1);
+                _navigationService.changeTab(2);
               },
               child: NotificationBadge(),
             ),

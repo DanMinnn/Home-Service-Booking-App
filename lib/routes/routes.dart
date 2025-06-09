@@ -6,6 +6,7 @@ import 'package:home_service_tasker/modules/auth/pages/set_new_password.dart';
 import 'package:home_service_tasker/modules/auth/pages/verified_success_page.dart';
 import 'package:home_service_tasker/modules/home/page/task_detail_page.dart';
 import 'package:home_service_tasker/modules/notifications/page/notifications_screen.dart';
+import 'package:home_service_tasker/modules/profile/pages/edit_profile_page.dart';
 import 'package:home_service_tasker/routes/route_name.dart';
 import 'package:home_service_tasker/ui/main_screen.dart';
 import 'package:home_service_tasker/ui/maps_page.dart';
@@ -38,6 +39,8 @@ class Routes {
         return _buildRoute(settings, const MapsPage());
       case RouteName.notificationScreen:
         return _buildRoute(settings, const NotificationsScreen());
+      case RouteName.editProfileScreen:
+        return _buildRoute(settings, const EditProfilePage());
       default:
         _logger.log('Default redirect to: ${settings.name}');
         return _buildRoute(settings, const SplashScreen());
