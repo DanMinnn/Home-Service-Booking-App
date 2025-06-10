@@ -11,4 +11,6 @@ class RouteName {
   static const String mapsScreen = '/maps-screen';
   static const String notificationScreen = '/notification-screen';
   static const String editProfileScreen = '/edit-profile-screen';
+  static const String historyTaskScreen = '/history-task-screen';
+  static const String historyTaskDetailScreen = '/history-task-detail-screen';
 }

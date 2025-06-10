@@ -192,7 +192,9 @@ class _ProfileState extends State<Profile> {
           context.read<AppStateBloc>().logout();
           navigationService.navigateToAndClearStack(RouteName.loginScreen);
         } else if (title == 'My Tasks') {
-          //navigationService.navigateTo(RouteName.myTasksScreen);
+          navigationService.navigateTo(RouteName.historyTaskScreen, arguments: {
+            'taskerId': _taskerId,
+          });
         } else if (title == 'My Address') {
           //navigationService.navigateTo(RouteName.myAddressScreen);
         }

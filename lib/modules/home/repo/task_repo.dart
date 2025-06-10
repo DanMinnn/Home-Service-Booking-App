@@ -160,4 +160,26 @@ class TaskRepo {
       rethrow;
     }
   }
+
+  //get history tasks
+  Future<List<Task>> getHistoryTasks(int taskerId) async {
+    try {
+      final response = await _apiProvider.get(
+        '/booking/$taskerId/get-history-tasks',
+      );
+      if (response.statusCode == 200) {
+        final data = response.data['data']['items'] as List;
+        final tasks =
+            data.map((e) => Task.fromJson(e as Map<String, dynamic>)).toList();
+
+        logger.log('HISTORY TASKS REPO: ${tasks.length}');
+        return tasks;
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      logger.log('Error fetching history tasks: $e');
+      rethrow;
+    }
+  }
 }

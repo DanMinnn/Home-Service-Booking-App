@@ -15,6 +15,8 @@ class Task {
   String? notes;
   double latitude;
   double longitude;
+  String? userName;
+  String? cancelReason;
 
   Task({
     required this.bookingId,
@@ -33,6 +35,8 @@ class Task {
     this.notes,
     required this.latitude,
     required this.longitude,
+    this.userName,
+    this.cancelReason,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -53,6 +57,8 @@ class Task {
       notes: json['notes'],
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      userName: json['username'],
+      cancelReason: json['cancelReason'],
     );
   }
 

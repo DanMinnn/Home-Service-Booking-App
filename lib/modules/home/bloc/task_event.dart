@@ -36,3 +36,8 @@ class CreateChatRoomEvent extends TaskEvent {
 
   CreateChatRoomEvent(this.chatRoomReq);
 }
+
+class LoadTaskHistoryEvent extends TaskEvent {
+  final int taskerId;
+  LoadTaskHistoryEvent({required this.taskerId});
+}

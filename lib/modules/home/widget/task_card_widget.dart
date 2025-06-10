@@ -21,8 +21,6 @@ class TaskCardWidget extends StatefulWidget {
 
 class _TaskCardWidgetState extends State<TaskCardWidget> {
   final LogProvider logger = const LogProvider(':::TASK-CARD-WIDGET:::');
-  bool inProgress = false;
-  bool completed = false;
   late Task task;
   DateTime currentDate = DateTime.now();
 
@@ -30,16 +28,6 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
   void initState() {
     super.initState();
     task = widget.task;
-    _checkDateTask();
-  }
-
-  void _checkDateTask() {
-    if (currentDate.isAfter(task.scheduledStart) &&
-        currentDate.isBefore(task.scheduledEnd)) {
-      inProgress = true;
-    } else if (currentDate.isAfter(task.scheduledEnd)) {
-      completed = true;
-    }
   }
 
   @override
@@ -114,18 +102,25 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (inProgress)
+                if (task.status == 'in_progress')
                   Text(
                     'In Progress',
                     style: AppTextStyles.headline4.copyWith(
                       color: AppColors.primary,
                     ),
                   )
-                else if (completed)
+                else if (task.status == 'completed')
                   Text(
                     'Completed',
                     style: AppTextStyles.headline4.copyWith(
                       color: AppColors.alertSuccess,
+                    ),
+                  )
+                else if (task.status == 'cancelled')
+                  Text(
+                    'Cancelled',
+                    style: AppTextStyles.headline4.copyWith(
+                      color: AppColors.alertFailed,
                     ),
                   ),
                 Text(

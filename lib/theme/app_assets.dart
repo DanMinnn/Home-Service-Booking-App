@@ -46,4 +46,7 @@ class AppAssetsIcons {
   static const String arrowBackRightIc = '${iconPath}arrow_back_right_ic.png';
   static const String cameraIc = '${iconPath}camera_ic.png';
   static const String markerIc = '${iconPath}marker_ic.png';
+  static const String userNameIc = '${iconPath}username_ic.png';
+  static const String cancelReason = '${iconPath}cancel_reason_ic.png';
+  static const String paymentStatus = '${iconPath}payment_status_ic.png';
 }
