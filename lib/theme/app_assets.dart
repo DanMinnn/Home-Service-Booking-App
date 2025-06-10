@@ -45,4 +45,5 @@ class AppAssetsIcons {
   static const String logoutIc = '${iconPath}logout_ic.png';
   static const String arrowBackRightIc = '${iconPath}arrow_back_right_ic.png';
   static const String cameraIc = '${iconPath}camera_ic.png';
+  static const String markerIc = '${iconPath}marker_ic.png';
 }

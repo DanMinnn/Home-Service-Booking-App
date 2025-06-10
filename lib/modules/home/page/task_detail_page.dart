@@ -85,32 +85,39 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            BasicAppBar(
-              backgroundColor: true,
-              leading: GestureDetector(
-                onTap: () {
-                  _navigationService.goBack();
-                },
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    AppColors.white,
-                    BlendMode.srcIn,
-                  ),
-                  child: Image.asset(
-                    AppAssetsIcons.arrowLeft,
-                    color: AppColors.dark,
-                  ),
+      backgroundColor: AppColors.dark,
+      body: Column(
+        children: [
+          BasicAppBar(
+            backgroundColor: true,
+            leading: GestureDetector(
+              onTap: () {
+                _navigationService.goBack();
+              },
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  AppColors.white,
+                  BlendMode.srcIn,
+                ),
+                child: Image.asset(
+                  AppAssetsIcons.arrowLeft,
+                  color: AppColors.dark,
                 ),
               ),
-              title: 'Task Detail',
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            title: 'Task Detail',
+          ),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
               child: Column(
                 children: [
                   TaskCardWidget(
@@ -118,13 +125,13 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   ),
                   const SizedBox(height: 16),
                   _buildTaskDetailCard(),
-                  const SizedBox(height: 60),
+                  const Spacer(),
                   _buildSwipeBtnGetTask(),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -412,7 +419,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     if (parts.length >= 4) {
       result = '${parts[1].trim()}, ${parts[2].trim()}';
     } else {
-      result = parts[1].trim();
+      result = parts[0].trim();
     }
     return result;
   }

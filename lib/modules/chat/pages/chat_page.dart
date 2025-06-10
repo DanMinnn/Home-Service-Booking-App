@@ -225,6 +225,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                           }
                           return Expanded(
                             child: RefreshIndicator(
+                              color: AppColors.white,
+                              backgroundColor: AppColors.primary,
                               onRefresh: () async {
                                 _chatBloc.add(ChatRoomsLoadedEvent(taskerId));
                               },
@@ -273,7 +275,15 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                               SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: _refreshChatRooms,
-                                child: Text('Load Chats'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 12),
+                                ),
+                                child: Text(
+                                  'Load Chats',
+                                  style: TextStyle(color: AppColors.white),
+                                ),
                               ),
                             ],
                           ),

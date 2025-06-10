@@ -88,7 +88,7 @@ class _ProfileState extends State<Profile> {
                   _buildProfileItem(
                     'My Address',
                     'Manage your addresses',
-                    AppAssetsIcons.locationIc,
+                    AppAssetsIcons.markerIc,
                   ),
                   _buildProfileItem(
                     'Logout',
