@@ -1,0 +1,46 @@
+name: home_service_admin
+description: "Admin Dashboard"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.2
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  dio:
+  shared_preferences:
+  flutter_dotenv:
+  json_serializable:
+  loading_indicator: ^3.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/backgrounds/
+    - assets/images/backgrounds/2.0x/
+    - assets/images/backgrounds/3.0x/
+    - assets/images/icons/
+    - assets/images/icons/2.0x/
+    - assets/images/icons/3.0x/
+    - .env
+
+  fonts:
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/dm_sans/DMSans-Bold.ttf
+        - asset: assets/fonts/dm_sans/DMSans-Medium.ttf
+        - asset: assets/fonts/dm_sans/DMSans-Regular.ttf
+        - asset: assets/fonts/dm_sans/DMSans-SemiBold.ttf
+
+
