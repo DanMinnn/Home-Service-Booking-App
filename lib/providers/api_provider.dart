@@ -37,13 +37,13 @@ class ApiProvider {
         return SharedPreferences.getInstance().then((prefs) {
           TokenManager().load(prefs);
           logger.log('calling with access token: $_accessToken');
-          //options.headers['Authorization'] = 'Bearer $_accessToken';
-          options.headers.remove('Authorization');
+          options.headers['Authorization'] = 'Bearer $_accessToken';
+          //options.headers.remove('Authorization');
           return handler.next(options);
         });
       }
-      //options.headers['Authorization'] = 'Bearer $_accessToken';
-      options.headers.remove('Authorization');
+      options.headers['Authorization'] = 'Bearer $_accessToken';
+      //options.headers.remove('Authorization');
       return handler.next(options);
     }, onResponse: (response, handler) {
       return handler.next(response);
