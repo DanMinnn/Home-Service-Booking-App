@@ -8,6 +8,8 @@ import 'package:home_service_admin/themes/app_assets.dart';
 import 'package:home_service_admin/themes/app_colors.dart';
 import 'package:home_service_admin/themes/style_text.dart';
 
+import '../../../providers/log_provider.dart';
+
 class CustomerPage extends StatefulWidget {
   const CustomerPage({super.key});
 
@@ -17,6 +19,15 @@ class CustomerPage extends StatefulWidget {
 
 class CustomerPageState extends State<CustomerPage> {
   bool showAddCustomerForm = false;
+
+  late UserBloc _userBloc;
+  final LogProvider logger = LogProvider("::::USER-PAGE::::");
+  @override
+  void initState() {
+    super.initState();
+    _userBloc = UserBloc(userRepo: UserRepo());
+    _userBloc.add(TaskerFetchEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,9 +127,12 @@ class CustomerPageState extends State<CustomerPage> {
                       ),
                       SizedBox(height: 8),
                       // Customer List
-                      BlocProvider(
-                        create: (context) => UserBloc(userRepo: UserRepo())
-                          ..add(CustomerFetchEvent()),
+                      BlocProvider.value(
+                        value: _userBloc
+                          ..add(CustomerFetchEvent(
+                            pageNo: 0,
+                            pageSize: 10,
+                          )),
                         child: BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
                             if (state is UserLoading) {
@@ -141,23 +155,32 @@ class CustomerPageState extends State<CustomerPage> {
                                 );
                               } else {
                                 return Expanded(
-                                  flex: 1,
-                                  child: ListView.builder(
-                                    itemBuilder: (_, index) {
-                                      final customer = customers[index];
-                                      return _buildCustomerRow(
-                                          customer.id,
-                                          customer.firstLastName,
-                                          customer.email,
-                                          customer.phoneNumber,
-                                          customer.profileImage!,
-                                          formatCreatedAt(customer.createdAt ??
-                                              DateTime.now()),
-                                          customer.isActive!);
-                                    },
-                                    itemCount: customers.length,
-                                    shrinkWrap: true,
-                                    physics: AlwaysScrollableScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemBuilder: (_, index) {
+                                            final customer = customers[index];
+                                            return _buildCustomerRow(
+                                                customer.id,
+                                                customer.firstLastName,
+                                                customer.email,
+                                                customer.phoneNumber,
+                                                customer.profileImage ??
+                                                    'https://t4.ftcdn.net/jpg/02/79/66/93/360_F_279669366_Lk12QalYQKMczLEa4ySjhaLtx1M2u7e6.jpg',
+                                                formatCreatedAt(
+                                                    customer.createdAt ??
+                                                        DateTime.now()),
+                                                customer.isActive!);
+                                          },
+                                          itemCount: customers.length,
+                                          shrinkWrap: true,
+                                          physics:
+                                              AlwaysScrollableScrollPhysics(),
+                                        ),
+                                      ),
+                                      _buildPaginationControls(state),
+                                    ],
                                   ),
                                 );
                               }
@@ -281,6 +304,93 @@ class CustomerPageState extends State<CustomerPage> {
                     ),
                   ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaginationControls(UserState state) {
+    // If we don't have data yet or metadata is null, don't show pagination
+    if (state is! UserLoaded) {
+      logger.log("User state is not loaded, skipping pagination controls.");
+      return const SizedBox.shrink();
+    }
+
+    final metadata = state.metadata!;
+
+    // If there's only one page, don't show pagination
+    if (metadata.totalPage <= 1) {
+      logger.log(
+          "User state is not loaded, skipping pagination controls. Only one page available.");
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: metadata.pageNo > 0
+                ? () {
+                    _userBloc.add(ChangePage(metadata.pageNo - 1));
+                  }
+                : null,
+            color: metadata.pageNo > 0 ? AppColors.primary : Colors.grey,
+          ),
+
+          // Page indicator
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+            ),
+            child: Text(
+              'Page ${metadata.pageNo + 1} of ${metadata.totalPage}',
+              style: AppTextStyles.bodyMedium,
+            ),
+          ),
+
+          // Next page button
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: metadata.pageNo < metadata.totalPage - 1
+                ? () {
+                    _userBloc.add(ChangePage(metadata.pageNo + 1));
+                  }
+                : null,
+            color: metadata.pageNo < metadata.totalPage - 1
+                ? AppColors.primary
+                : Colors.grey,
+          ),
+
+          // Items per page dropdown
+          const SizedBox(width: 16),
+          Text('Items per page:', style: AppTextStyles.bodySmall),
+          const SizedBox(width: 8),
+          DropdownButton<int>(
+            value: metadata.pageSize,
+            items: [10, 20, 50, 100].map((int value) {
+              return DropdownMenuItem<int>(
+                value: value,
+                child: Text('$value', style: AppTextStyles.bodyMedium),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null && value != metadata.pageSize) {
+                _userBloc.add(ChangeItemsPerPage(value));
+              }
+            },
+            style: AppTextStyles.bodyMedium,
+            underline: Container(
+              height: 1,
+              color: AppColors.primary,
             ),
           ),
         ],

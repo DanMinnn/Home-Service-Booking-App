@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_admin/modules/user/bloc/user_event.dart';
+import 'package:home_service_admin/providers/log_provider.dart';
 import 'package:home_service_admin/themes/app_assets.dart';
 import 'package:home_service_admin/themes/app_colors.dart';
 import 'package:home_service_admin/themes/style_text.dart';
@@ -18,16 +19,13 @@ class TaskerPage extends StatefulWidget {
 
 class TaskerPageState extends State<TaskerPage> {
   bool showAddCustomerForm = false;
-  int currentPage = 0;
-  int pageSize = 10;
-  int totalPages = 1;
-  int totalItems = 0;
   late UserBloc _userBloc;
-
+  final LogProvider logger = LogProvider("::::TASKER-PAGE::::");
   @override
   void initState() {
     super.initState();
     _userBloc = UserBloc(userRepo: UserRepo());
+    _userBloc.add(TaskerFetchEvent());
   }
 
   @override
@@ -137,8 +135,8 @@ class TaskerPageState extends State<TaskerPage> {
                       BlocProvider.value(
                         value: _userBloc
                           ..add(TaskerFetchEvent(
-                            pageNo: currentPage,
-                            pageSize: pageSize,
+                            pageNo: 0,
+                            pageSize: 10,
                           )),
                         child: BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
@@ -153,11 +151,6 @@ class TaskerPageState extends State<TaskerPage> {
                               );
                             } else if (state is UserLoaded) {
                               final taskers = state.users;
-                              // Update total pages based on response data
-                              if (state.metadata != null) {
-                                totalItems = state.metadata!.totalItems;
-                                totalPages = state.metadata!.totalPage;
-                              }
 
                               if (taskers.isEmpty) {
                                 return Center(
@@ -181,7 +174,7 @@ class TaskerPageState extends State<TaskerPage> {
                                                 tasker.phoneNumber,
                                                 tasker.status!,
                                                 tasker.profileImage ??
-                                                    AppAssetsIcons.clientIc,
+                                                    'https://sm.ign.com/ign_nordic/cover/a/avatar-gen/avatar-generations_prsz.jpg',
                                                 formatCreatedAt(
                                                     tasker.createdAt ??
                                                         DateTime.now()),
@@ -193,27 +186,18 @@ class TaskerPageState extends State<TaskerPage> {
                                               AlwaysScrollableScrollPhysics(),
                                         ),
                                       ),
-                                      SizedBox(height: 16),
-                                      _buildPagination(context),
+                                      _buildPaginationControls(state),
                                     ],
                                   ),
                                 );
                               }
                             } else if (state is UserError) {
                               return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.error_outline,
-                                        color: Colors.red, size: 48),
-                                    SizedBox(height: 16),
-                                    Text(
-                                      'Error: ${state.message}',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ],
+                                child: Text(
+                                  'Something went wrong. Check your internet connection.',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: Colors.red,
+                                  ),
                                 ),
                               );
                             }
@@ -343,214 +327,91 @@ class TaskerPageState extends State<TaskerPage> {
     );
   }
 
-  Widget _buildPagination(BuildContext context) {
+  Widget _buildPaginationControls(UserState state) {
+    // If we don't have data yet or metadata is null, don't show pagination
+    if (state is! UserLoaded) {
+      logger.log("User state is not loaded, skipping pagination controls.");
+      return const SizedBox.shrink();
+    }
+
+    final metadata = state.metadata!;
+
+    // If there's only one page, don't show pagination
+    if (metadata.totalPage <= 1) {
+      logger.log(
+          "User state is not loaded, skipping pagination controls. Only one page available.");
+      return const SizedBox.shrink();
+    }
+
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
+      margin: const EdgeInsets.only(top: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Page size selector
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: metadata.pageNo > 0
+                ? () {
+                    _userBloc.add(ChangePage(metadata.pageNo - 1));
+                  }
+                : null,
+            color: metadata.pageNo > 0 ? AppColors.primary : Colors.grey,
+          ),
+
+          // Page indicator
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Text(
-                  'Show:',
-                  style: AppTextStyles.bodyMedium,
-                ),
-                SizedBox(width: 8),
-                _buildPageSizeDropdown(),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+            ),
+            child: Text(
+              'Page ${metadata.pageNo + 1} of ${metadata.totalPage}',
+              style: AppTextStyles.bodyMedium,
             ),
           ),
-          SizedBox(width: 24),
-          // Previous page button
-          _buildPaginationButton(
-            icon: Icons.chevron_left,
-            onPressed:
-                currentPage > 0 ? () => _changePage(currentPage - 1) : null,
-          ),
-          SizedBox(width: 8),
-          // Page numbers
-          ..._buildPageNumbers(),
-          SizedBox(width: 8),
+
           // Next page button
-          _buildPaginationButton(
-            icon: Icons.chevron_right,
-            onPressed: currentPage < totalPages - 1
-                ? () => _changePage(currentPage + 1)
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: metadata.pageNo < metadata.totalPage - 1
+                ? () {
+                    _userBloc.add(ChangePage(metadata.pageNo + 1));
+                  }
                 : null,
+            color: metadata.pageNo < metadata.totalPage - 1
+                ? AppColors.primary
+                : Colors.grey,
           ),
-          SizedBox(width: 24),
-          // Total items counter
-          Text(
-            'Total: $totalItems items',
+
+          // Items per page dropdown
+          const SizedBox(width: 16),
+          Text('Items per page:', style: AppTextStyles.bodySmall),
+          const SizedBox(width: 8),
+          DropdownButton<int>(
+            value: metadata.pageSize,
+            items: [10, 20, 50, 100].map((int value) {
+              return DropdownMenuItem<int>(
+                value: value,
+                child: Text('$value', style: AppTextStyles.bodyMedium),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null && value != metadata.pageSize) {
+                _userBloc.add(ChangeItemsPerPage(value));
+              }
+            },
             style: AppTextStyles.bodyMedium,
+            underline: Container(
+              height: 1,
+              color: AppColors.primary,
+            ),
           ),
         ],
       ),
     );
-  }
-
-  List<Widget> _buildPageNumbers() {
-    List<Widget> pageNumbers = [];
-
-    // Determine which page numbers to show
-    int startPage = currentPage - 2;
-    int endPage = currentPage + 2;
-
-    if (startPage < 0) {
-      endPage = endPage - startPage;
-      startPage = 0;
-    }
-
-    if (endPage > totalPages - 1) {
-      endPage = totalPages - 1;
-    }
-
-    // Add first page button
-    if (startPage > 0) {
-      pageNumbers.add(_buildPageNumberButton(0));
-      if (startPage > 1) {
-        pageNumbers.add(Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text('...', style: AppTextStyles.bodyMedium),
-        ));
-      }
-    }
-
-    // Add visible page range
-    for (int i = startPage; i <= endPage; i++) {
-      pageNumbers.add(_buildPageNumberButton(i));
-    }
-
-    // Add last page button
-    if (endPage < totalPages - 1) {
-      if (endPage < totalPages - 2) {
-        pageNumbers.add(Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text('...', style: AppTextStyles.bodyMedium),
-        ));
-      }
-      pageNumbers.add(_buildPageNumberButton(totalPages - 1));
-    }
-
-    return pageNumbers;
-  }
-
-  Widget _buildPageNumberButton(int pageNumber) {
-    bool isActive = pageNumber == currentPage;
-    return InkWell(
-      onTap: () => _changePage(pageNumber),
-      child: Container(
-        width: 36,
-        height: 36,
-        margin: EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: isActive ? AppColors.primary : Colors.grey.shade300,
-            width: 1,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            (pageNumber + 1).toString(),
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: isActive ? Colors.white : AppColors.text,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPaginationButton(
-      {required IconData icon, VoidCallback? onPressed}) {
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: onPressed != null ? Colors.transparent : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: Colors.grey.shade300,
-            width: 1,
-          ),
-        ),
-        child: Center(
-          child: Icon(
-            icon,
-            size: 18,
-            color: onPressed != null ? AppColors.text : Colors.grey.shade400,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPageSizeDropdown() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: DropdownButton<int>(
-        value: pageSize,
-        underline: SizedBox(),
-        icon: Icon(Icons.arrow_drop_down, size: 20),
-        items: [5, 10, 20, 50].map((size) {
-          return DropdownMenuItem<int>(
-            value: size,
-            child: Text(size.toString(), style: AppTextStyles.bodyMedium),
-          );
-        }).toList(),
-        onChanged: (value) {
-          if (value != null && value != pageSize) {
-            setState(() {
-              pageSize = value;
-              currentPage = 0; // Reset to first page when changing page size
-            });
-            _refreshTaskers();
-          }
-        },
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.text,
-        ),
-        dropdownColor: Colors.white,
-      ),
-    );
-  }
-
-  void _changePage(int newPage) {
-    if (newPage != currentPage && newPage >= 0 && newPage < totalPages) {
-      setState(() {
-        currentPage = newPage;
-      });
-      _refreshTaskers();
-    }
-  }
-
-  void _refreshTaskers() {
-    _userBloc.add(TaskerFetchEvent(
-      pageNo: currentPage,
-      pageSize: pageSize,
-    ));
   }
 
   Widget _buildTaskerRow(int id, String name, String email, String phone,

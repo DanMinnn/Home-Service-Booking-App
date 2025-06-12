@@ -38,4 +38,18 @@ class UserResponse {
           json['createAt'] != null ? DateTime.parse(json['createAt']) : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'firstLastName': firstLastName,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'profileImage': profileImage,
+      'active': isActive,
+      'taskerStatus': status,
+      'lastLogin': lastLogin?.toIso8601String(),
+      'createAt': createdAt?.toIso8601String(),
+    };
+  }
 }
