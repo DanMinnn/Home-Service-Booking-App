@@ -90,10 +90,12 @@ class _LoginPageState extends State<LoginPage> {
                     child: BlocConsumer<AuthBloc, AuthState>(
                       listener: (context, state) {
                         if (state is LoginSuccess) {
+                          context
+                              .read<AuthBloc>()
+                              .add(GetAdminInfo(_emailController.text));
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => MainScreen(
-                                  email: _emailController.text.toString()),
+                              builder: (context) => MainScreen(),
                             ),
                           );
                         } else if (state is LoginError) {

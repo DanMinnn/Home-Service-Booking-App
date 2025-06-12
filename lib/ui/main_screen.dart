@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_admin/modules/bookings/pages/bookings_page.dart';
-import 'package:home_service_admin/modules/login/bloc/auth_bloc.dart';
-import 'package:home_service_admin/modules/login/bloc/auth_event.dart';
-import 'package:home_service_admin/modules/login/repo/login_repo.dart';
+import 'package:home_service_admin/modules/login/pages/login_page.dart';
+import 'package:home_service_admin/modules/login/repo/admin_storage.dart';
+import 'package:home_service_admin/modules/user/models/user_response.dart';
 import 'package:home_service_admin/modules/user/pages/tasker_page.dart';
+import 'package:home_service_admin/providers/log_provider.dart';
 import 'package:home_service_admin/themes/style_text.dart';
 
-import '../modules/login/bloc/auth_state.dart';
 import '../modules/user/pages/customer_page.dart';
 import '../themes/app_assets.dart';
 import '../themes/app_colors.dart';
 import 'dashboard_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  final String? email;
-
-  const MainScreen({super.key, this.email});
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -25,7 +22,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
   String selectedMonth = 'Feb 2023';
-
+  final AdminStorage _adminStorage = AdminStorage();
+  UserResponse? admin;
+  final LogProvider logger = LogProvider("::::MAIN-SCREEN::::");
   final List<String> months = [
     'Jan 2023',
     'Feb 2023',
@@ -58,6 +57,35 @@ class _MainScreenState extends State<MainScreen> {
     'Notification',
     'Settings',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminData();
+  }
+
+  Future<void> _loadAdminData() async {
+    final currentAdmin = _adminStorage.currentAdmin;
+    if (currentAdmin != null) {
+      setState(() {
+        admin = currentAdmin;
+      });
+      logger.log("Admin data loaded: ${admin?.firstLastName}");
+      return;
+    }
+    logger.log("No admin data found, loading from storage...");
+
+    await _adminStorage.loadTaskerFromStorage();
+    final adminStorage = _adminStorage.currentAdmin;
+    if (adminStorage != null) {
+      setState(() {
+        admin = adminStorage;
+      });
+      logger.log("Admin data loaded from storage: ${admin?.firstLastName}");
+      return;
+    }
+    logger.log("No admin data found in storage.");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,71 +174,41 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 // Profile
-                BlocProvider(
-                  create: (context) => AuthBloc(LoginRepo())
-                    ..add(GetAdminInfo(
-                      widget.email ?? '',
-                    )),
-                  child: BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      if (state is AdminInfoLoaded) {
-                        final admin = state.admin;
-                        return Container(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage: NetworkImage(
-                                    admin.profileImage!.isNotEmpty
-                                        ? admin.profileImage!
-                                        : AppAssetsIcons.clientIc),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(admin.firstLastName,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ),
-                              Image.asset(
-                                AppAssetsIcons.logoutIc,
-                              )
-                            ],
-                          ),
-                        );
-                      }
-                      return Container(
-                        padding: EdgeInsets.all(16),
-                        child: Row(
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: NetworkImage(
+                          admin?.profileImage ??
+                              'https://img.freepik.com/premium-vector/man-avatar-profile-picture-isolated-background-avatar-profile-picture-man_1293239-4841.jpg?semt=ais_hybrid&w=740',
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundImage:
-                                  NetworkImage(AppAssetsIcons.clientIc),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Admin',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                            ),
-                            Image.asset(
-                              AppAssetsIcons.logoutIc,
-                            )
+                            Text(admin?.firstLastName ?? 'Admin',
+                                style: TextStyle(fontWeight: FontWeight.w600)),
                           ],
                         ),
-                      );
-                    },
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          );
+                        },
+                        child: Image.asset(
+                          AppAssetsIcons.logoutIc,
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ],
