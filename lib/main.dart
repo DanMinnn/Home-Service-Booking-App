@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:home_service_admin/routes/navigation_service.dart';
 import 'package:home_service_admin/themes/app_colors.dart';
-import 'package:home_service_admin/ui/splash_screen.dart';
+import 'package:home_service_admin/ui/main_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,8 +15,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final NavigationService navigationService = NavigationService();
     return MaterialApp(
       title: 'Admin Home Service',
+      navigatorKey: navigationService.navigatorKey,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           color: AppColors.neutral,
@@ -25,7 +28,7 @@ class MyApp extends StatelessWidget {
         ),
         fontFamily: 'DMSans',
       ),
-      home: const SplashScreen(),
+      home: const MainScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
