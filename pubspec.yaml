@@ -19,6 +19,7 @@ dependencies:
   flutter_dotenv:
   json_serializable:
   loading_indicator: ^3.1.1
+  intl:
   fl_chart: ^1.0.0
 
 dev_dependencies:
