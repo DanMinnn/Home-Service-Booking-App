@@ -75,19 +75,17 @@ class BookingsPageState extends State<BookingsPage> {
 
                             const SizedBox(height: 16),
 
-                            // Table Header
-                            _buildTableHeader(state),
-
-                            const SizedBox(height: 8),
-
-                            // Booking List
+                            // Booking Data Table
                             Expanded(
                               flex: 2,
                               child: state is BookingLoading
-                                  ? const Center(
-                                      child: CircularProgressIndicator())
+                                  ? Center(
+                                      child: CircularProgressIndicator(
+                                      color: AppColors.primary,
+                                    ))
                                   : state is BookingLoaded
-                                      ? _buildBookingList(state.bookings)
+                                      ? _buildBookingDataTable(
+                                          state.bookings, state)
                                       : state is BookingError
                                           ? Center(
                                               child: Text(
@@ -217,147 +215,86 @@ class BookingsPageState extends State<BookingsPage> {
     );
   }
 
-  Widget _buildTableHeader(BookingState state) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Text(
-              'Service',
-              style: AppTextStyles.bodyMedium,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader('Customer', 'customer', state),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader('Tasker', 'tasker', state),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader('Date', 'date', state),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader('Start Time', 'startTime', state),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader('End Time', 'endTime', state),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader('Address', 'address', state),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildSortableHeader(
-              'Status',
-              'status',
-              state,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(width: 40),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSortableHeader(String title, String field, BookingState state,
-      {TextAlign? textAlign}) {
-    final sortModel = state.sortModel;
-    final isSorted = sortModel.field == field;
-    final sortOrder = isSorted ? sortModel.order : SortOrder.none;
-
-    Widget? sortIcon;
-    if (sortOrder == SortOrder.ascending) {
-      sortIcon = const Icon(Icons.arrow_upward, size: 16);
-    } else if (sortOrder == SortOrder.descending) {
-      sortIcon = const Icon(Icons.arrow_downward, size: 16);
+  Widget _buildBookingDataTable(List<Booking> bookings, BookingState state) {
+    if (bookings.isEmpty) {
+      return const Center(child: Text('No bookings found'));
     }
 
-    return InkWell(
-      onTap: () {
-        _bookingBloc.add(ApplySort(field));
-      },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.bodyMedium,
-            textAlign: textAlign,
-          ),
-          if (sortIcon != null) sortIcon,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookingList(List<Booking> bookings) {
-    return bookings.isEmpty
-        ? const Center(child: Text('No bookings found'))
-        : ListView.builder(
-            itemCount: bookings.length,
-            itemBuilder: (context, index) {
-              final booking = bookings[index];
-              return _buildBookingRow(
-                booking.service ?? 'Unknown',
-                booking.customer ?? 'Unknown',
-                booking.tasker ?? 'Waiting...',
-                booking.date ?? '2023-10-01',
-                booking.startTime ?? '10:00 AM',
-                booking.endTime ?? '12:00 PM',
-                booking.status ?? 'Pending',
-                booking.address ?? 'No address provided',
-              );
-            },
-          );
-  }
-
-  Widget _buildBookingRow(
-      String service,
-      String customer,
-      String tasker,
-      String date,
-      String startTime,
-      String endTime,
-      String status,
-      String address) {
     return Container(
-      width: MediaQuery.of(context).size.width - 300,
-      margin: const EdgeInsets.only(bottom: 25),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.neutral,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Text(service, style: AppTextStyles.bodyMedium),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(customer, style: AppTextStyles.bodyMedium),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(status == 'Pending' ? 'Waiting...' : tasker,
-                style: AppTextStyles.bodyMedium),
-          ),
-          Expanded(
-            flex: 1,
+      child: SingleChildScrollView(
+        child: DataTable(
+          headingRowColor: MaterialStateProperty.all(Colors.transparent),
+          dataRowColor: MaterialStateProperty.all(Colors.transparent),
+          dividerThickness: 0,
+          headingRowHeight: 50,
+          dataRowMinHeight: 65,
+          dataRowMaxHeight: 65,
+          columns: [
+            _buildDataColumn('Service', 'service', state),
+            _buildDataColumn('Customer', 'customer', state),
+            _buildDataColumn('Tasker', 'tasker', state),
+            _buildDataColumn('Date', 'date', state),
+            _buildDataColumn('Start Time', 'startTime', state),
+            _buildDataColumn('End Time', 'endTime', state),
+            _buildDataColumn('Address', 'address', state),
+            _buildDataColumn('Status', 'status', state),
+            const DataColumn(label: SizedBox(width: 40)),
+          ],
+          rows: bookings
+              .map((booking) => _buildDataRow(booking, context))
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  DataColumn _buildDataColumn(String title, String field, BookingState state) {
+    final sortModel = state.sortModel;
+    final isSorted = sortModel.field == field;
+    final sortOrder = isSorted ? sortModel.order : SortOrder.none;
+
+    return DataColumn(
+      label: Expanded(
+        flex: 2,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: AppTextStyles.bodyMedium,
+            ),
+            if (sortOrder == SortOrder.ascending)
+              const Icon(Icons.arrow_upward, size: 16)
+            else if (sortOrder == SortOrder.descending)
+              const Icon(Icons.arrow_downward, size: 16),
+          ],
+        ),
+      ),
+      onSort: (_, __) {
+        _bookingBloc.add(ApplySort(field));
+      },
+    );
+  }
+
+  DataRow _buildDataRow(Booking booking, BuildContext context) {
+    return DataRow(
+      cells: [
+        DataCell(Text(booking.service ?? 'Unknown',
+            style: AppTextStyles.bodyMedium)),
+        DataCell(Text(booking.customer ?? 'Unknown',
+            style: AppTextStyles.bodyMedium)),
+        DataCell(Text(
+            booking.status == 'Pending'
+                ? 'Waiting...'
+                : (booking.tasker ?? 'Unknown'),
+            style: AppTextStyles.bodyMedium)),
+        DataCell(
+          SizedBox(
+            width: 120,
             child: Row(
               children: [
                 ColorFiltered(
@@ -365,59 +302,44 @@ class BookingsPageState extends State<BookingsPage> {
                         ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
                     child: Image.asset(AppAssetsIcons.calendarDaysIc)),
                 const SizedBox(width: 8),
-                Text(
-                  date,
-                  style: AppTextStyles.bodyMedium,
-                ),
+                Text(booking.date ?? '2023-10-01',
+                    style: AppTextStyles.bodyMedium),
               ],
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              startTime,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              endTime,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              address,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 100),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(status),
-                  borderRadius: BorderRadius.circular(24),
+        ),
+        DataCell(SizedBox(
+          width: 100,
+          child: Text(booking.startTime ?? '10:00 AM',
+              style: AppTextStyles.bodyMedium),
+        )),
+        DataCell(SizedBox(
+          width: 100,
+          child: Text(booking.endTime ?? '12:00 PM',
+              style: AppTextStyles.bodyMedium),
+        )),
+        DataCell(Text(booking.address ?? 'No address provided',
+            style: AppTextStyles.bodyMedium)),
+        DataCell(
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: _getStatusColor(booking.status ?? 'Pending'),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Text(
+                booking.status?.toUpperCase() ?? 'Pending',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.neutral,
                 ),
-                child: Text(
-                  status,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.neutral,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
-          const SizedBox(
-              width: 40, child: Icon(Icons.more_horiz, color: AppColors.text)),
-        ],
-      ),
+        ),
+        const DataCell(Icon(Icons.more_horiz, color: AppColors.text)),
+      ],
     );
   }
 
@@ -581,7 +503,9 @@ class BookingsPageState extends State<BookingsPage> {
                   },
                   child: Text(
                     'Apply Filters',
-                    style: AppTextStyles.titleSmall,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: AppColors.neutral,
+                    ),
                   ),
                 ),
               ],
