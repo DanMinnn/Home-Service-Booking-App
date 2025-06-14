@@ -10,6 +10,7 @@ class UserResponse {
   String? status;
   DateTime? lastLogin;
   DateTime? createdAt;
+  String? userType;
 
   UserResponse({
     required this.id,
@@ -21,6 +22,7 @@ class UserResponse {
     this.status,
     this.lastLogin,
     this.createdAt,
+    this.userType,
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class UserResponse {
           json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
       createdAt:
           json['createAt'] != null ? DateTime.parse(json['createAt']) : null,
+      userType: json['userType'] ?? 'tasker',
     );
   }
 
@@ -50,6 +53,7 @@ class UserResponse {
       'taskerStatus': status,
       'lastLogin': lastLogin?.toIso8601String(),
       'createAt': createdAt?.toIso8601String(),
+      'userType': userType,
     };
   }
 }

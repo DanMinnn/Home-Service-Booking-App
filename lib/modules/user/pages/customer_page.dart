@@ -22,6 +22,7 @@ class CustomerPageState extends State<CustomerPage> {
 
   late UserBloc _userBloc;
   final LogProvider logger = LogProvider("::::USER-PAGE::::");
+
   @override
   void initState() {
     super.initState();
@@ -112,6 +113,12 @@ class CustomerPageState extends State<CustomerPage> {
                             Expanded(
                                 flex: 1,
                                 child: Text(
+                                  'Type',
+                                  style: AppTextStyles.bodyMedium,
+                                )),
+                            Expanded(
+                                flex: 1,
+                                child: Text(
                                   'Created At',
                                   style: AppTextStyles.bodyMedium,
                                 )),
@@ -171,6 +178,7 @@ class CustomerPageState extends State<CustomerPage> {
                                                 formatCreatedAt(
                                                     customer.createdAt ??
                                                         DateTime.now()),
+                                                customer.userType ?? 'customer',
                                                 customer.isActive!);
                                           },
                                           itemCount: customers.length,
@@ -399,7 +407,7 @@ class CustomerPageState extends State<CustomerPage> {
   }
 
   Widget _buildCustomerRow(int id, String name, String email, String phone,
-      String avatar, String createdAt, bool isActive) {
+      String avatar, String createdAt, String userType, bool isActive) {
     return Container(
       width: MediaQuery.of(context).size.width - 300,
       margin: EdgeInsets.only(bottom: 25),
@@ -448,6 +456,16 @@ class CustomerPageState extends State<CustomerPage> {
             child: Text(
               phone,
               style: AppTextStyles.bodyMedium,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              userType.toUpperCase(),
+              style: userType == 'admin'
+                  ? AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.secondary)
+                  : AppTextStyles.bodyMedium,
             ),
           ),
           Expanded(

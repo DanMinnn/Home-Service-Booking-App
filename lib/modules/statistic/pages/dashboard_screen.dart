@@ -205,28 +205,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               childAspectRatio: 1.8,
               children: [
                 _buildRevenueCard(
-                  _formatCurrency(dashboardData.revenueServices?.totalRevenueSum ?? 0),
+                  _formatCurrency(
+                      dashboardData.revenueServices?.totalRevenueSum ?? 0),
                   'Total Revenue',
                   AppColors.primary,
                   Icons.account_balance_wallet,
                   dashboardData.revenueServices?.totalRevenues ?? [],
                 ),
                 _buildRevenueCard(
-                  _formatCurrency(dashboardData.revenueServices?.totalRevenueTodaySum ?? 0),
+                  _formatCurrency(
+                      dashboardData.revenueServices?.totalRevenueTodaySum ?? 0),
                   'Revenue Today',
                   AppColors.secondary,
                   Icons.today,
                   dashboardData.revenueServices?.totalRevenuesToday ?? [],
                 ),
                 _buildRevenueCard(
-                  _formatCurrency(dashboardData.revenueServices?.totalRevenueThisWeekSum ?? 0),
+                  _formatCurrency(
+                      dashboardData.revenueServices?.totalRevenueThisWeekSum ??
+                          0),
                   'Revenue This Week',
                   AppColors.accent,
                   Icons.date_range,
                   dashboardData.revenueServices?.totalRevenuesThisWeek ?? [],
                 ),
                 _buildRevenueCard(
-                  _formatCurrency(dashboardData.revenueServices?.totalRevenueThisMonthSum ?? 0),
+                  _formatCurrency(
+                      dashboardData.revenueServices?.totalRevenueThisMonthSum ??
+                          0),
                   'Revenue This Month',
                   AppColors.primary,
                   Icons.calendar_month,
@@ -358,7 +364,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // New method to build revenue cards
   Widget _buildRevenueCard(
     String value,
     String label,
@@ -420,10 +425,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: AppTextStyles.bodyMedium,
             ),
           ],
         ),
@@ -431,12 +433,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // New method to show revenue details in a dialog
   void _showRevenueDetailsDialog(String title, List<ServiceRevenue> revenues) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
+        backgroundColor: AppColors.neutral,
+        title: Text(title,
+            style: AppTextStyles.titleSmall.copyWith(
+                fontWeight: FontWeight.bold, color: AppColors.accent)),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.separated(
@@ -446,15 +450,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             itemBuilder: (context, index) {
               final revenue = revenues[index];
               return ListTile(
-                title: Text(revenue.serviceName),
-                subtitle: Text('${revenue.categoryName} | ${revenue.bookingCount} bookings'),
-                trailing: Text(
-                  _formatCurrency(revenue.totalRevenue),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
+                title: Text(
+                  revenue.serviceName,
+                  style: AppTextStyles.headlineSmall,
                 ),
+                subtitle: Text(
+                  '${revenue.categoryName} | ${revenue.bookingCount} bookings',
+                  style: AppTextStyles.titleMedium,
+                ),
+                trailing: Text(_formatCurrency(revenue.totalRevenue),
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: AppColors.primary,
+                    )),
               );
             },
           ),
@@ -462,14 +469,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(
+              'Close',
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.text),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // New method to build a revenue list section
   Widget _buildServiceRevenueList(RevenueServices revenueServices) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -515,18 +524,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
               ...revenueServices.totalRevenues.asMap().entries.map(
-                (entry) => TableRow(
-                  decoration: BoxDecoration(
-                    color: entry.key.isEven ? Colors.white : Colors.grey[50],
+                    (entry) => TableRow(
+                      decoration: BoxDecoration(
+                        color:
+                            entry.key.isEven ? Colors.white : Colors.grey[50],
+                      ),
+                      children: [
+                        _tableCell('${entry.key + 1}'),
+                        _tableCell(
+                            '${entry.value.serviceName}\n${entry.value.categoryName}'),
+                        _tableCell('${entry.value.bookingCount}'),
+                        _tableCell(_formatCurrency(entry.value.totalRevenue),
+                            isRevenue: true),
+                      ],
+                    ),
                   ),
-                  children: [
-                    _tableCell('${entry.key + 1}'),
-                    _tableCell('${entry.value.serviceName}\n${entry.value.categoryName}', isTitle: true),
-                    _tableCell('${entry.value.bookingCount}'),
-                    _tableCell(_formatCurrency(entry.value.totalRevenue), isRevenue: true),
-                  ],
-                ),
-              ),
             ],
           ),
         ],
@@ -545,13 +557,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _tableCell(String text, {bool isTitle = false, bool isRevenue = false}) {
+  Widget _tableCell(String text,
+      {bool isTitle = false, bool isRevenue = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       child: Text(
         text,
         style: TextStyle(
-          fontWeight: isTitle || isRevenue ? FontWeight.w600 : FontWeight.normal,
+          fontWeight:
+              isTitle || isRevenue ? FontWeight.w600 : FontWeight.normal,
           color: isRevenue ? AppColors.primary : null,
         ),
         textAlign: isTitle ? TextAlign.left : TextAlign.center,
@@ -965,22 +979,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Recent Bookings',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'See All',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ],
+          const Text(
+            'Recent Bookings',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           Expanded(

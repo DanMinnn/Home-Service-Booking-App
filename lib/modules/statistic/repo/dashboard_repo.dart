@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:home_service_admin/modules/statistic/models/dashboard_models.dart';
 import 'package:home_service_admin/providers/api_provider.dart';
 import 'package:home_service_admin/providers/log_provider.dart';
@@ -11,7 +9,6 @@ class DashboardRepo {
   Future<DashboardResponse> fetchDashboardData() async {
     try {
       final response = await _apiProvider.get('/dashboard/summary');
-      logger.log('API Response: ${jsonEncode(response.data)}');
 
       if (response.data['status'] == 200) {
         final responseData = response.data['data'] ?? {};
