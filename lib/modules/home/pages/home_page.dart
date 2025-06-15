@@ -239,10 +239,8 @@ class _HomePageState extends State<HomePage> {
                       child: Text('No services available'),
                     );
                   }
-                  // Filter to ensure cleaning and cooking services are included
+                  //filter cleaning and cooking services
                   final displayServices = [...services];
-
-                  // Find cleaning service (id: 20) and cooking service (id: 21)
                   final cleaningService = services.firstWhere(
                     (s) => s.id == 20,
                   );
@@ -250,8 +248,6 @@ class _HomePageState extends State<HomePage> {
                   final cookingService = services.firstWhere(
                     (s) => s.id == 21,
                   );
-
-                  // Limit to 6 services but ensure cleaning and cooking are included
                   if (displayServices.length > 6) {
                     displayServices
                         .removeWhere((s) => s.id == 20 || s.id == 21);
