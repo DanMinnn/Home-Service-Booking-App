@@ -248,7 +248,7 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
                           },
                           child: Image.asset(AppAssetIcons.arrowLeft),
                         ),
-                        title: 'Choose Options Cooking',
+                        title: 'Options Cooking',
                       ),
                       _buildSelectPerson(state),
                       const SizedBox(height: 16),

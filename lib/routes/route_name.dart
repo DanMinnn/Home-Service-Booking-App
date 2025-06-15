@@ -7,7 +7,7 @@ class RouteName {
   static const String setNewPasswordScreen = '/set-new-password-screen';
   static const String homeScreen = '/home-screen';
   static const String categories = '/categories-screen';
-  static const String serviceItem = '/option-screen';
+  static const String serviceCleaning = '/option-cleaning-screen';
   static const String chooseTime = '/choose-time-screen';
   static const String confirmAndPay = '/confirm-and-pay-screen';
   static const String bookingSuccessfully = '/booking-successfully-screen';

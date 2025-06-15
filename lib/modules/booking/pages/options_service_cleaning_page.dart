@@ -111,7 +111,7 @@ class _OptionsServiceCleaningPageState
                             _navigationService.goBack();
                           },
                           child: Image.asset(AppAssetIcons.arrowLeft)),
-                      title: 'Choose Options',
+                      title: 'Options Cleaning',
                     ),
                     _buildDuration(state),
                     _addOnService(),

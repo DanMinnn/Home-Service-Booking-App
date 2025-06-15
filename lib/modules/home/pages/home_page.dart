@@ -5,6 +5,7 @@ import 'package:home_service/repo/user_repository.dart';
 import 'package:home_service/routes/route_name.dart';
 
 import '../../../common/widgets/stateless/basic_app_bar.dart';
+import '../../../common/widgets/stateless/show_snack_bar.dart';
 import '../../../providers/log_provider.dart';
 import '../../../services/navigation_service.dart';
 import '../../../themes/app_assets.dart';
@@ -207,9 +208,7 @@ class _HomePageState extends State<HomePage> {
               GestureDetector(
                 onTap: () {
                   logger.log('See All button pressed');
-                  // Use the NavigationService to change tabs instead of direct navigation
-                  _navigationService
-                      .changeTab(2); // 2 is the index for Categories tab
+                  _navigationService.changeTab(2);
                 },
                 child: Text(
                   'See All',
@@ -240,6 +239,28 @@ class _HomePageState extends State<HomePage> {
                       child: Text('No services available'),
                     );
                   }
+                  // Filter to ensure cleaning and cooking services are included
+                  final displayServices = [...services];
+
+                  // Find cleaning service (id: 20) and cooking service (id: 21)
+                  final cleaningService = services.firstWhere(
+                    (s) => s.id == 20,
+                  );
+
+                  final cookingService = services.firstWhere(
+                    (s) => s.id == 21,
+                  );
+
+                  // Limit to 6 services but ensure cleaning and cooking are included
+                  if (displayServices.length > 6) {
+                    displayServices
+                        .removeWhere((s) => s.id == 20 || s.id == 21);
+                    displayServices.insert(0, cleaningService);
+                    displayServices.insert(1, cookingService);
+                    while (displayServices.length > 6) {
+                      displayServices.removeLast();
+                    }
+                  }
                   return GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -249,12 +270,12 @@ class _HomePageState extends State<HomePage> {
                       crossAxisSpacing: 12,
                       childAspectRatio: 101 / 124,
                     ),
-                    itemCount: 6,
+                    itemCount: displayServices.length,
                     itemBuilder: (context, index) {
                       return _buildItemGridView(
-                        services[index].name ?? '',
-                        services[index].icon ?? '',
-                        services[index].id ?? 0,
+                        displayServices[index].name ?? '',
+                        displayServices[index].icon ?? '',
+                        displayServices[index].id ?? 0,
                       );
                     },
                   );
@@ -289,14 +310,17 @@ class _HomePageState extends State<HomePage> {
               'name': nameService,
             },
           );
-        } else {
+        } else if (id == 20) {
           _navigationService.navigateTo(
-            RouteName.serviceItem,
+            RouteName.serviceCleaning,
             arguments: {
               'id': id,
               'name': nameService,
             },
           );
+        } else {
+          ShowSnackBar.showSuccess(
+              context, 'This service coming soon', 'Under development');
         }
       },
       child: Container(

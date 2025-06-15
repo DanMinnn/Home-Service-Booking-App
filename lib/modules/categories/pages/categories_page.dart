@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/themes/app_assets.dart';
 
 import '../../../routes/route_name.dart';
@@ -81,7 +82,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 itemCount: services.length,
                 itemBuilder: (context, index) => _buildItemGridView(
                   services[index].name ?? '',
-                  services[index].icon ?? '',
+                  services[index].icon,
                   services[index].id ?? 0,
                 ),
               ),
@@ -103,7 +104,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  Widget _buildItemGridView(String serviceName, String icon, int id) {
+  Widget _buildItemGridView(String serviceName, String? icon, int id) {
     return GestureDetector(
       onTap: () {
         if (id == 21) {
@@ -114,14 +115,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
               'name': serviceName,
             },
           );
-        } else {
+        } else if (id == 20) {
           _navigationService.navigateTo(
-            RouteName.serviceItem,
+            RouteName.serviceCleaning,
             arguments: {
               'id': id,
               'name': serviceName,
             },
           );
+        } else {
+          ShowSnackBar.showSuccess(
+              context, 'This service coming soon', 'Under development');
         }
       },
       child: Column(
@@ -135,11 +139,14 @@ class _CategoriesPageState extends State<CategoriesPage> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Image.asset(
-                AppAssetIcons.iconPath + icon,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-              ),
+              child: icon != null
+                  ? Image.asset(
+                      AppAssetIcons.iconPath + icon,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    )
+                  : const Icon(Icons.category,
+                      size: 48, color: AppColors.darkBlue),
             ),
           ),
           const SizedBox(height: 8),

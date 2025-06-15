@@ -36,7 +36,7 @@ class Routes {
         return _buildRoute(settings, const MainScreen());
       case RouteName.categories:
         return _buildRoute(settings, const CategoriesPage());
-      case RouteName.serviceItem:
+      case RouteName.serviceCleaning:
         return _buildRoute(settings, const OptionsServiceCleaningPage());
       case RouteName.serviceCooking:
         return _buildRoute(settings, const OptionsServiceCookingPage());
