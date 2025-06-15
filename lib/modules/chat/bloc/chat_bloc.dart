@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/modules/chat/bloc/chat_event.dart';
 import 'package:home_service/modules/chat/bloc/chat_state.dart';
+import 'package:home_service/modules/chat/models/chat_room_model.dart';
 
 import '../models/chat_message_model.dart';
 import '../repo/chat_repo.dart';
@@ -24,6 +25,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   // Check if user is online
   bool isUserOnline(int userId) => _onlineUsers[userId] ?? false;
   bool get isConnected => _chatService.isConnected;
+
+  //Cache for chat rooms and messages when state is ChatConnected
+  List<ChatRoomModel> _chatRoomsCache = [];
+  List<ChatMessageModel> _chatMessagesCache = [];
   ChatBloc() : super(ChatInitial()) {
     //Connect events to handlers
     on<ChatInitialized>(_onChatInitialized);
@@ -114,7 +119,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ChatDisconnected event,
     Emitter<ChatState> emit,
   ) async {
-    emit(ChatConnected(false));
+    emit(ChatConnected(false,
+        rooms: _chatRoomsCache,
+        roomId: _currentRoomId ?? 0,
+        messages: _chatMessagesCache));
   }
 
   Future<void> _onChatRoomsLoaded(
@@ -124,6 +132,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       emit(ChatLoading());
       final rooms = await _chatRepo.getChatRooms();
+
+      _chatRoomsCache = rooms;
       emit(ChatRoomsLoaded(rooms));
     } catch (e) {
       emit(ChatError('Failed to load chat rooms: ${e.toString()}'));
@@ -155,6 +165,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         page: event.page,
         size: event.size,
       );
+
+      _chatMessagesCache = messages;
 
       // Cache the messages
       if (event.page == 0) {

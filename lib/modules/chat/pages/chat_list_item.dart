@@ -62,11 +62,24 @@ class ChatListItem extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    room.lastMessage!.messageText,
-                    style: AppTextStyles.bodyMediumRegular.copyWith(
-                      color: AppColors.darkBlue.withValues(alpha: 0.8),
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        room.lastMessage!.senderType == userType
+                            ? 'You: '
+                            : room.taskerName!,
+                        style: AppTextStyles.bodyMediumRegular.copyWith(
+                          color: AppColors.darkBlue.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        room.lastMessage!.messageText,
+                        style: AppTextStyles.bodyMediumRegular.copyWith(
+                          color: AppColors.darkBlue.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

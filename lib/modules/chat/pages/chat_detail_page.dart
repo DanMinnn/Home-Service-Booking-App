@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
+import 'package:home_service/modules/chat/models/chat_message_model.dart';
 import 'package:home_service/modules/chat/pages/chat_message_item.dart';
 import 'package:home_service/themes/app_colors.dart';
 
@@ -33,7 +34,6 @@ class _ChatDetailPageState extends State<ChatDetailPage>
   final NavigationService _navigationService = NavigationService();
   final TextEditingController _messageController = TextEditingController();
   bool _hasFocus = false;
-  final bool _isLoading = true;
   final ScrollController _scrollController = ScrollController();
   bool _isTyping = false;
 
@@ -200,40 +200,65 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                 }
               },
               builder: (context, state) {
-                if (state is ChatMessagesLoaded &&
+                List<ChatMessageModel> messages = [];
+
+                if (state is ChatConnected && state.roomId == widget.room.id) {
+                  messages = state.messages;
+                } else if (state is ChatMessagesLoaded &&
                     state.roomId == widget.room.id) {
-                  final messages = state.messages.reversed.toList();
-                  return Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      controller: _scrollController,
-                      itemCount: messages.length,
-                      reverse: true,
-                      itemBuilder: (context, index) {
-                        final message = messages[index];
-                        final isMe = message.senderId == widget.userId;
-                        return ChatMessageItem(
-                          message: messages[index],
-                          isMe: isMe,
-                        );
-                      },
-                    ),
-                  );
+                  messages = state.messages;
                 }
-                if (state is ChatLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return Center(
-                  child: Text(
-                    'No messages yet',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                    ),
+                // if (state is ChatMessagesLoaded &&
+                //     state.roomId == widget.room.id) {
+                //   final messages = state.messages.reversed.toList();
+                //   return Expanded(
+                //     child: ListView.builder(
+                //       padding: EdgeInsets.zero,
+                //       controller: _scrollController,
+                //       itemCount: messages.length,
+                //       reverse: true,
+                //       itemBuilder: (context, index) {
+                //         final message = messages[index];
+                //         final isMe = message.senderId == widget.userId;
+                //         return ChatMessageItem(
+                //           message: messages[index],
+                //           isMe: isMe,
+                //         );
+                //       },
+                //     ),
+                //   );
+                // }
+                messages = messages.reversed.toList();
+                return Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    controller: _scrollController,
+                    itemCount: messages.length,
+                    reverse: true,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      final isMe = message.senderId == widget.userId;
+                      return ChatMessageItem(
+                        message: messages[index],
+                        isMe: isMe,
+                      );
+                    },
                   ),
                 );
+                // if (state is ChatLoading) {
+                //   return Center(
+                //     child: CircularProgressIndicator(color: Color(0xFF386DF3)),
+                //   );
+                // }
+                // return Center(
+                //   child: Text(
+                //     state.toString(),
+                //     style: TextStyle(
+                //       color: Colors.grey,
+                //       fontSize: 16,
+                //     ),
+                //   ),
+                // );
               },
             ),
             _buildSendMessage(),

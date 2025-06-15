@@ -11,8 +11,12 @@ class ChatConnecting extends ChatState {}
 
 class ChatConnected extends ChatState {
   final bool isConnected;
+  final List<ChatRoomModel> rooms;
+  final int roomId;
+  final List<ChatMessageModel> messages;
 
-  ChatConnected(this.isConnected);
+  ChatConnected(this.isConnected,
+      {this.rooms = const [], this.roomId = 0, this.messages = const []});
 }
 
 class ChatRoomsLoaded extends ChatState {
