@@ -7,10 +7,11 @@ import 'package:home_service_admin/modules/user/pages/tasker_page.dart';
 import 'package:home_service_admin/providers/log_provider.dart';
 import 'package:home_service_admin/themes/style_text.dart';
 
+import '../modules/services/pages/services_page.dart';
+import '../modules/statistic/pages/dashboard_screen.dart';
 import '../modules/user/pages/customer_page.dart';
 import '../themes/app_assets.dart';
 import '../themes/app_colors.dart';
-import 'dashboard_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -52,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
     'Customer',
     'Taskers',
     'Bookings',
-    'Invoices',
+    'Services',
     'Messages',
     'Notification',
     'Settings',
@@ -234,12 +235,7 @@ class _MainScreenState extends State<MainScreen> {
       case 3:
         return BookingsPage();
       case 4:
-        return Center(
-          child: Text(
-            'Welcome to the Dashboard',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        );
+        return ServicesPage();
       case 5:
         return Center(
           child: Text(

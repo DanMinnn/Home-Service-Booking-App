@@ -69,12 +69,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Error: ${(state).message}',
+                      'Something went wrong!',
                       style: const TextStyle(color: Colors.red),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _loadDashboardData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text('Retry'),
                     ),
                   ],
