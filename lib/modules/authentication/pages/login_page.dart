@@ -120,18 +120,6 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                   ),
-                  BlocBuilder<LoginBloc, LoginState>(
-                    buildWhen: (previous, current) =>
-                        previous is LoginLoading != current is LoginLoading,
-                    builder: (context, state) {
-                      if (state is LoginLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
                 ],
               ),
             ),
@@ -214,11 +202,18 @@ class _LoginFormState extends State<LoginForm> {
     bool isValidForm = _email.text.toString().isNotEmpty &&
         _password.text.toString().isNotEmpty;
 
-    return SizedBox(
-        width: double.infinity,
-        child: BasicButton(
-            onPressed: isValidForm ? () => _onLoginPressed(context) : null,
-            title: 'Login'));
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        final isLoading = state is LoginLoading;
+        return SizedBox(
+            width: double.infinity,
+            child: BasicButton(
+                onPressed: isValidForm && !isLoading
+                    ? () => _onLoginPressed(context)
+                    : null,
+                title: isLoading ? 'Logging...' : 'Login'));
+      },
+    );
   }
 
   void _onLoginPressed(BuildContext context) {

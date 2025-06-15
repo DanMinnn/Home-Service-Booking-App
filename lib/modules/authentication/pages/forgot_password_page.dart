@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/blocs/form_validate/form_bloc.dart';
 import 'package:home_service/modules/authentication/blocs/login/login_event.dart';
 import 'package:home_service/modules/authentication/repos/login_repo.dart';
+import 'package:home_service/services/navigation_service.dart';
 import 'package:home_service/themes/app_colors.dart';
 
+import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../common/widgets/stateless/basic_button.dart';
 import '../../../common/widgets/stateless/show_snack_bar.dart';
 import '../../../themes/app_assets.dart';
@@ -31,6 +33,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final navigationService = NavigationService();
     return Scaffold(
       backgroundColor: AppColors.white,
       body: MultiBlocProvider(
@@ -52,29 +55,38 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           },
           child: BlocBuilder<FormFieldBloc, FormFieldStates>(
             builder: (context, state) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+              return SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 50),
-                    Text(
-                      'Forgot Password',
-                      style: AppTextStyles.h4.copyWith(
-                        color: AppColors.darkBlue,
-                      ),
+                    BasicAppBar(
+                      isLeading: false,
+                      isTrailing: false,
+                      leading: GestureDetector(
+                          onTap: () {
+                            navigationService.goBack();
+                          },
+                          child: Image.asset(AppAssetIcons.arrowLeft)),
+                      title: 'Forgot Password',
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      'Please enter your email. We will send you a link to reset your password.',
-                      style: AppTextStyles.bodyMediumRegular.copyWith(
-                        color: AppColors.darkBlue.withValues(alpha: 0.8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Please enter your email. We will send you a link to reset your password.',
+                            style: AppTextStyles.bodyMediumRegular.copyWith(
+                              color: AppColors.darkBlue.withValues(alpha: 0.8),
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          _buildEmailTextField(context, state),
+                          const SizedBox(height: 20),
+                          _buildSubmitButton(),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 40),
-                    _buildEmailTextField(context, state),
-                    const SizedBox(height: 20),
-                    _buildSubmitButton(),
                   ],
                 ),
               );

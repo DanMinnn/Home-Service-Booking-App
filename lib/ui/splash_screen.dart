@@ -107,7 +107,7 @@ class _SplashscreenState extends State<Splashscreen> {
     if (appState == AppState.authorized) {
       _navigationService.navigateToAndClearStack(RouteName.homeScreen);
     } else if (appState == AppState.unAuthorized) {
-      _navigationService.navigateToAndClearStack(RouteName.authScreen);
+      _navigationService.navigateToAndClearStack(RouteName.homeScreen);
     } else {
       _navigationService.navigateToAndClearStack(RouteName.onboardingScreen);
     }

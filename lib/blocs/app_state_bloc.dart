@@ -41,6 +41,9 @@ class AppStateBloc extends Cubit<AppState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(PrefsKey.authorLevel);
     await _userRepository.clearUser();
+    await prefs.remove('access_token');
+    await prefs.remove('refresh_token');
+    await prefs.remove('userId');
     logger.log('User logged out');
     emit(AppState.unAuthorized);
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/blocs/form_validate/form_bloc.dart';
+import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/authentication/blocs/signup/signup_bloc.dart';
 import 'package:home_service/modules/authentication/repos/signup_repo.dart';
 
@@ -59,13 +60,7 @@ class _SignupFormState extends State<SignupForm> {
     return BlocListener<SignupBloc, SignupState>(
       listener: (context, state) {
         if (state is SignupSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(state.message),
-                duration: const Duration(seconds: 5),
-                backgroundColor: AppColors.green),
-          );
-          //Navigator.of(context).pushReplacementNamed('/login');
+          ShowSnackBar.showSuccess(context, state.message, 'Well done!');
         } else if (state is SignupFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -112,20 +107,6 @@ class _SignupFormState extends State<SignupForm> {
                         ],
                       ),
                     ),
-                  ),
-                  BlocBuilder<SignupBloc, SignupState>(
-                    buildWhen: (previous, current) =>
-                        previous is SignupLoading != current is SignupLoading,
-                    builder: (context, state) {
-                      if (state is SignupLoading) {
-                        return Container(
-                          color: AppColors.black.withValues(alpha: 0.5),
-                          child:
-                              const Center(child: CircularProgressIndicator()),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
                   ),
                 ],
               ),
@@ -261,11 +242,18 @@ class _SignupFormState extends State<SignupForm> {
         state.phoneNumber.isValid &&
         state.password.isValid;
 
-    return SizedBox(
-      width: double.infinity,
-      child: BasicButton(
-          onPressed: isFormValid ? () => _onSignupPressed(context) : null,
-          title: 'Sign up'),
+    return BlocBuilder<SignupBloc, SignupState>(
+      builder: (context, state) {
+        final isLoading = state is SignupLoading;
+        return SizedBox(
+          width: double.infinity,
+          child: BasicButton(
+              onPressed: isFormValid && !isLoading
+                  ? () => _onSignupPressed(context)
+                  : null,
+              title: isLoading ? 'Processing...' : 'Sign up'),
+        );
+      },
     );
   }
 
