@@ -71,7 +71,8 @@ class _WalletPageState extends State<WalletPage> {
       child: BlocBuilder<WalletBloc, WalletState>(
         builder: (context, state) {
           if (state is WalletLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF386DF3)));
           } else if (state is WalletError) {
             return Center(
               child: Text(

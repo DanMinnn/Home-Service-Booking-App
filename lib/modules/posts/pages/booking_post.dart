@@ -114,7 +114,8 @@ class _BookingPostState extends State<BookingPost> {
                   builder: (context, state) {
                     if (state is PostLoading) {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child:
+                            CircularProgressIndicator(color: Color(0xFF386DF3)),
                       );
                     } else if (state is PostLoaded) {
                       final posts = state.posts;

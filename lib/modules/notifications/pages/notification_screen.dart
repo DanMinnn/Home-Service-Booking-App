@@ -101,10 +101,9 @@ class NotificationsScreenState extends State<NotificationsScreen>
                 child: BlocBuilder<NotificationBloc, NotificationState>(
                   builder: (context, state) {
                     if (state is NotificationLoading) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.darkBlue,
-                        ),
+                      return const Center(
+                        child:
+                            CircularProgressIndicator(color: Color(0xFF386DF3)),
                       );
                     } else if (state is NotificationLoaded) {
                       final notifications = state.notifications;

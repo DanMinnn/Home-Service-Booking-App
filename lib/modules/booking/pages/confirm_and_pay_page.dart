@@ -110,7 +110,8 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
         child: BlocBuilder<BookingBloc, BookingState>(
           builder: (context, state) {
             if (state is BookingLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF386DF3)));
             }
 
             if (state is BookingSuccess) {

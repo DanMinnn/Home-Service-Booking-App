@@ -219,10 +219,9 @@ class _FloatingChatBotState extends State<FloatingChatBot>
                               builder: (context, state) {
                                 if (state is ChatbotLoading) {
                                   return Expanded(
-                                    child: Center(
+                                    child: const Center(
                                       child: CircularProgressIndicator(
-                                        color: AppColors.darkBlue,
-                                      ),
+                                          color: Color(0xFF386DF3)),
                                     ),
                                   );
                                 } else if (state is ChatbotMessagesLoaded) {

@@ -603,7 +603,7 @@ class _MapsPageState extends State<MapsPage> {
             Container(
               color: AppColors.black.withValues(alpha: 0.3),
               child: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(color: Color(0xFF386DF3)),
               ),
             ),
 

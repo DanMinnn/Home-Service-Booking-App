@@ -211,7 +211,7 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
               return const Center(
                 child: Align(
                   alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(color: Color(0xFF386DF3)),
                 ),
               );
             } else if (state is ServicePackagesError) {
