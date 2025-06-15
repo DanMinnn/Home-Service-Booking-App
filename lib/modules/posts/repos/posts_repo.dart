@@ -7,23 +7,39 @@ class PostsRepo {
   LogProvider get logger => const LogProvider('::::POSTS-REPO::::');
   final _apiProvider = ApiProvider();
 
-  Future<List<Post>> getPosts(int userId, {String? status}) async {
+  Future<Map<String, dynamic>> getPosts(int userId,
+      {String? status, int pageNo = 0, int pageSize = 10}) async {
     try {
-      String endpoint = '/booking/$userId/booking-detail/';
+      String endpoint = '/booking/$userId/booking-detail';
 
+      // Build query parameters
+      List<String> queryParams = [];
       if (status != null) {
-        endpoint += '?status=$status';
+        queryParams.add('status=$status');
+      }
+      queryParams.add('pageNo=$pageNo');
+      queryParams.add('pageSize=$pageSize');
+
+      if (queryParams.isNotEmpty) {
+        endpoint += '?${queryParams.join('&')}';
       }
 
       final response = await _apiProvider.get(endpoint);
 
       if (response.statusCode == 200) {
-        final data = response.data['data']['items'] as List;
+        final responseData = response.data['data'];
+        final data = responseData['items'] as List;
         final posts =
             data.map((e) => Post.fromJson(e as Map<String, dynamic>)).toList();
 
-        logger.log('POST REPO: ${posts.length}');
-        return posts;
+        logger.log('POST REPO: ${posts.length}, Page: $pageNo/$pageSize');
+
+        return {
+          'posts': posts,
+          'pageNo': responseData['pageNo'] ?? 0,
+          'pageSize': responseData['pageSize'] ?? 10,
+          'totalPage': responseData['totalPage'] ?? 1,
+        };
       } else {
         throw Exception('Unexpected status code: ${response.statusCode}');
       }

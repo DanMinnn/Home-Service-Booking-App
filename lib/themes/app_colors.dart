@@ -13,6 +13,7 @@ class AppColors {
   static const Color redMedium = Color(0xFFEA4C2D);
   static const Color tanHide = Color(0xFFFFE7E7);
   static const Color red = Color(0xFFEB5757);
+  static const Color accent = Color(0xFF03A89E);
 
   //error color light
   static const Color iconClose = Color(0xFFc91912);

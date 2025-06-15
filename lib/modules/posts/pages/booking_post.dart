@@ -31,6 +31,8 @@ class _BookingPostState extends State<BookingPost> {
   int _userId = 0;
   late PostBloc _postBloc;
   bool _isCompleted = false;
+  int _currentPage = 0;
+  final int _pageSize = 10;
 
   @override
   void initState() {
@@ -57,6 +59,19 @@ class _BookingPostState extends State<BookingPost> {
       });
       return;
     }
+  }
+
+  void _loadPosts() {
+    _postBloc.add(
+      PostFetchEvent(
+        userId: _userId,
+        status: selectedValue?.toLowerCase() == 'all'
+            ? null
+            : selectedValue?.toLowerCase(),
+        pageNo: _currentPage,
+        pageSize: _pageSize,
+      ),
+    );
   }
 
   @override
@@ -86,7 +101,11 @@ class _BookingPostState extends State<BookingPost> {
                     ..add(
                       PostFetchEvent(
                         userId: _userId,
-                        status: selectedValue?.toLowerCase(),
+                        status: selectedValue?.toLowerCase() == 'all'
+                            ? null
+                            : selectedValue?.toLowerCase(),
+                        pageNo: _currentPage,
+                        pageSize: _pageSize,
                       ),
                     );
                   return _postBloc;
@@ -114,15 +133,22 @@ class _BookingPostState extends State<BookingPost> {
                           ),
                         );
                       }
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: posts.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 0),
-                        itemBuilder: (context, index) {
-                          return _buildBookingCard(posts[index]);
-                        },
+                      return Column(
+                        children: [
+                          ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: posts.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 0),
+                            itemBuilder: (context, index) {
+                              return _buildBookingCard(posts[index]);
+                            },
+                          ),
+                          if (state.totalPage > 1)
+                            _buildPaginationControls(
+                                state.pageNo, state.totalPage),
+                        ],
                       );
                     }
                     return Center(
@@ -141,6 +167,56 @@ class _BookingPostState extends State<BookingPost> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPaginationControls(int currentPage, int totalPages) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: currentPage > 0
+                ? () {
+                    setState(() {
+                      _currentPage = currentPage - 1;
+                    });
+                    _loadPosts();
+                  }
+                : null,
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color:
+                  currentPage > 0 ? AppColors.darkBlue : AppColors.darkBlue20,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Page ${currentPage + 1} of $totalPages',
+            style: AppTextStyles.bodyMediumSemiBold.copyWith(
+              color: AppColors.darkBlue,
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: currentPage < totalPages - 1
+                ? () {
+                    setState(() {
+                      _currentPage = currentPage + 1;
+                    });
+                    _loadPosts();
+                  }
+                : null,
+            icon: Icon(
+              Icons.arrow_forward_ios,
+              color: currentPage < totalPages - 1
+                  ? AppColors.darkBlue
+                  : AppColors.darkBlue20,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -197,12 +273,15 @@ class _BookingPostState extends State<BookingPost> {
             onChanged: (value) {
               setState(() {
                 selectedValue = value;
+                _currentPage = 0; // Reset to first page when filter changes
                 // If "All" is selected, pass null as status to fetch all posts
                 final statusFilter =
                     (value == 'All') ? null : value?.toLowerCase();
                 _postBloc.add(PostFetchEvent(
                   userId: _userId,
                   status: statusFilter,
+                  pageNo: _currentPage,
+                  pageSize: _pageSize,
                 ));
                 _isCompleted = value == 'Completed';
               });
@@ -256,13 +335,20 @@ class _BookingPostState extends State<BookingPost> {
             _buildBookingSecondRow(post),
             if (post.status!.compareTo('pending') == 0)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  'Wait for the tasker to accept your booking',
-                  style: AppTextStyles.bodySmallSemiBold.copyWith(
-                    color: AppColors.darkBlue,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.tanHide,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Wait for the tasker to accept your booking',
+                    style: AppTextStyles.bodySmallSemiBold.copyWith(
+                      color: AppColors.darkBlue,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -311,7 +397,7 @@ class _BookingPostState extends State<BookingPost> {
           const Spacer(),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.tanHide,
+              color: _getStatus(post.status ?? ''),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Padding(
@@ -319,7 +405,7 @@ class _BookingPostState extends State<BookingPost> {
               child: Text(
                 capitalize(post.status ?? ''),
                 style: AppTextStyles.captionMedium.copyWith(
-                  color: AppColors.red,
+                  color: AppColors.darkBlue,
                   fontSize: 14,
                 ),
               ),
@@ -328,6 +414,25 @@ class _BookingPostState extends State<BookingPost> {
         ],
       ),
     );
+  }
+
+  Color _getStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return AppColors.tanHide;
+      case 'assigned':
+        return AppColors.blue.withValues(alpha: 0.2);
+      case 'in_progress':
+        return AppColors.accent;
+      case 'completed':
+        return AppColors.green.withValues(alpha: 0.2);
+      case 'cancelled':
+        return AppColors.redMedium.withValues(alpha: 0.2);
+      case 'rescheduled':
+        return AppColors.darkBlue20.withValues(alpha: 0.2);
+      default:
+        return AppColors.darkBlue20; // Default color for unknown status
+    }
   }
 
   Widget _buildBookingSecondRow(Post post) {

@@ -8,8 +8,15 @@ class PostLoading extends PostState {}
 
 class PostLoaded extends PostState {
   final List<Post> posts;
+  final int pageNo;
+  final int pageSize;
+  final int totalPage;
 
-  PostLoaded({required this.posts});
+  PostLoaded(
+      {required this.posts,
+      this.pageNo = 0,
+      this.pageSize = 10,
+      this.totalPage = 1});
 }
 
 class PostError extends PostState {

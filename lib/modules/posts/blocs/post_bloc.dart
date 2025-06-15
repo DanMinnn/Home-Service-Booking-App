@@ -16,10 +16,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       PostFetchEvent event, Emitter<PostState> emit) async {
     emit(PostLoading());
     try {
-      final posts =
-          await postsRepo.getPosts(event.userId, status: event.status);
-      emit(PostLoaded(posts: posts));
-      logger.log('Posts fetched successfully: ${posts.length} posts');
+      final result = await postsRepo.getPosts(event.userId,
+          status: event.status, pageNo: event.pageNo, pageSize: event.pageSize);
+
+      emit(PostLoaded(
+        posts: result['posts'],
+        pageNo: result['pageNo'],
+        pageSize: result['pageSize'],
+        totalPage: result['totalPage'],
+      ));
+
+      logger.log(
+          'Posts fetched successfully: ${result['posts'].length} posts, Page: ${result['pageNo']}/${result['totalPage']}');
     } catch (e) {
       emit(PostError(message: e.toString()));
       logger.log('Error fetching posts: ${e.toString()}');
