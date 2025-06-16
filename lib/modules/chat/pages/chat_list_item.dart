@@ -67,7 +67,7 @@ class ChatListItem extends StatelessWidget {
                       Text(
                         room.lastMessage!.senderType == userType
                             ? 'You: '
-                            : room.taskerName!,
+                            : '${room.taskerName!}: ',
                         style: AppTextStyles.bodyMediumRegular.copyWith(
                           color: AppColors.darkBlue.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w600,
