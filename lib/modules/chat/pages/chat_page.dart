@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_tasker/common/widget/show_snack_bar.dart';
 import 'package:home_service_tasker/modules/chat/bloc/chat_bloc.dart';
 import 'package:home_service_tasker/modules/chat/bloc/chat_event.dart';
+import 'package:home_service_tasker/modules/chat/model/chat_room_model.dart';
 import 'package:home_service_tasker/providers/log_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -145,7 +146,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: AppColors.bgContent,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40),
@@ -189,7 +190,9 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                 Icon(Icons.error_outline,
                                     size: 64, color: Colors.red),
                                 SizedBox(height: 16),
-                                Text(state.message),
+                                Text('Something went wrong',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.red)),
                                 SizedBox(height: 16),
                                 ElevatedButton(
                                   onPressed: _refreshChatRooms,
@@ -199,7 +202,79 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                             ),
                           );
                         }
-                        if (state is ChatRoomsLoaded) {
+
+                        List<ChatRoomModel> chatRooms = [];
+                        if (state is ChatConnected) {
+                          chatRooms = state.rooms;
+                        } else if (state is ChatRoomsLoaded) {
+                          chatRooms = state.rooms;
+                        }
+                        if (chatRooms.isEmpty && state is! ChatLoading) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.chat_bubble_outline,
+                                    size: 64, color: Colors.grey),
+                                SizedBox(height: 16),
+                                Text(
+                                  'No conversations yet',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.grey),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Start a conversation to see it here',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Expanded(
+                          child: RefreshIndicator(
+                            color: AppColors.white,
+                            backgroundColor: AppColors.primary,
+                            onRefresh: () async {
+                              _chatBloc.add(ChatRoomsLoadedEvent(taskerId));
+                            },
+                            child: ListView.builder(
+                              itemCount: chatRooms.length,
+                              itemBuilder: (context, index) {
+                                final room = chatRooms[index];
+                                return ChatListItem(
+                                  chatBloc: _chatBloc,
+                                  room: room,
+                                  taskerId: taskerId,
+                                  userType: 'tasker',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BlocProvider.value(
+                                          value: _chatBloc,
+                                          child: ChatDetailScreen(
+                                            room: room,
+                                            taskerId: taskerId,
+                                            userType: 'tasker',
+                                          ),
+                                        ),
+                                      ),
+                                    ).then((_) {
+                                      // Refresh rooms when returning from detail page
+                                      if (mounted) {
+                                        _chatBloc.add(
+                                            ChatRoomsLoadedEvent(taskerId));
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                        /*if (state is ChatRoomsLoaded) {
                           final chatRooms = state.rooms;
                           if (chatRooms.isEmpty) {
                             return Center(
@@ -287,7 +362,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                               ),
                             ],
                           ),
-                        );
+                        );*/
                       },
                     ),
                   ],

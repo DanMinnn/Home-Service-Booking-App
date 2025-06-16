@@ -111,15 +111,28 @@ class ChatListItem extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          lastMessage != null
-                              ? room.lastMessage!.messageText
-                              : 'No messages yet',
-                          style: AppTextStyles.paragraph3.copyWith(
-                            color: Color(0xFF000000).withValues(alpha: 0.5),
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            Text(
+                              room.lastMessage!.senderType == userType
+                                  ? 'You: '
+                                  : '${room.userName!}: ',
+                              style: AppTextStyles.paragraph3.copyWith(
+                                color: Color(0xFF000000).withValues(alpha: 0.8),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              lastMessage != null
+                                  ? room.lastMessage!.messageText
+                                  : 'No messages yet',
+                              style: AppTextStyles.paragraph3.copyWith(
+                                color: Color(0xFF000000).withValues(alpha: 0.5),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
                     ],

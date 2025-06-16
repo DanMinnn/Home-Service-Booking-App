@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service_tasker/modules/chat/bloc/chat_bloc.dart';
 import 'package:home_service_tasker/modules/chat/bloc/chat_event.dart';
+import 'package:home_service_tasker/modules/chat/model/chat_message_model.dart';
 import 'package:home_service_tasker/routes/navigation_service.dart';
 import 'package:home_service_tasker/theme/styles_text.dart';
 
@@ -252,7 +253,7 @@ class ChatDetailScreenState extends State<ChatDetailScreen>
                       if (state is ChatError) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.message),
+                            content: Text('Something went wrong'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -271,7 +272,33 @@ class ChatDetailScreenState extends State<ChatDetailScreen>
                       }
                     },
                     builder: (context, state) {
+                      List<ChatMessageModel> messages = [];
                       if (state is ChatMessagesLoaded &&
+                          state.roomId == widget.room.id) {
+                        messages = state.messages;
+                      } else if (state is ChatConnected &&
+                          state.roomId == widget.room.id) {
+                        messages = state.messages;
+                      }
+
+                      messages = messages.reversed.toList();
+                      return Expanded(
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          itemCount: messages.length,
+                          reverse: true,
+                          itemBuilder: (context, index) {
+                            final message = messages[index];
+                            final isMe = message.senderId == widget.taskerId;
+                            return ChatMessageItem(
+                              message: messages[index],
+                              isMe: isMe,
+                            );
+                          },
+                        ),
+                      );
+
+                      /*if (state is ChatMessagesLoaded &&
                           state.roomId == widget.room.id) {
                         final messages = state.messages.reversed.toList();
                         return Expanded(
@@ -303,7 +330,7 @@ class ChatDetailScreenState extends State<ChatDetailScreen>
                             fontSize: 16,
                           ),
                         ),
-                      );
+                      );*/
                     },
                   ),
                   SizedBox(height: 16),
