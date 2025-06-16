@@ -268,6 +268,7 @@ class _OptionsServiceCleaningPageState
   Widget _addOnService() {
     return Container(
       padding: const EdgeInsets.all(16),
+      color: AppColors.darkBlue.withValues(alpha: 0.05),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,6 +288,16 @@ class _OptionsServiceCleaningPageState
           ),
           const SizedBox(height: 10),
           _buildAddOn(),
+          const SizedBox(height: 16),
+          Center(
+            child: Text(
+              'Upcoming',
+              style: AppTextStyles.bodyLargeRegular.copyWith(
+                color: AppColors.red.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -328,7 +339,7 @@ class _OptionsServiceCleaningPageState
           height: 88,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.darkBlue.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isSelected

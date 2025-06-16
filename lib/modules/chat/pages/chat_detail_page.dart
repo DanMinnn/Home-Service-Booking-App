@@ -181,7 +181,7 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                 if (state is ChatError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(state.message),
+                      content: Text('Something went wrong'),
                       backgroundColor: Colors.red,
                     ),
                   );

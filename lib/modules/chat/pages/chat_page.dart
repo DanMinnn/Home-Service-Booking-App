@@ -141,146 +141,156 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               ),
               title: 'Chat',
             ),
-            BlocProvider.value(
-              value: _chatBloc,
-              child: BlocConsumer<ChatBloc, ChatState>(
-                listener: (context, state) {
-                  if (state is ChatError) {
-                    ShowSnackBar.showError(context, state.message);
-                  } else if (state is ChatConnected && state.isConnected) {
-                    // Load rooms when connected
-                    logger.log("Chat connected, loading rooms");
-                    _chatBloc.add(ChatRoomsLoadedEvent(userId));
-                  }
-                },
-                builder: (context, state) {
-                  if (state is ChatLoading || state is ChatInitial) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(color: Color(0xFF386DF3)),
-                          SizedBox(height: 16),
-                          Text('Connecting to chat...'),
-                        ],
-                      ),
-                    );
-                  }
-                  if (state is ChatError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error_outline,
-                              size: 64, color: Colors.red),
-                          SizedBox(height: 16),
-                          Text(state.message),
-                          SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _refreshChatRooms,
-                            child: Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+            Expanded(
+              child: BlocProvider.value(
+                value: _chatBloc,
+                child: BlocConsumer<ChatBloc, ChatState>(
+                  listener: (context, state) {
+                    if (state is ChatError) {
+                      ShowSnackBar.showError(context, 'Something went wrong');
+                    } else if (state is ChatConnected && state.isConnected) {
+                      // Load rooms when connected
+                      logger.log("Chat connected, loading rooms");
+                      _chatBloc.add(ChatRoomsLoadedEvent(userId));
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is ChatLoading || state is ChatInitial) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(color: Color(0xFF386DF3)),
+                            SizedBox(height: 16),
+                            Text('Connecting to chat...'),
+                          ],
+                        ),
+                      );
+                    }
+                    if (state is ChatError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error_outline,
+                                size: 64, color: Colors.red),
+                            SizedBox(height: 16),
+                            Text(
+                                'Check your internet connection or contact support',
+                                style:
+                                    TextStyle(fontSize: 16, color: Colors.red)),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                                onPressed: _refreshChatRooms,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.darkBlue,
+                                ),
+                                child: Text(
+                                  'Retry',
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                          ],
+                        ),
+                      );
+                    }
 
-                  List<ChatRoomModel> rooms = [];
-                  if (state is ChatRoomsLoaded) {
-                    final chatRooms = state.rooms;
-                    rooms = chatRooms;
+                    List<ChatRoomModel> rooms = [];
+                    if (state is ChatRoomsLoaded) {
+                      final chatRooms = state.rooms;
+                      rooms = chatRooms;
 
-                    logger.log(
-                      "Chat rooms loaded with ${rooms.length} rooms",
-                    );
-                  } else if (state is ChatConnected) {
-                    rooms = state.rooms;
+                      logger.log(
+                        "Chat rooms loaded with ${rooms.length} rooms",
+                      );
+                    } else if (state is ChatConnected) {
+                      rooms = state.rooms;
 
-                    logger.log(
-                      "Chat connected with ${rooms.length} rooms",
-                    );
-                  }
+                      logger.log(
+                        "Chat connected with ${rooms.length} rooms",
+                      );
+                    }
 
-                  if (rooms.isNotEmpty) {
-                    // return Center(
-                    //   child: Column(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Icon(Icons.chat_bubble_outline,
-                    //           size: 64, color: Colors.grey),
-                    //       SizedBox(height: 16),
-                    //       Text(
-                    //         'No conversations yet',
-                    //         style: TextStyle(fontSize: 18, color: Colors.grey),
-                    //       ),
-                    //       SizedBox(height: 8),
-                    //       Text(
-                    //         'Start a conversation to see it here',
-                    //         style: TextStyle(color: Colors.grey),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // );
-                    return Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          _chatBloc.add(ChatRoomsLoadedEvent(userId));
-                        },
-                        child: ListView.builder(
-                          padding: EdgeInsets.only(top: 10),
-                          itemCount: rooms.length,
-                          itemBuilder: (context, index) {
-                            final room = rooms[index];
-                            return ChatListItem(
-                              room: room,
-                              userId: userId,
-                              userType: 'user',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => BlocProvider.value(
-                                      value: _chatBloc,
-                                      child: ChatDetailPage(
-                                        room: room,
-                                        userId: userId,
-                                        userType: 'user',
+                    if (rooms.isNotEmpty) {
+                      // return Center(
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       Icon(Icons.chat_bubble_outline,
+                      //           size: 64, color: Colors.grey),
+                      //       SizedBox(height: 16),
+                      //       Text(
+                      //         'No conversations yet',
+                      //         style: TextStyle(fontSize: 18, color: Colors.grey),
+                      //       ),
+                      //       SizedBox(height: 8),
+                      //       Text(
+                      //         'Start a conversation to see it here',
+                      //         style: TextStyle(color: Colors.grey),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // );
+                      return Expanded(
+                        child: RefreshIndicator(
+                          onRefresh: () async {
+                            _chatBloc.add(ChatRoomsLoadedEvent(userId));
+                          },
+                          child: ListView.builder(
+                            padding: EdgeInsets.only(top: 10),
+                            itemCount: rooms.length,
+                            itemBuilder: (context, index) {
+                              final room = rooms[index];
+                              return ChatListItem(
+                                room: room,
+                                userId: userId,
+                                userType: 'user',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider.value(
+                                        value: _chatBloc,
+                                        child: ChatDetailPage(
+                                          room: room,
+                                          userId: userId,
+                                          userType: 'user',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ).then((_) {
-                                  // Refresh rooms when returning from detail page
-                                  if (mounted) {
-                                    _chatBloc.add(ChatRoomsLoadedEvent(userId));
-                                  }
-                                });
-                              },
-                            );
-                          },
+                                  ).then((_) {
+                                    // Refresh rooms when returning from detail page
+                                    if (mounted) {
+                                      _chatBloc
+                                          .add(ChatRoomsLoadedEvent(userId));
+                                    }
+                                  });
+                                },
+                              );
+                            },
+                          ),
                         ),
+                      );
+                    }
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Waiting for connection...'),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                              onPressed: _refreshChatRooms,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.darkBlue,
+                              ),
+                              child: Text(
+                                'Load Chats',
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ],
                       ),
                     );
-                  }
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Waiting for connection...'),
-                        Text(state.runtimeType.toString()),
-                        SizedBox(height: 16),
-                        ElevatedButton(
-                            onPressed: _refreshChatRooms,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.darkBlue,
-                            ),
-                            child: Text(
-                              'Load Chats',
-                              style: TextStyle(color: Colors.white),
-                            )),
-                      ],
-                    ),
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ],

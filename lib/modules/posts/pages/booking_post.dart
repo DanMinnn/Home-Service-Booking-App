@@ -79,23 +79,23 @@ class _BookingPostState extends State<BookingPost> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              BasicAppBar(
-                isLeading: false,
-                isTrailing: false,
-                leading: GestureDetector(
-                  onTap: () {
-                    _navigationService.goBackToPreviousTab();
-                  },
-                  child: Image.asset(AppAssetIcons.arrowLeft),
-                ),
-                title: 'Bookings',
+        child: Column(
+          children: [
+            BasicAppBar(
+              isLeading: false,
+              isTrailing: false,
+              leading: GestureDetector(
+                onTap: () {
+                  _navigationService.goBackToPreviousTab();
+                },
+                child: Image.asset(AppAssetIcons.arrowLeft),
               ),
-              _sortByStatus(),
-              const SizedBox(height: 16),
-              BlocProvider(
+              title: 'Bookings',
+            ),
+            _sortByStatus(),
+            const SizedBox(height: 16),
+            Expanded(
+              child: BlocProvider(
                 create: (context) {
                   _postBloc = PostBloc(PostsRepo())
                     ..add(
@@ -134,22 +134,24 @@ class _BookingPostState extends State<BookingPost> {
                           ),
                         );
                       }
-                      return Column(
-                        children: [
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: posts.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 0),
-                            itemBuilder: (context, index) {
-                              return _buildBookingCard(posts[index]);
-                            },
-                          ),
-                          if (state.totalPage > 1)
-                            _buildPaginationControls(
-                                state.pageNo, state.totalPage),
-                        ],
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: posts.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 0),
+                              itemBuilder: (context, index) {
+                                return _buildBookingCard(posts[index]);
+                              },
+                            ),
+                            if (state.totalPage > 1)
+                              _buildPaginationControls(
+                                  state.pageNo, state.totalPage),
+                          ],
+                        ),
                       );
                     }
                     return Center(
@@ -165,8 +167,8 @@ class _BookingPostState extends State<BookingPost> {
                   },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -274,10 +276,15 @@ class _BookingPostState extends State<BookingPost> {
             onChanged: (value) {
               setState(() {
                 selectedValue = value;
-                _currentPage = 0; // Reset to first page when filter changes
-                // If "All" is selected, pass null as status to fetch all posts
-                final statusFilter =
-                    (value == 'All') ? null : value?.toLowerCase();
+                _currentPage = 0;
+                String? statusFilter;
+                if (value?.toLowerCase() == 'all') {
+                  statusFilter = null;
+                } else if (value?.toLowerCase() == 'in progress') {
+                  statusFilter = 'in_progress';
+                } else {
+                  statusFilter = value?.toLowerCase();
+                }
                 _postBloc.add(PostFetchEvent(
                   userId: _userId,
                   status: statusFilter,
@@ -424,7 +431,7 @@ class _BookingPostState extends State<BookingPost> {
       case 'assigned':
         return AppColors.blue.withValues(alpha: 0.2);
       case 'in_progress':
-        return AppColors.accent;
+        return AppColors.accent.withValues(alpha: 0.2);
       case 'completed':
         return AppColors.green.withValues(alpha: 0.2);
       case 'cancelled':

@@ -27,23 +27,21 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BasicAppBar(
-                isLeading: false,
-                isTrailing: false,
-                leading: Image.asset(AppAssetIcons.arrowLeft),
-                title: 'Category',
-                onBackButtonPressed: () {
-                  // Go back to the previous tab instead of hardcoding to home
-                  _navigationService.goBackToPreviousTab();
-                },
-              ),
-              _buildCategories(),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BasicAppBar(
+              isLeading: false,
+              isTrailing: false,
+              leading: Image.asset(AppAssetIcons.arrowLeft),
+              title: 'Category',
+              onBackButtonPressed: () {
+                // Go back to the previous tab instead of hardcoding to home
+                _navigationService.goBackToPreviousTab();
+              },
+            ),
+            Expanded(child: _buildCategories()),
+          ],
         ),
       ),
     );
@@ -70,20 +68,22 @@ class _CategoriesPageState extends State<CategoriesPage> {
             }
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.6,
-                ),
-                itemCount: services.length,
-                itemBuilder: (context, index) => _buildItemGridView(
-                  services[index].name ?? '',
-                  services[index].icon,
-                  services[index].id ?? 0,
+              child: SingleChildScrollView(
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.6,
+                  ),
+                  itemCount: services.length,
+                  itemBuilder: (context, index) => _buildItemGridView(
+                    services[index].name ?? '',
+                    services[index].icon,
+                    services[index].id ?? 0,
+                  ),
                 ),
               ),
             );
