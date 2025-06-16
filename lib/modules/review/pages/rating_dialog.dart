@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_service/modules/favorite_tasker/repo/favorite_tasker_repo.dart';
 import 'package:home_service/modules/review/repo/review_repo.dart';
 import 'package:home_service/themes/app_assets.dart';
 import 'package:home_service/themes/app_colors.dart';
@@ -9,12 +10,14 @@ import '../model/review_req.dart';
 class RatingDialog extends StatefulWidget {
   final String taskerName;
   final String taskerAvatar;
+  final int taskerId;
   final int bookingId;
   final int reviewerId;
   const RatingDialog({
     super.key,
     required this.taskerName,
     this.taskerAvatar = '',
+    required this.taskerId,
     required this.bookingId,
     required this.reviewerId,
   });
@@ -26,6 +29,7 @@ class RatingDialog extends StatefulWidget {
     BuildContext context, {
     required String taskerName,
     String taskerAvatar = '',
+    required int taskerId,
     required int bookingId,
     required int reviewerId,
   }) {
@@ -35,6 +39,7 @@ class RatingDialog extends StatefulWidget {
       builder: (context) => RatingDialog(
         taskerName: taskerName,
         taskerAvatar: taskerAvatar,
+        taskerId: taskerId,
         bookingId: bookingId,
         reviewerId: reviewerId,
       ),
@@ -47,12 +52,15 @@ class _RatingDialogState extends State<RatingDialog>
   int _selectedRating = 0;
   bool _showFeedbackOptions = false;
   bool _isOtherSelected = false;
-  List<String> _selectedFeedbacks = [];
+  final List<String> _selectedFeedbacks = [];
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   final TextEditingController _feedbackController = TextEditingController();
   final ReviewRepo _reviewRepo = ReviewRepo();
+  final FavoriteTaskerRepo _favoriteTaskerRepo = FavoriteTaskerRepo();
+  bool _isInFavorites = false;
+  bool _isCheckingFavorite = false;
   final List<String> _feedbackOptions = [
     'Không đúng giờ',
     'Thái độ không tốt',
@@ -86,6 +94,57 @@ class _RatingDialogState extends State<RatingDialog>
       parent: _animationController,
       curve: Curves.easeOutBack,
     ));
+
+    // Check if tasker is already in favorites when dialog opens
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    try {
+      setState(() {
+        _isCheckingFavorite = true;
+      });
+
+      final isInFavorites = await _favoriteTaskerRepo.isTaskerInFavorites(
+          widget.reviewerId, widget.taskerId);
+
+      setState(() {
+        _isInFavorites = isInFavorites;
+        _isCheckingFavorite = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isCheckingFavorite = false;
+      });
+    }
+  }
+
+  Future<void> _toggleFavoriteStatus() async {
+    try {
+      final result = await _favoriteTaskerRepo.toggleFavoriteTasker(
+          widget.reviewerId, widget.taskerId, widget.bookingId);
+
+      setState(() {
+        _isInFavorites = result;
+      });
+
+      // Show feedback to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: _isInFavorites ? AppColors.green : AppColors.red,
+          content: Text(
+              _isInFavorites ? 'Added to favorites' : 'Removed from favorites'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update favorites'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   @override
@@ -156,12 +215,36 @@ class _RatingDialogState extends State<RatingDialog>
                 child: Row(
                   children: [
                     Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                          padding: EdgeInsets.all(4),
-                          child: Image.asset(AppAssetIcons.heart)),
-                    ),
+                    _isCheckingFavorite
+                        ? SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.blue,
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: _toggleFavoriteStatus,
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              child: ColorFiltered(
+                                colorFilter: ColorFilter.mode(
+                                  _isInFavorites
+                                      ? AppColors.green
+                                      : AppColors.darkBlue,
+                                  BlendMode.srcIn,
+                                ),
+                                child: Image.asset(
+                                  _isInFavorites
+                                      ? AppAssetIcons.heartFilledIc
+                                      : AppAssetIcons.heart,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              ),
+                            ),
+                          ),
                   ],
                 ),
               ),

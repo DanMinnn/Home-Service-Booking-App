@@ -4,6 +4,7 @@ class AppAssetsBackgrounds {
   static const String logo = '${imagePath}logo_app.png';
   static const String carousel = '${imagePath}img_carousel.png';
   static const String notification = '${imagePath}notifications.png';
+  static const String avt = '${imagePath}avt_remove_bg.png';
 }
 
 class AppAssetIcons {
@@ -75,4 +76,7 @@ class AppAssetIcons {
   static const String historyIc = '${iconPath}history_ic.png';
   static const String completedIc = '${iconPath}completed_ic.png';
   static const String starIc = '${iconPath}star_ic.png';
+
+  static const String heartFilledIc = '${iconPath}heart_filled_ic.png';
+  static const String starFilledIc = '${iconPath}star_filled_ic.png';
 }

@@ -8,6 +8,7 @@ import 'package:home_service/modules/booking/pages/confirm_and_pay_page.dart';
 import 'package:home_service/modules/booking/pages/options_service_cleaning_page.dart';
 import 'package:home_service/modules/categories/pages/categories_page.dart';
 import 'package:home_service/modules/chat/pages/chat_page.dart';
+import 'package:home_service/modules/favorite_tasker/page/favorite_tasker_page.dart';
 import 'package:home_service/modules/maps/pages/maps.dart';
 import 'package:home_service/modules/notifications/pages/notification_screen.dart';
 import 'package:home_service/modules/posts/pages/booking_post.dart';
@@ -59,17 +60,20 @@ class Routes {
         _logger.log('Navigating to Edit profile: ${settings.name}');
         return _buildRoute(settings, const EditProfile());
       case RouteName.wallet:
-        _logger.log('Navigating to Wallet profile: ${settings.name}');
+        _logger.log('Navigating to Wallet: ${settings.name}');
         return _buildRoute(settings, const WalletPage());
       case RouteName.depositWallet:
-        _logger.log('Navigating to Deposit profile: ${settings.name}');
+        _logger.log('Navigating to Deposit: ${settings.name}');
         return _buildRoute(settings, const DepositWalletPage());
       case RouteName.chatPage:
-        _logger.log('Navigating to List Chat profile: ${settings.name}');
+        _logger.log('Navigating to List Chat: ${settings.name}');
         return _buildRoute(settings, const ChatPage());
       case RouteName.notifications:
-        _logger.log('Navigating to List Chat profile: ${settings.name}');
+        _logger.log('Navigating to List Notification: ${settings.name}');
         return _buildRoute(settings, const NotificationsScreen());
+      case RouteName.favoriteTasker:
+        _logger.log('Navigating to Favorite Tasker: ${settings.name}');
+        return _buildRoute(settings, const FavoriteTaskerPage());
       default:
         _logger.log('Default redirect to HomePage: ${settings.name}');
         return _buildRoute(settings, const MainScreen());

@@ -12,6 +12,7 @@ class AppColors {
   static const Color subTitle = Color(0xFF3D4976);
   static const Color redMedium = Color(0xFFEA4C2D);
   static const Color tanHide = Color(0xFFFFE7E7);
+  static const Color avtBg = Color(0xFFFDADAC);
   static const Color red = Color(0xFFEB5757);
   static const Color accent = Color(0xFF03A89E);
 

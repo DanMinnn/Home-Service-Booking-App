@@ -85,7 +85,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 title: 'Favorite Taskers',
                 icon: AppAssetIcons.heart,
                 onTap: () {
-                  //navigationService.navigateTo('/my-orders');
+                  navigationService
+                      .navigateTo(RouteName.favoriteTasker, arguments: {
+                    'userId': _userId,
+                  });
                 },
               ),
               _buildItem(

@@ -28,12 +28,10 @@ class RouteName {
   //chat
   static const String listChatPage = '/list-chat-screen';
   static const String chatPage = '/chat-screen';
-  static const String settings = '/settings';
-  static const String about = '/about';
-  static const String contactUs = '/contact_us';
-  static const String termsAndConditions = '/terms_and_conditions';
-  static const String privacyPolicy = '/privacy_policy';
 
   //notifications
   static const String notifications = '/notifications-screen';
+
+  //tasker
+  static const String favoriteTasker = '/favorite-tasker-screen';
 }

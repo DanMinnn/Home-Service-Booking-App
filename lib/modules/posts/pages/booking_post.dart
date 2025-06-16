@@ -468,7 +468,9 @@ class _BookingPostState extends State<BookingPost> {
                         context,
                         bookingId: post.bookingId ?? 0,
                         reviewerId: _userId,
+                        taskerId: post.taskerId ?? 0,
                         taskerName: post.taskerName ?? '',
+                        taskerAvatar: post.taskerImage ?? '',
                       );
                     },
                     style: ElevatedButton.styleFrom(
