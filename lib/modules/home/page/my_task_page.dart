@@ -267,7 +267,9 @@ class _MyTaskPageState extends State<MyTaskPage> {
                     const SizedBox(height: 16),
                     if (state is TaskLoadingState)
                       const Center(
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFFD6B22),
+                        ),
                       )
                     else if (state is TaskAssignedListState) ...[
                       if (state.tasks.isEmpty)
@@ -338,7 +340,7 @@ class _MyTaskPageState extends State<MyTaskPage> {
             ),
           )
         : Center(
-            child: const CircularProgressIndicator(),
+            child: const CircularProgressIndicator(color: Color(0xFFFD6B22)),
           );
   }
 

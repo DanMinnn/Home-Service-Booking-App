@@ -112,7 +112,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: AppColors.bgContent,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),

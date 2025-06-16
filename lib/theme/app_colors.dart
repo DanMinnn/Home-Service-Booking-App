@@ -15,6 +15,7 @@ class AppColors {
   static const Color alertWarning = Color(0xFFFF6628);
   static const Color bgNotification = Color(0xFFFAFAFA);
   static const Color secondaryBlack = Color(0xFF040415);
+  static const Color bgContent = Color(0xFFF8F8F8);
 
   //error color light
   static const Color iconClose = Color(0xFFc91912);

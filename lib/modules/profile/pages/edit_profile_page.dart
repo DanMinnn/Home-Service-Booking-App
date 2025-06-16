@@ -119,7 +119,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: Color(0xFFF8F8F8),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),

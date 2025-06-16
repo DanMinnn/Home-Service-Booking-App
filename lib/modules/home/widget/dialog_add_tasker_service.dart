@@ -63,7 +63,9 @@ class _DialogAddTaskerServiceState extends State<DialogAddTaskerService> {
                     ),
                     const SizedBox(height: 16),
                     if (state is ServiceLoading)
-                      const Center(child: CircularProgressIndicator())
+                      const Center(
+                          child: CircularProgressIndicator(
+                              color: Color(0xFFFD6B22)))
                     else if (state is ServiceError)
                       Center(
                         child: Text(

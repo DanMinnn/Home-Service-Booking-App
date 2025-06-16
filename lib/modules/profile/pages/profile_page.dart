@@ -68,7 +68,7 @@ class _ProfileState extends State<Profile> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: Color(0xFFF8F8F8),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),

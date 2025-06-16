@@ -35,14 +35,12 @@ Future<void> main() async {
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
-  // You can perform background tasks here, but avoid UI operations
+  //handle background tasks here
 }
 
 class TaskerApp extends StatelessWidget {
   const TaskerApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final navigationService = NavigationService();

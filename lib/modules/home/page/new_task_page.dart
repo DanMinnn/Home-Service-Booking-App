@@ -62,63 +62,30 @@ class _NewTaskPageState extends State<NewTaskPage> {
     logger.log('Build method called with serviceIds: $serviceIds');
     return Scaffold(
       backgroundColor: AppColors.transparent,
-      body: SingleChildScrollView(
-        child: serviceIds.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : BlocProvider(
-                create: (context) => TaskBloc(TaskRepo())
-                  ..add(
-                    LoadTasksEvent(taskerId: taskerId, serviceIds: serviceIds),
-                  ),
-                child: BlocBuilder<TaskBloc, TaskState>(
-                  builder: (context, state) {
-                    if (state is TaskLoadingState) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (state is TaskLoadedState) {
-                      final tasks = state.tasks;
-                      if (tasks.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'No tasks available',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 18,
-                            ),
-                          ),
-                        );
-                      }
-                      return Column(
-                        children: [
-                          ListView.builder(
-                              itemBuilder: (_, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        _navigationService.navigateTo(
-                                            RouteName.taskDetailScreen,
-                                            arguments: {
-                                              'task': tasks[index],
-                                              'taskerId': taskerId,
-                                            });
-                                      },
-                                      child: TaskCardWidget(
-                                        task: tasks[index],
-                                      )),
-                                );
-                              },
-                              itemCount: tasks.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics()),
-                        ],
-                      );
-                    } else if (state is TaskErrorState) {
-                      logger.log('Error loading tasks: ${state.error}');
-                      return const Center(
+      body: serviceIds.isEmpty
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Color(0xFFFD6B22),
+            ))
+          : BlocProvider(
+              create: (context) => TaskBloc(TaskRepo())
+                ..add(
+                  LoadTasksEvent(taskerId: taskerId, serviceIds: serviceIds),
+                ),
+              child: BlocBuilder<TaskBloc, TaskState>(
+                builder: (context, state) {
+                  if (state is TaskLoadingState) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFFD6B22),
+                      ),
+                    );
+                  } else if (state is TaskLoadedState) {
+                    final tasks = state.tasks;
+                    if (tasks.isEmpty) {
+                      return Center(
                         child: Text(
-                          'Something went wrong',
+                          'No tasks available',
                           style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 18,
@@ -126,11 +93,47 @@ class _NewTaskPageState extends State<NewTaskPage> {
                         ),
                       );
                     }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                    return Expanded(
+                      child: SingleChildScrollView(
+                        child: ListView.builder(
+                            itemBuilder: (_, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      _navigationService.navigateTo(
+                                          RouteName.taskDetailScreen,
+                                          arguments: {
+                                            'task': tasks[index],
+                                            'taskerId': taskerId,
+                                          });
+                                    },
+                                    child: TaskCardWidget(
+                                      task: tasks[index],
+                                    )),
+                              );
+                            },
+                            itemCount: tasks.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics()),
+                      ),
+                    );
+                  } else if (state is TaskErrorState) {
+                    logger.log('Error loading tasks: ${state.error}');
+                    return const Center(
+                      child: Text(
+                        'Something went wrong',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 18,
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-      ),
+            ),
     );
   }
 }

@@ -106,13 +106,7 @@ class _HomePageState extends State<HomePage>
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white,
-                      Color(0xFFFFE5D0),
-                    ]),
+                color: AppColors.bgContent,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
