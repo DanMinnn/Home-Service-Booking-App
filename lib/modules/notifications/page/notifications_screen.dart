@@ -28,13 +28,14 @@ class NotificationsScreenState extends State<NotificationsScreen>
   final LogProvider logger = LogProvider(':::::NOTIFICATION-SCREEN:::::');
   late NotificationBloc _notificationBloc;
   late AnimationController _animationController;
+  final NotificationsRepo _notificationsRepo = NotificationsRepo();
   int taskerId = 0;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _notificationBloc = NotificationBloc(NotificationsRepo());
+    _notificationBloc = NotificationBloc(_notificationsRepo);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -191,7 +192,10 @@ class NotificationsScreenState extends State<NotificationsScreen>
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction) {},
+      onDismissed: (direction) async {
+        await _notificationsRepo.deleteNotification(notification.id);
+        _notificationBloc.add(NotificationFetch(taskerId));
+      },
       child: Material(
         color: AppColors.bgNotification,
         child: InkWell(

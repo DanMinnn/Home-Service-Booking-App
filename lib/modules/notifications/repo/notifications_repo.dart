@@ -108,4 +108,13 @@ class NotificationsRepo {
       rethrow;
     }
   }
+
+  //delete notification
+  Future<void> deleteNotification(int notificationId) async {
+    try {
+      await _apiProvider.delete('/notifications/tasker/delete/$notificationId');
+    } catch (e) {
+      logger.log('Failed to mark notification as read ${e.toString()}');
+    }
+  }
 }
