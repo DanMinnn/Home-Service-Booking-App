@@ -156,6 +156,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
 
                 final bookingReq = BookingReq(
                   userId: bookingData.user!.id,
+                  taskerId: bookingData.tasker!.taskerId,
                   serviceId: bookingData.serviceId,
                   packageId: bookingData.packageId,
                   address: bookingData.address,
@@ -233,6 +234,56 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (bookingData.tasker != null) ...[
+            Text(
+              'Tasker',
+              style: AppTextStyles.h6Bold.copyWith(
+                color: AppColors.darkBlue,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                bookingData.tasker!.taskerAvatar.isNotEmpty
+                    ? CircleAvatar(
+                        radius: 28,
+                        child: ClipOval(
+                          child: Image.network(
+                            bookingData.tasker!.taskerAvatar,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: AppColors.darkBlue.withValues(alpha: 0.05),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          size: 56,
+                          color: AppColors.darkBlue,
+                        ),
+                      ),
+                const SizedBox(width: 12),
+                Text(
+                  bookingData.tasker!.taskerName.isNotEmpty
+                      ? bookingData.tasker!.taskerName
+                      : 'Tasker Name',
+                  style: AppTextStyles.h6SemiBold.copyWith(
+                    color: AppColors.darkBlue,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+          const SizedBox(height: 8),
           Text(
             'Working time',
             style: AppTextStyles.bodyMediumMedium,

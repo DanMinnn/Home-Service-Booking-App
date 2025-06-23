@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/modules/booking/models/booking_data.dart';
+import 'package:home_service/modules/booking/models/booking_w_tasker.dart';
 import 'package:home_service/modules/booking/widget/price_next_navbar.dart';
 import 'package:home_service/modules/categories/bloc/service_package_cubit.dart';
 import 'package:home_service/modules/categories/bloc/service_package_state.dart';
@@ -32,6 +33,11 @@ class _OptionsServiceCleaningPageState
 
   int? serviceId;
   String? serviceName;
+  //book with favorite tasker
+  int taskerId = 0;
+  String taskerName = '';
+  String taskerAvatar = '';
+  BookingWTasker? bookingWTasker;
 
   int? selectedDuration;
   int? selectedItemAddOn;
@@ -55,10 +61,22 @@ class _OptionsServiceCleaningPageState
       serviceId = args['id'] as int?;
       serviceName = args['name'] as String?;
 
+      if (args.containsKey('taskerId')) {
+        taskerId = args['taskerId'] as int;
+        taskerName = args['taskerName'] as String;
+        taskerAvatar = args['taskerAvatar'] as String;
+        bookingWTasker = BookingWTasker(
+          taskerId: taskerId,
+          taskerName: taskerName,
+          taskerAvatar: taskerAvatar,
+        );
+      }
+
       bookingData = bookingData.copyWith(
         serviceId: serviceId,
         serviceName: serviceName,
         user: _userRepository.currentUser,
+        tasker: bookingWTasker,
       );
     }
   }
@@ -160,6 +178,54 @@ class _OptionsServiceCleaningPageState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16),
+            if (taskerId > 0) ...[
+              Text(
+                'Tasker',
+                style: AppTextStyles.h6Bold.copyWith(
+                  color: AppColors.darkBlue,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  taskerAvatar.isNotEmpty
+                      ? CircleAvatar(
+                          radius: 28,
+                          child: ClipOval(
+                            child: Image.network(
+                              taskerAvatar,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: AppColors.darkBlue.withValues(alpha: 0.05),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.person,
+                            size: 56,
+                            color: AppColors.darkBlue,
+                          ),
+                        ),
+                  const SizedBox(width: 12),
+                  Text(
+                    taskerName.isNotEmpty ? taskerName : 'Tasker Name',
+                    style: AppTextStyles.h6SemiBold.copyWith(
+                      color: AppColors.darkBlue,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
             Text(
               'Duration',
               style: AppTextStyles.h6Bold.copyWith(

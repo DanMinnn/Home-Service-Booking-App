@@ -25,4 +25,15 @@ class ServiceCubit extends Cubit<ServiceState> {
       emit(ServiceError(error: e.toString()));
     }
   }
+
+  Future<void> fetchTaskerServices(int taskerId) async {
+    try {
+      emit(ServiceLoading());
+      final taskerServices =
+          await _serviceRepository.getTaskerServices(taskerId);
+      emit(TaskerServiceLoaded(taskerServices: taskerServices));
+    } catch (e) {
+      emit(ServiceError(error: e.toString()));
+    }
+  }
 }

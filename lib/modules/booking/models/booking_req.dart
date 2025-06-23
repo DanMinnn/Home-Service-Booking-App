@@ -1,6 +1,7 @@
 class BookingReq {
   int? userId;
   int? serviceId;
+  int? taskerId;
   int? packageId;
   String? address;
   DateTime? scheduledStart;
@@ -21,6 +22,7 @@ class BookingReq {
   BookingReq({
     this.userId,
     this.serviceId,
+    this.taskerId,
     this.packageId,
     this.address,
     this.scheduledStart,
@@ -41,6 +43,7 @@ class BookingReq {
 
   BookingReq.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
+    taskerId = json['taskerId'];
     serviceId = json['serviceId'];
     packageId = json['packageId'];
     address = json['address'];
@@ -65,6 +68,7 @@ class BookingReq {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userId'] = userId;
+    data['taskerId'] = taskerId;
     data['serviceId'] = serviceId;
     data['packageId'] = packageId;
     data['address'] = address;

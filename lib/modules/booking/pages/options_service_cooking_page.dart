@@ -16,6 +16,7 @@ import 'package:intl/intl.dart';
 import '../../../common/widgets/stateless/basic_app_bar.dart';
 import '../../../themes/app_assets.dart';
 import '../../../themes/styles_text.dart';
+import '../models/booking_w_tasker.dart';
 import '../widget/price_next_navbar.dart';
 
 class OptionsServiceCookingPage extends StatefulWidget {
@@ -47,6 +48,12 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
   late int serviceId;
   String? serviceName;
 
+  //book with favorite tasker
+  int taskerId = 0;
+  String taskerName = '';
+  String taskerAvatar = '';
+  BookingWTasker? bookingWTasker;
+
   // Selected package and variant
   ServicePackages? _selectedPackage; // 2, 2.5, 3, 3.5 hours
   double _totalPrice = 0;
@@ -68,10 +75,22 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
       serviceId = args['id'] as int;
       serviceName = args['name'] as String?;
 
+      if (args.containsKey('taskerId')) {
+        taskerId = args['taskerId'] as int;
+        taskerName = args['taskerName'] as String;
+        taskerAvatar = args['taskerAvatar'] as String;
+        bookingWTasker = BookingWTasker(
+          taskerId: taskerId,
+          taskerName: taskerName,
+          taskerAvatar: taskerAvatar,
+        );
+      }
+
       bookingData = bookingData.copyWith(
         serviceId: serviceId,
         serviceName: serviceName,
         user: _userRepository.currentUser,
+        tasker: bookingWTasker,
       );
     }
   }
@@ -365,6 +384,53 @@ class _OptionsServiceCookingPageState extends State<OptionsServiceCookingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (taskerId > 0) ...[
+            Text(
+              'Tasker',
+              style: AppTextStyles.h6Bold.copyWith(
+                color: AppColors.darkBlue,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                taskerAvatar.isNotEmpty
+                    ? CircleAvatar(
+                        radius: 28,
+                        child: ClipOval(
+                          child: Image.network(
+                            taskerAvatar,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: AppColors.darkBlue.withValues(alpha: 0.05),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          size: 56,
+                          color: AppColors.darkBlue,
+                        ),
+                      ),
+                const SizedBox(width: 12),
+                Text(
+                  taskerName.isNotEmpty ? taskerName : 'Tasker Name',
+                  style: AppTextStyles.h6SemiBold.copyWith(
+                    color: AppColors.darkBlue,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
           Text(
             'People',
             style: AppTextStyles.h6Bold.copyWith(

@@ -1,3 +1,5 @@
+import 'package:home_service/modules/booking/models/booking_w_tasker.dart';
+
 import '../../../models/user.dart';
 
 class BookingData {
@@ -40,6 +42,9 @@ class BookingData {
   final List<String>? coursesNames;
   final String? preferStyle;
 
+  //booking with favorite tasker
+  final BookingWTasker? tasker;
+
   BookingData({
     this.serviceId,
     this.serviceName,
@@ -64,6 +69,7 @@ class BookingData {
     this.preferStyle,
     this.latitude,
     this.longitude,
+    this.tasker,
   });
 
   BookingData copyWith({
@@ -90,6 +96,7 @@ class BookingData {
     String? preferStyle,
     double? latitude,
     double? longitude,
+    BookingWTasker? tasker,
   }) {
     return BookingData(
       serviceId: serviceId ?? this.serviceId,
@@ -115,6 +122,7 @@ class BookingData {
       preferStyle: preferStyle ?? this.preferStyle,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      tasker: tasker ?? this.tasker,
     );
   }
 

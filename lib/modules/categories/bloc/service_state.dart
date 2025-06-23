@@ -1,4 +1,5 @@
 import '../models/service_item.dart';
+import '../models/tasker_service_response.dart';
 
 abstract class ServiceState {}
 
@@ -14,4 +15,10 @@ class ServiceError extends ServiceState {
   final String error;
 
   ServiceError({required this.error});
+}
+
+class TaskerServiceLoaded extends ServiceState {
+  final List<TaskerServiceResponse> taskerServices;
+
+  TaskerServiceLoaded({required this.taskerServices});
 }
