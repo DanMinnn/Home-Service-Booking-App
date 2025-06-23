@@ -5,7 +5,7 @@ import 'package:home_service/themes/styles_text.dart';
 import '../../../themes/app_colors.dart';
 
 class ChatListItem extends StatelessWidget {
-  final ChatRoomModel room;
+  final ChatRoomModel? room;
   final int userId;
   final String userType;
   final VoidCallback onTap;
@@ -20,6 +20,11 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (room == null) {
+      return SizedBox.shrink();
+    }
+    final lastMessage = room?.lastMessage;
+    final messageAt = room?.lastMessageAt;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -34,10 +39,10 @@ class ChatListItem extends StatelessWidget {
             CircleAvatar(
               radius: 28,
               backgroundColor: Color(0xFFFF6B35),
-              child: room.taskerProfile != null
+              child: room?.taskerProfile != null
                   ? ClipOval(
                       child: Image.network(
-                        '${room.taskerProfile}',
+                        '${room?.taskerProfile}',
                         width: 56,
                         height: 56,
                         fit: BoxFit.cover,
@@ -56,7 +61,7 @@ class ChatListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    room.taskerName!,
+                    room!.taskerName!,
                     style: AppTextStyles.bodyLargeSemiBold.copyWith(
                       color: AppColors.darkBlue,
                     ),
@@ -65,16 +70,18 @@ class ChatListItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        room.lastMessage!.senderType == userType
-                            ? 'You: '
-                            : '${room.taskerName!}: ',
+                        lastMessage != null
+                            ? lastMessage.senderType == userType
+                                ? 'You: '
+                                : '${room?.taskerName!}: '
+                            : '',
                         style: AppTextStyles.bodyMediumRegular.copyWith(
                           color: AppColors.darkBlue.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
-                        room.lastMessage!.messageText,
+                        lastMessage?.messageText ?? 'No messages yet',
                         style: AppTextStyles.bodyMediumRegular.copyWith(
                           color: AppColors.darkBlue.withValues(alpha: 0.8),
                         ),
@@ -85,7 +92,7 @@ class ChatListItem extends StatelessWidget {
               ),
             ),
             Text(
-              _formatTime(room.lastMessageAt!),
+              messageAt != null ? _formatTime(messageAt) : '',
               style: AppTextStyles.captionRegular.copyWith(
                 color: AppColors.darkBlue.withValues(alpha: 0.4),
                 fontSize: 13,

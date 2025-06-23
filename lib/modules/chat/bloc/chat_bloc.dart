@@ -134,7 +134,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final rooms = await _chatRepo.getChatRooms();
 
       _chatRoomsCache = rooms;
-      emit(ChatRoomsLoaded(rooms));
+      emit(ChatRoomsLoaded(rooms,
+          roomId: _currentRoomId,
+          messages: _messagesCache[_currentRoomId] ?? []));
     } catch (e) {
       emit(ChatError('Failed to load chat rooms: ${e.toString()}'));
     }
@@ -358,7 +360,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         _onlineUsers.remove(userId);
       }
 
-      emit(ChatOnlineStatusState(Map.from(_onlineUsers)));
+      emit(ChatOnlineStatusState(Map.from(_onlineUsers),
+          rooms: _chatRoomsCache,
+          roomId: _currentRoomId ?? 0,
+          messages: _chatMessagesCache));
     }
   }
 

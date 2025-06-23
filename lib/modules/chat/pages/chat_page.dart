@@ -208,6 +208,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       logger.log(
                         "Chat connected with ${rooms.length} rooms",
                       );
+                    } else if (state is ChatOnlineStatusState) {
+                      rooms = state.rooms;
                     }
 
                     if (rooms.isNotEmpty) {
@@ -272,22 +274,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       );
                     }
                     return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Waiting for connection...'),
-                          SizedBox(height: 16),
-                          ElevatedButton(
-                              onPressed: _refreshChatRooms,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.darkBlue,
-                              ),
-                              child: Text(
-                                'Load Chats',
-                                style: TextStyle(color: Colors.white),
-                              )),
-                        ],
-                      ),
+                      child: Text('No conversations yet'),
                     );
                   },
                 ),

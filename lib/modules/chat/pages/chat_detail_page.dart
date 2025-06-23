@@ -137,39 +137,38 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                             color: AppColors.darkBlue,
                           ),
                         ),
+                  // Separate BlocBuilder for online status only
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: BlocProvider.value(
-                      value: context.read<ChatBloc>(),
-                      child: BlocBuilder<ChatBloc, ChatState>(
-                        buildWhen: (previous, current) =>
-                            current is ChatOnlineStatusState,
-                        builder: (context, state) {
-                          bool isOnline = false;
-                          if (state is ChatOnlineStatusState) {
-                            isOnline =
-                                state.onlineUsers[widget.room.taskerId] ??
-                                    false;
-                          } else {
-                            isOnline = context
-                                .read<ChatBloc>()
-                                .isUserOnline(widget.room.taskerId);
-                          }
-                          return Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: isOnline ? AppColors.green : AppColors.red,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
+                    child: BlocBuilder<ChatBloc, ChatState>(
+                      buildWhen: (previous, current) =>
+                          current is ChatOnlineStatusState ||
+                          (previous is! ChatOnlineStatusState &&
+                              current is ChatConnected),
+                      builder: (context, state) {
+                        bool isOnline = false;
+                        if (state is ChatOnlineStatusState) {
+                          isOnline =
+                              state.onlineUsers[widget.room.taskerId] ?? false;
+                        } else {
+                          isOnline = context
+                              .read<ChatBloc>()
+                              .isUserOnline(widget.room.taskerId);
+                        }
+                        return Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: isOnline ? AppColors.green : AppColors.red,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -207,6 +206,13 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                 } else if (state is ChatMessagesLoaded &&
                     state.roomId == widget.room.id) {
                   messages = state.messages;
+                } else if (state is ChatOnlineStatusState &&
+                    state.roomId == widget.room.id) {
+                  // Use messages from online status state if available
+                  messages = state.messages;
+                } else if (state is ChatRoomsLoaded &&
+                    state.roomId == widget.room.id) {
+                  messages = state.messages;
                 }
                 // if (state is ChatMessagesLoaded &&
                 //     state.roomId == widget.room.id) {
@@ -228,23 +234,37 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                 //     ),
                 //   );
                 // }
-                messages = messages.reversed.toList();
-                return Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    controller: _scrollController,
-                    itemCount: messages.length,
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final isMe = message.senderId == widget.userId;
-                      return ChatMessageItem(
-                        message: messages[index],
-                        isMe: isMe,
-                      );
-                    },
-                  ),
-                );
+                if (messages.isEmpty) {
+                  return Expanded(
+                    child: Center(
+                      child: Text(
+                        'Loading messages...',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  messages = messages.reversed.toList();
+                  return Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      controller: _scrollController,
+                      itemCount: messages.length,
+                      reverse: true,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMe = message.senderId == widget.userId;
+                        return ChatMessageItem(
+                          message: messages[index],
+                          isMe: isMe,
+                        );
+                      },
+                    ),
+                  );
+                }
                 // if (state is ChatLoading) {
                 //   return Center(
                 //     child: CircularProgressIndicator(color: Color(0xFF386DF3)),

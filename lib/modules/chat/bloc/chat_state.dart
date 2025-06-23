@@ -21,8 +21,9 @@ class ChatConnected extends ChatState {
 
 class ChatRoomsLoaded extends ChatState {
   final List<ChatRoomModel> rooms;
-
-  ChatRoomsLoaded(this.rooms);
+  final int? roomId;
+  final List<ChatMessageModel> messages;
+  ChatRoomsLoaded(this.rooms, {this.roomId, this.messages = const []});
 }
 
 class ChatMessagesLoaded extends ChatState {
@@ -49,8 +50,16 @@ class ChatTypingState extends ChatState {
 
 class ChatOnlineStatusState extends ChatState {
   final Map<int, bool> onlineUsers;
+  final int? roomId;
+  final List<ChatMessageModel> messages;
+  final List<ChatRoomModel> rooms;
 
-  ChatOnlineStatusState(this.onlineUsers);
+  ChatOnlineStatusState(
+    this.onlineUsers, {
+    this.roomId,
+    this.messages = const [],
+    this.rooms = const [],
+  });
 }
 
 class ChatError extends ChatState {
