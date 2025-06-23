@@ -6,6 +6,7 @@ import 'package:home_service/common/widgets/stateless/show_snack_bar.dart';
 import 'package:home_service/modules/favorite_tasker/bloc/ftasker_bloc.dart';
 import 'package:home_service/modules/favorite_tasker/model/tasker.dart';
 import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/routes/route_name.dart';
 import 'package:home_service/themes/styles_text.dart';
 
 import '../../../common/widgets/stateless/basic_app_bar.dart';
@@ -14,6 +15,7 @@ import '../../../themes/app_assets.dart';
 import '../../../themes/app_colors.dart';
 import '../bloc/ftasker_event.dart';
 import '../bloc/ftasker_state.dart';
+import '../model/chat_room_req.dart';
 import '../repo/favorite_tasker_repo.dart';
 
 class FavoriteTaskerPage extends StatefulWidget {
@@ -158,6 +160,12 @@ class _FavoriteTaskerPageState extends State<FavoriteTaskerPage> {
                               physics: NeverScrollableScrollPhysics()),
                         );
                       }
+                    } else if (state is ChatRoomCreated) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        ShowSnackBar.showSuccess(
+                            context, state.message, 'Chat Room Created');
+                        _navigationService.navigateTo(RouteName.chatPage);
+                      });
                     }
                     return Center(
                       child: Text('Loading...'),
@@ -173,184 +181,229 @@ class _FavoriteTaskerPageState extends State<FavoriteTaskerPage> {
   }
 
   Widget _buildCardTasker(Tasker tasker, Color bgColor) {
-    // Check if we have a processed avatar for this tasker
     final processedAvatar = _processedAvatars[tasker.id];
     bool isRemoveTasker = false;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        width: 157,
-        height: 190,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Stack(children: [
-              Container(
-                height: 130,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+      child: GestureDetector(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (_) {
+                return AlertDialog(
+                  backgroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+                  title: Text('Do you want to chat with tasker?'),
+                  titleTextStyle: AppTextStyles.bodyLargeSemiBold
+                      .copyWith(color: AppColors.darkBlue),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Close',
+                        style: AppTextStyles.bodyMediumRegular.copyWith(
+                          color: AppColors.darkBlue.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          await Future.delayed(Duration(milliseconds: 100));
+                          final chatRoomReq = ChatRoomReq(
+                            taskerId: tasker.id,
+                            userId: userId,
+                          );
+                          _fTaskerBloc.add(ChatTaskerEvent(
+                            chatRoomReq: chatRoomReq,
+                          ));
+                        },
+                        child: Text(
+                          'Chat',
+                          style: AppTextStyles.bodyMediumRegular.copyWith(
+                            color: AppColors.green,
+                          ),
+                        )),
+                  ],
+                );
+              });
+        },
+        child: Container(
+          width: 157,
+          height: 190,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(children: [
+                Container(
+                  height: 130,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
                   ),
-                  child: tasker.profileImage != null
-                      ? Image.network(
-                          tasker.profileImage!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        )
-                      : Image.asset(
-                          AppAssetsBackgrounds.avt,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ), /*processedAvatar != null
-                      ? Image.memory(
-                          processedAvatar,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        )
-                      : tasker.profileImage != null
-                          ? Stack(
-                              children: [
-                                // Show loading indicator while processing
-                                Center(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.blue,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: tasker.profileImage != null
+                        ? Image.network(
+                            tasker.profileImage!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
+                        : Image.asset(
+                            AppAssetsBackgrounds.avt,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ), /*processedAvatar != null
+                        ? Image.memory(
+                            processedAvatar,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
+                        : tasker.profileImage != null
+                            ? Stack(
+                                children: [
+                                  // Show loading indicator while processing
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.blue,
+                                    ),
                                   ),
-                                ),
-                                // Default avatar image
-                                Image.asset(
-                                  AppAssetsBackgrounds.avt,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                ),
-                              ],
-                            )
-                          : Image.asset(
-                              AppAssetsBackgrounds.avt,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),*/
+                                  // Default avatar image
+                                  Image.asset(
+                                    AppAssetsBackgrounds.avt,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                                ],
+                              )
+                            : Image.asset(
+                                AppAssetsBackgrounds.avt,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),*/
+                  ),
                 ),
-              ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: GestureDetector(
-                  onTap: () async {
-                    isRemoveTasker = await _favoriteTaskerRepo
-                        .removeFavoriteTasker(tasker.id);
-                    logger.log(
-                        'Remove tasker: ${tasker.fullName}, success: $isRemoveTasker');
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: () async {
+                      isRemoveTasker = await _favoriteTaskerRepo
+                          .removeFavoriteTasker(tasker.id);
+                      logger.log(
+                          'Remove tasker: ${tasker.fullName}, success: $isRemoveTasker');
 
-                    if (isRemoveTasker) {
-                      _fTaskerBloc.add(FTaskerLoadEvent(userId: userId));
-                      ShowSnackBar.showSuccess(context,
-                          'Tasker removed successfully.', 'Well done!');
-                    } else {
-                      ShowSnackBar.showError(
-                        context,
-                        'Something went wrong',
-                      );
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          AppColors.green,
-                          BlendMode.srcIn,
-                        ),
-                        child: Image.asset(
-                          AppAssetIcons.heartFilledIc,
-                          width: 20,
-                          height: 20,
+                      if (isRemoveTasker) {
+                        _fTaskerBloc.add(FTaskerLoadEvent(userId: userId));
+                        ShowSnackBar.showSuccess(context,
+                            'Tasker removed successfully.', 'Well done!');
+                      } else {
+                        ShowSnackBar.showError(
+                          context,
+                          'Something went wrong',
+                        );
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            AppColors.green,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            AppAssetIcons.heartFilledIc,
+                            width: 20,
+                            height: 20,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ]),
-            Container(
-              height: 60,
-              decoration: BoxDecoration(
-                color: AppColors.darkBlue.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                ),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  Text(
-                    tasker.fullName,
-                    style: AppTextStyles.bodyMediumSemiBold.copyWith(
-                      color: AppColors.darkBlue,
-                    ),
+              ]),
+              Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.darkBlue.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const SizedBox(width: 16),
-                      ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          AppColors.green,
-                          BlendMode.srcIn,
-                        ),
-                        child: Image.asset(
-                          AppAssetIcons.starFilledIc,
-                          width: 16,
-                          height: 16,
-                        ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      tasker.fullName,
+                      style: AppTextStyles.bodyMediumSemiBold.copyWith(
+                        color: AppColors.darkBlue,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        tasker.review != null
-                            ? normalizeTo5(tasker.review!.reputationScore)
-                                .toStringAsFixed(1)
-                            : '0.0',
-                        style: AppTextStyles.bodyMediumRegular.copyWith(
-                          color: AppColors.darkBlue,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const SizedBox(width: 16),
+                        ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            AppColors.green,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            AppAssetIcons.starFilledIc,
+                            width: 16,
+                            height: 16,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        tasker.review != null
-                            ? '(${tasker.review?.totalReviews ?? 0}) reviews'
-                            : '(0 reviews)',
-                        style: AppTextStyles.bodyMediumRegular.copyWith(
-                          color: AppColors.darkBlue.withValues(alpha: 0.6),
+                        const SizedBox(width: 4),
+                        Text(
+                          tasker.review != null
+                              ? normalizeTo5(tasker.review!.reputationScore)
+                                  .toStringAsFixed(1)
+                              : '0.0',
+                          style: AppTextStyles.bodyMediumRegular.copyWith(
+                            color: AppColors.darkBlue,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
+                        const SizedBox(width: 4),
+                        Text(
+                          tasker.review != null
+                              ? '(${tasker.review?.totalReviews ?? 0}) reviews'
+                              : '(0 reviews)',
+                          style: AppTextStyles.bodyMediumRegular.copyWith(
+                            color: AppColors.darkBlue.withValues(alpha: 0.6),
+                          ),
+                        ),
+                        const Spacer(),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -17,3 +17,9 @@ class FTaskerError extends FTaskerState {
 
   FTaskerError({required this.message});
 }
+
+class ChatRoomCreated extends FTaskerState {
+  final String message;
+
+  ChatRoomCreated(this.message);
+}

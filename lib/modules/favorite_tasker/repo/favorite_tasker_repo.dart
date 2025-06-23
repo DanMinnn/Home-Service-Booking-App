@@ -4,7 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:home_service/providers/log_provider.dart';
 
+import '../../../common/response_data.dart';
 import '../../../providers/api_provider.dart';
+import '../model/chat_room_req.dart';
 import '../model/tasker.dart';
 
 class FavoriteTaskerRepo {
@@ -115,6 +117,31 @@ class FavoriteTaskerRepo {
     } catch (e) {
       logger.log('Exception error toggling favorite tasker: $e');
       return false;
+    }
+  }
+
+  Future<ResponseData> createChatRoom(ChatRoomReq req) async {
+    try {
+      ResponseData responseData = ResponseData(status: 0, message: '');
+      final response = await _apiProvider.post(
+        '/chat/rooms/create',
+        data: req.toJson(),
+      );
+
+      if (response.data['status'] == 201) {
+        return responseData = ResponseData(
+          status: response.data['status'],
+          message: response.data['message'] ?? 'Chat room created successfully',
+        );
+      } else {
+        return responseData = ResponseData(
+          status: response.data['status'],
+          message: response.data['message'] ?? 'Failed to create chat room',
+        );
+      }
+    } catch (e) {
+      logger.log('Error creating chat room: $e');
+      rethrow;
     }
   }
 }
