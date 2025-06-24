@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/common/widgets/stateless/basic_app_bar.dart';
 import 'package:home_service/modules/posts/blocs/post_state.dart';
 import 'package:home_service/modules/posts/models/post.dart';
+import 'package:home_service/modules/posts/pages/post_detail_page.dart';
 import 'package:home_service/modules/posts/repos/posts_repo.dart';
 import 'package:home_service/modules/review/pages/rating_dialog.dart';
 import 'package:home_service/providers/log_provider.dart';
@@ -341,7 +342,7 @@ class _BookingPostState extends State<BookingPost> {
           children: [
             _buildBookingFirstRow(post),
             _buildBookingSecondRow(post),
-            if (post.status!.compareTo('pending') == 0)
+            if (post.status!.compareTo('pending') == 0) ...[
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Container(
@@ -360,6 +361,33 @@ class _BookingPostState extends State<BookingPost> {
                   ),
                 ),
               ),
+            ] else if (post.status!.compareTo('assigned') == 0) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PostDetailPage(post: post),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'View Details',
+                      style: AppTextStyles.bodyLargeSemiBold,
+                    ),
+                  ),
+                ),
+              )
+            ],
           ],
         ),
       ),
@@ -411,7 +439,7 @@ class _BookingPostState extends State<BookingPost> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: Text(
-                capitalize(post.status ?? ''),
+                _formatStatus(post.status ?? ''),
                 style: AppTextStyles.captionMedium.copyWith(
                   color: AppColors.darkBlue,
                   fontSize: 14,
@@ -523,15 +551,19 @@ class _BookingPostState extends State<BookingPost> {
     );
   }
 
+  String _formatStatus(String status) {
+    if (status.toLowerCase() == 'in_progress') {
+      return 'In Progress';
+    }
+    return status.isEmpty
+        ? 'Unknown'
+        : status[0].toUpperCase() + status.substring(1);
+  }
+
   String formatPrice(double price) {
     final formatter = NumberFormat('#,###');
     String formattedPrice = formatter.format(price);
     return formattedPrice;
-  }
-
-  String capitalize(String text) {
-    if (text.isEmpty) return text;
-    return text[0].toUpperCase() + text.substring(1);
   }
 
   String showDurationTime(DateTime? startTime, DateTime? endTime) {
