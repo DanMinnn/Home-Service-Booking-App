@@ -154,9 +154,16 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                   taskDetails = {'workload': bookingData.packageDescription!};
                 }
 
+                var taskerId;
+                if (bookingData.tasker != null) {
+                  taskerId = bookingData.tasker!.taskerId;
+                }
+
+                logger.log("TaskerID: $taskerId");
+
                 final bookingReq = BookingReq(
                   userId: bookingData.user!.id,
-                  taskerId: bookingData.tasker!.taskerId,
+                  taskerId: taskerId,
                   serviceId: bookingData.serviceId,
                   packageId: bookingData.packageId,
                   address: bookingData.address,
@@ -169,6 +176,8 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                   latitude: bookingData.latitude,
                   longitude: bookingData.longitude,
                 );
+
+                logger.log("Booking Req ${bookingReq.toJson()}");
 
                 if (_selectedPaymentMethod == PaymentMethod.bank_transfer) {
                   //check if user has enough balance

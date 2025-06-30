@@ -257,7 +257,7 @@ class _FloatingChatBotState extends State<FloatingChatBot>
                                   return Expanded(
                                     child: Center(
                                       child: Text(
-                                        'Error: ${state.message}',
+                                        'Something went wrong',
                                         style: TextStyle(
                                           color: Colors.red,
                                           fontSize: 14,

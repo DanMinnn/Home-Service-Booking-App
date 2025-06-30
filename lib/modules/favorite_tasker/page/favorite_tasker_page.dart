@@ -380,7 +380,7 @@ class _FavoriteTaskerPageState extends State<FavoriteTaskerPage> {
                         const SizedBox(width: 4),
                         Text(
                           tasker.review != null
-                              ? normalizeTo5(tasker.review!.reputationScore)
+                              ? tasker.review!.reputationScore
                                   .toStringAsFixed(1)
                               : '0.0',
                           style: AppTextStyles.bodyMediumRegular.copyWith(

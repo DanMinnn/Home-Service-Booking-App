@@ -23,8 +23,9 @@ class BookingRepo {
       } else {
         return response.data['status'] ?? 400;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       logger.log("Error creating booking: ${e.toString()}");
+      logger.log("Stack trace: $stackTrace");
       rethrow;
     }
   }

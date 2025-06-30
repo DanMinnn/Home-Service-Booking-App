@@ -67,7 +67,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               ShowSnackBar.showSuccess(context, state.message, 'Well done!');
               _navigationService.navigateToAndClearStack(RouteName.authScreen);
             } else if (state is LoginFailure) {
-              ShowSnackBar.showError(context, state.error);
+              ShowSnackBar.showError(context, 'Login Failed');
             }
           },
           child: BlocBuilder<FormFieldBloc, FormFieldStates>(
