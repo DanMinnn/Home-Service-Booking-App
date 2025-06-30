@@ -51,6 +51,7 @@ class AppAssetIcons {
   static const String profileFilled = '${iconPath}profile_filled_ic.png';
   static const String paymentCash = '${iconPath}payment_cash.png';
   static const String digitalPay = '${iconPath}digital_pay_ic.png';
+  static const String vnpay = '${iconPath}vnpay_ic.png';
 
   static const String add = '${iconPath}add_ic.png';
   static const String minus = '${iconPath}minus_ic.png';

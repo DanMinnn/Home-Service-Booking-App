@@ -1,4 +1,1 @@
-enum PaymentMethod {
-  cash,
-  bank_transfer,
-}
+enum PaymentMethod { cash, bank_transfer, vnpay }

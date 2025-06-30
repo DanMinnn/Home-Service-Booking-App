@@ -6,6 +6,7 @@ import 'package:home_service/providers/log_provider.dart';
 class BookingRepo {
   LogProvider get logger => const LogProvider("BOOKING-REPO:::::");
   final apiProvider = ApiProvider();
+  String? _paymentUrl;
 
   Future<int> createBookingRequest(BookingReq req) async {
     try {
@@ -17,9 +18,16 @@ class BookingRepo {
           contentType: 'application/json',
         ),
       );
-      if (response.data['status'] == 200 || response.data['status'] == 201) {
+      if (response.data['status'] == 200 || response.data['status'] == 202) {
         logger.log("Booking created successfully: ${response.data}");
-        return response.data['status'] ?? 200;
+
+        if (response.data['data'] != null &&
+            response.data['data']['paymentUrl'] != null) {
+          _paymentUrl = response.data['data']['paymentUrl'];
+          logger.log("Payment URL received: $_paymentUrl");
+        }
+
+        return response.data['data']['bookingId'] ?? 0;
       } else {
         return response.data['status'] ?? 400;
       }
@@ -28,5 +36,10 @@ class BookingRepo {
       logger.log("Stack trace: $stackTrace");
       rethrow;
     }
+  }
+
+  // Method to get the payment URL after creating a booking
+  String? getPaymentUrl() {
+    return _paymentUrl;
   }
 }

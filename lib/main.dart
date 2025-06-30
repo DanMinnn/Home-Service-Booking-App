@@ -8,6 +8,7 @@ import 'package:home_service/modules/authentication/repos/email_verification_han
 import 'package:home_service/routes/routes.dart';
 import 'package:home_service/services/firebase_messaging_service.dart';
 import 'package:home_service/services/navigation_service.dart';
+import 'package:home_service/services/payment_service.dart';
 import 'package:home_service/themes/app_colors.dart';
 
 Future<void> main() async {
@@ -22,6 +23,7 @@ Future<void> main() async {
   // Initialize Firebase messaging service
   final firebaseMessagingService = FirebaseMessagingService();
   await firebaseMessagingService.init();
+  await PaymentService().initDeepLinks();
   runApp(
     EmailVerificationHandler(
       child: const MyApp(),

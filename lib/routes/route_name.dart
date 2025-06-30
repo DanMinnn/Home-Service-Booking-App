@@ -11,6 +11,7 @@ class RouteName {
   static const String chooseTime = '/choose-time-screen';
   static const String confirmAndPay = '/confirm-and-pay-screen';
   static const String bookingSuccessfully = '/booking-successfully-screen';
+  static const String paymentError = '/payment-error';
   //cooking page
   static const String serviceCooking = '/option-cooking-screen';
   static const String mapsScreen = '/map-screen';

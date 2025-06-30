@@ -107,11 +107,34 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
             create: (context) => BookingBloc(BookingRepo()),
           ),
         ],
-        child: BlocBuilder<BookingBloc, BookingState>(
+        child: BlocConsumer<BookingBloc, BookingState>(
+          listener: (context, state) {
+            if (state is BookingVnpayPaymentInitiated) {
+              logger.log("VNPAY payment initiated, waiting for redirect...");
+            } else if (state is BookingError) {
+              ShowSnackBar.showError(context, state.message);
+            }
+          },
           builder: (context, state) {
             if (state is BookingLoading) {
               return const Center(
                   child: CircularProgressIndicator(color: Color(0xFF386DF3)));
+            }
+
+            if (state is BookingVnpayPaymentInitiated) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Redirecting to VNPAY...",
+                      style: AppTextStyles.bodyMediumMedium,
+                    ),
+                    const SizedBox(height: 10),
+                    const CircularProgressIndicator(color: Color(0xFF386DF3)),
+                  ],
+                ),
+              );
             }
 
             if (state is BookingSuccess) {
@@ -120,6 +143,7 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                     .navigateToWithReplacement(RouteName.bookingSuccessfully);
               });
             }
+
             return GestureDetector(
               onTap: () {
                 final updateBookingData = bookingData.copyWith(
@@ -179,8 +203,8 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
 
                 logger.log("Booking Req ${bookingReq.toJson()}");
 
+                // Check wallet balance if using digital payment
                 if (_selectedPaymentMethod == PaymentMethod.bank_transfer) {
-                  //check if user has enough balance
                   context.read<WalletBloc>().add(
                         WalletFetch(userId: bookingData.user!.id ?? 0),
                       );
@@ -193,6 +217,8 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
                     }
                   });
                 }
+
+                // Submit the booking request
                 context.read<BookingBloc>().add(BookingSubmitted(bookingReq));
                 logger.log("Booking data: ${updateBookingData.paymentMethod}");
               },
@@ -399,6 +425,12 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
             'Cash on Pay',
             PaymentMethod.cash,
           ),
+          const SizedBox(height: 8),
+          _buildPaymentItem(
+            Image.asset(AppAssetIcons.vnpay),
+            'VNPAY',
+            PaymentMethod.vnpay,
+          ),
           const SizedBox(height: 30),
         ],
       ),
@@ -409,8 +441,13 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
     return Container(
       width: MediaQuery.of(context).size.width - 36,
       decoration: BoxDecoration(
-        color: AppColors.blue.withValues(alpha: 0.05),
+        color: _selectedPaymentMethod == value
+            ? AppColors.blue.withValues(alpha: 0.1)
+            : AppColors.blue.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
+        border: _selectedPaymentMethod == value
+            ? Border.all(color: AppColors.blue, width: 1)
+            : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -418,23 +455,26 @@ class _ConfirmAndPayPageState extends State<ConfirmAndPayPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: image,
                   ),
-                  child: image,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  method,
-                  style: AppTextStyles.bodyMediumMedium,
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    method,
+                    style: AppTextStyles.bodyMediumMedium,
+                  ),
+                ],
+              ),
             ),
             Radio(
               value: value,

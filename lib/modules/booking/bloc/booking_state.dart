@@ -5,13 +5,20 @@ class BookingInitial extends BookingState {}
 class BookingLoading extends BookingState {}
 
 class BookingSuccess extends BookingState {
-  final String message;
+  final int bookingId;
 
-  BookingSuccess(this.message);
+  BookingSuccess(this.bookingId);
 }
 
-class BookingFailure extends BookingState {
-  final String error;
+class BookingVnpayPaymentInitiated extends BookingState {
+  final String paymentUrl;
+  final int bookingId;
 
-  BookingFailure(this.error);
+  BookingVnpayPaymentInitiated(this.paymentUrl, this.bookingId);
+}
+
+class BookingError extends BookingState {
+  final String message;
+
+  BookingError(this.message);
 }

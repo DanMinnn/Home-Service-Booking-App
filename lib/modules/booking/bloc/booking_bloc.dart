@@ -1,14 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_service/modules/booking/bloc/booking_event.dart';
 import 'package:home_service/modules/booking/bloc/booking_state.dart';
+import 'package:home_service/modules/booking/models/payment_method.dart';
 import 'package:home_service/modules/booking/repo/booking_repo.dart';
-import 'package:home_service/providers/log_provider.dart';
+import 'package:home_service/services/payment_service.dart';
 
 class BookingBloc extends Bloc<BookingEvent, BookingState> {
-  final BookingRepo bookingRepository;
-  LogProvider get logger => const LogProvider("BOOKING-BLOC:::::");
+  final BookingRepo _bookingRepo;
+  final PaymentService _paymentService = PaymentService();
 
-  BookingBloc(this.bookingRepository) : super(BookingInitial()) {
+  BookingBloc(this._bookingRepo) : super(BookingInitial()) {
     on<BookingSubmitted>(_onBookingSubmitted);
   }
 
@@ -16,19 +19,21 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       BookingSubmitted event, Emitter<BookingState> emit) async {
     emit(BookingLoading());
     try {
-      final req = event.bookingReq;
-      final bookingResponse = await bookingRepository.createBookingRequest(req);
-      if (bookingResponse == 200) {
-        emit(BookingSuccess("Booking created successfully"));
-        return;
-      } else {
-        emit(BookingFailure("Failed to create booking. Check your details."));
-        return;
+      var response = await _bookingRepo.createBookingRequest(event.bookingReq);
+
+      if (event.bookingReq.methodType == PaymentMethod.vnpay.name) {
+        final paymentUrl = _bookingRepo.getPaymentUrl();
+        if (paymentUrl != null && paymentUrl.isNotEmpty) {
+          emit(BookingVnpayPaymentInitiated(paymentUrl, response));
+          await _paymentService.handleVnpayPaymentUrl(paymentUrl);
+          return;
+        }
       }
-      // logger.log('Booking response: ${bookingResponse.toString()}');
-      // emit(BookingSuccess(bookingResponse.toString()));
+
+      // For other payment methods or if no payment URL is provided
+      emit(BookingSuccess(response));
     } catch (e) {
-      emit(BookingFailure("Error: ${e.toString()}"));
+      emit(BookingError(e.toString()));
     }
   }
 }
