@@ -37,9 +37,9 @@ A full-stack application that allows clients to book and manage housekeeping ser
 - Notification system (push & in-app)
 - Admin dashboard (for service management)
 
-App for client:
+## App for client:
 https://github.com/user-attachments/assets/373debdb-6a6d-40f6-aa00-3e918d4d8b5b
-App for tasker:
+## App for tasker:
 https://github.com/user-attachments/assets/86858910-24d0-4c40-9876-9cb943ec3c61
 
 
